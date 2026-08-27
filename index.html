@@ -131,9 +131,7 @@
       transition: background-color 0.2s;
     }
 
-    .theme-toggle-btn:hover {
-      background: var(--border-color);
-    }
+    .theme-toggle-btn:hover { background: var(--border-color); }
 
     .nav-list { 
       list-style: none; 
@@ -146,7 +144,7 @@
       .nav-list { flex-direction: column; width: 100%; }
     }
     
-    .nav-item a {
+    .nav-item a, .nav-item button {
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -156,13 +154,18 @@
       text-decoration: none;
       font-size: 0.85rem;
       font-weight: 500;
+      background: none;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      text-align: left;
     }
 
     @media (min-width: 768px) {
-      .nav-item a { padding: 0.75rem 1rem; font-size: 0.9rem; }
+      .nav-item a, .nav-item button { padding: 0.75rem 1rem; font-size: 0.9rem; }
     }
 
-    .nav-item.active a, .nav-item a:hover { background: var(--today-bg); color: var(--primary); }
+    .nav-item.active a, .nav-item a:hover, .nav-item button:hover { background: var(--today-bg); color: var(--primary); }
 
     main { flex: 1; padding: 1rem; overflow-y: auto; }
 
@@ -189,7 +192,6 @@
 
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Welcome Hero Banner Styling */
     .welcome-hero {
       display: none;
       position: relative;
@@ -253,9 +255,7 @@
       transition: background 0.2s;
     }
 
-    .btn-close-welcome:hover {
-      background: rgba(255, 255, 255, 0.35);
-    }
+    .btn-close-welcome:hover { background: rgba(255, 255, 255, 0.35); }
 
     .metrics-row {
       display: grid;
@@ -463,8 +463,10 @@
       padding: 1.5rem;
       border-radius: 12px;
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       border: 1px solid var(--border-color);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .form-group { margin-bottom: 1rem; }
@@ -484,6 +486,24 @@
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-secondary { background: var(--border-color); color: var(--text-main); }
     .btn-secondary:hover { opacity: 0.8; }
+
+    /* Chronogram Results Styling */
+    .chronogram-results {
+      margin-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+    }
+
+    .chrono-day-card {
+      background: var(--bg-color);
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      border-left: 4px solid var(--accent-purple);
+      font-size: 0.85rem;
+    }
+
+    .chrono-day-card strong { display: block; margin-bottom: 0.25rem; color: var(--accent-purple); }
   </style>
 </head>
 <body>
@@ -506,7 +526,7 @@
       </div>
       <ul class="nav-list">
         <li class="nav-item active"><a href="#">🏠 Home</a></li>
-        <li class="nav-item"><a href="#">📅 Agenda</a></li>
+        <li class="nav-item"><button id="btnOpenChronogram">🤖 Cronograma</button></li>
         <li class="nav-item"><a href="#">📊 Stats</a></li>
       </ul>
     </aside>
@@ -605,6 +625,31 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="chronogramModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">🤖 Gerador de Cronograma IA</h3>
+      <form id="chronogramForm" autocomplete="off">
+        <div class="form-group">
+          <label for="examDate">Data da Prova / Exame</label>
+          <input type="date" id="examDate" required>
+        </div>
+        <div class="form-group">
+          <label for="topicsInput">Tópicos para estudar (separados por vírgula)</label>
+          <textarea id="topicsInput" rows="3" placeholder="Ex: Álgebra, Geometria, História do Brasil, Física Quântica..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="dailyHours">Horas disponíveis por dia</label>
+          <input type="number" id="dailyHours" min="1" max="16" value="2" required>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary" id="btnCancelChrono">Fechar</button>
+          <button type="submit" class="btn btn-primary">Gerar Cronograma</button>
+        </div>
+      </form>
+      <div id="chronogramOutput" class="chronogram-results" style="display:none;"></div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
@@ -633,7 +678,7 @@
     let monthlyGoalHours = 50;
     let unsubscribeLogs = null;
 
-    // --- Dark Mode Logic ---
+    // Theme Switcher
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -671,6 +716,64 @@
     const welcomeUserName = document.getElementById('welcomeUserName');
     const btnCloseWelcome = document.getElementById('btnCloseWelcome');
 
+    // Chronogram Modal Elements
+    const chronogramModal = document.getElementById('chronogramModal');
+    const btnOpenChronogram = document.getElementById('btnOpenChronogram');
+    const btnCancelChrono = document.getElementById('btnCancelChrono');
+    const chronogramForm = document.getElementById('chronogramForm');
+    const chronogramOutput = document.getElementById('chronogramOutput');
+
+    btnOpenChronogram.addEventListener('click', () => {
+      chronogramModal.style.display = 'flex';
+    });
+
+    btnCancelChrono.addEventListener('click', () => {
+      chronogramModal.style.display = 'none';
+      chronogramOutput.style.display = 'none';
+    });
+
+    chronogramForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const examDateValue = document.getElementById('examDate').value;
+      const topics = document.getElementById('topicsInput').value.split(',').map(t => t.trim()).filter(Boolean);
+      const dailyHours = document.getElementById('dailyHours').value;
+
+      if (!examDateValue || topics.length === 0) return;
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const examDate = new Date(examDateValue);
+      const diffTime = examDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays <= 0) {
+        alert('A data da prova deve ser futura!');
+        return;
+      }
+
+      chronogramOutput.innerHTML = `<h4 style="margin-bottom:0.5rem; color:var(--primary);">🗓️ Plano de Estudo (${diffDays} dias restantes)</h4>`;
+
+      let currentTopicIdx = 0;
+      for (let day = 1; day <= Math.min(diffDays, 14); day++) {
+        const topic = topics[currentTopicIdx % topics.length];
+        const isRevisionDay = day % 4 === 0;
+
+        chronogramOutput.innerHTML += `
+          <div class="chrono-day-card">
+            <strong>Dia ${day} ${isRevisionDay ? '🔄 (Revisão)' : ''}</strong>
+            ${isRevisionDay ? `Revisar tópicos anteriores + Exercícios (${dailyHours}h)` : `Estudar: ${topic} (${dailyHours}h)`}
+          </div>
+        `;
+        if (!isRevisionDay) currentTopicIdx++;
+      }
+
+      if (diffDays > 14) {
+        chronogramOutput.innerHTML += `<p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">...e mais ${diffDays - 14} dias planejados sequencialmente.</p>`;
+      }
+
+      chronogramOutput.style.display = 'block';
+    });
+
     document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -696,7 +799,7 @@
       welcomeHero.style.display = 'none';
     });
 
-    [studyModal, goalModal].forEach(modal => {
+    [studyModal, goalModal, chronogramModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.style.display = 'none';
