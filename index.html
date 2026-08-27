@@ -15,6 +15,28 @@
       --border-color: #e5e7eb;
       --accent-purple: #8b5cf6;
       --danger: #ef4444;
+      --auth-bg: #1e293b;
+      --empty-day-bg: #f3f4f6;
+      --today-bg: #ecfdf5;
+      --input-bg: #ffffff;
+      --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --primary: #10b981;
+      --primary-hover: #34d399;
+      --text-main: #f3f4f6;
+      --text-sub: #9ca3af;
+      --border-color: #334155;
+      --accent-purple: #a78bfa;
+      --danger: #f87171;
+      --auth-bg: #0f172a;
+      --empty-day-bg: #0f172a;
+      --today-bg: #064e3b;
+      --input-bg: #0f172a;
+      --modal-overlay-bg: rgba(0, 0, 0, 0.75);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -25,16 +47,17 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     #authBanner {
-      background: #1e293b;
+      background: var(--auth-bg);
       color: white;
       padding: 0.75rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid var(--border-color);
       font-size: 0.85rem;
       gap: 0.5rem;
     }
@@ -85,8 +108,33 @@
       }
     }
 
+    .brand-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
     .brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
     
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.3rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background-color 0.2s;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--border-color);
+    }
+
     .nav-list { 
       list-style: none; 
       display: flex; 
@@ -114,7 +162,7 @@
       .nav-item a { padding: 0.75rem 1rem; font-size: 0.9rem; }
     }
 
-    .nav-item.active a, .nav-item a:hover { background: #ecfdf5; color: var(--primary); }
+    .nav-item.active a, .nav-item a:hover { background: var(--today-bg); color: var(--primary); }
 
     main { flex: 1; padding: 1rem; overflow-y: auto; }
 
@@ -264,7 +312,7 @@
     .progress-bar-bg {
       width: 100%;
       height: 10px;
-      background: #e5e7eb;
+      background: var(--border-color);
       border-radius: 5px;
       overflow: hidden;
     }
@@ -325,10 +373,10 @@
       align-items: center;
     }
 
-    .calendar-day.empty { background: #f3f4f6; }
+    .calendar-day.empty { background: var(--empty-day-bg); }
 
     .day-number { font-size: 0.75rem; font-weight: 600; }
-    .today { background: #ecfdf5; }
+    .today { background: var(--today-bg); }
     .today .day-number { color: var(--primary); font-weight: 800; }
 
     .btn-add-mini {
@@ -402,7 +450,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: var(--modal-overlay-bg);
       justify-content: center;
       align-items: center;
       z-index: 100;
@@ -411,22 +459,31 @@
 
     .modal-content {
       background: var(--card-bg);
+      color: var(--text-main);
       padding: 1.5rem;
       border-radius: 12px;
       width: 100%;
       max-width: 420px;
+      border: 1px solid var(--border-color);
     }
 
     .form-group { margin-bottom: 1rem; }
     .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
-    .form-group input, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; }
+    .form-group input, .form-group textarea { 
+      width: 100%; 
+      padding: 0.6rem; 
+      border: 1px solid var(--border-color); 
+      border-radius: 6px; 
+      background-color: var(--input-bg);
+      color: var(--text-main);
+    }
 
     .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
     .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #e5e7eb; }
-    .btn-secondary:hover { background: #d1d5db; }
+    .btn-secondary { background: var(--border-color); color: var(--text-main); }
+    .btn-secondary:hover { opacity: 0.8; }
   </style>
 </head>
 <body>
@@ -441,7 +498,12 @@
 
   <div class="dashboard-container">
     <aside>
-      <div class="brand">📖 Caderno</div>
+      <div class="brand-container">
+        <div class="brand">📖 Caderno</div>
+        <button class="theme-toggle-btn" id="btnToggleTheme" title="Alternar Tema">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
       <ul class="nav-list">
         <li class="nav-item active"><a href="#">🏠 Home</a></li>
         <li class="nav-item"><a href="#">📅 Agenda</a></li>
@@ -571,6 +633,26 @@
     let monthlyGoalHours = 50;
     let unsubscribeLogs = null;
 
+    // --- Dark Mode Logic ---
+    const btnToggleTheme = document.getElementById('btnToggleTheme');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    btnToggleTheme.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    initTheme();
+
     const calendarGrid = document.getElementById('calendarGrid');
     const studyModal = document.getElementById('studyModal');
     const studyForm = document.getElementById('studyForm');
@@ -657,7 +739,6 @@
           document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
         }
 
-        // Show welcome hero banner
         welcomeUserName.textContent = `Que bom te ver de novo, ${firstName}!`;
         welcomeHero.style.display = 'block';
 
