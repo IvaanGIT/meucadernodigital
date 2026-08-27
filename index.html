@@ -508,9 +508,7 @@
       }
     });
 
-    document.getElementById('btnCancel').addEventListener('click', () => {
-      closeStudyModal();
-    });
+    document.getElementById('btnCancel').addEventListener('click', closeStudyModal);
 
     document.getElementById('btnEditGoal').addEventListener('click', () => {
       if (!currentUser) {
@@ -521,9 +519,7 @@
       goalModal.style.display = 'flex';
     });
 
-    document.getElementById('btnCancelGoal').addEventListener('click', () => {
-      closeGoalModal();
-    });
+    document.getElementById('btnCancelGoal').addEventListener('click', closeGoalModal);
 
     [studyModal, goalModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
@@ -600,7 +596,6 @@
       const newGoal = parseInt(goalInput.value, 10);
       if (isNaN(newGoal) || newGoal <= 0) return;
 
-      // Update state immediately so UI changes without waiting
       monthlyGoalHours = newGoal;
       updateStats();
       closeGoalModal();
@@ -628,7 +623,6 @@
       calendarGrid.innerHTML = '';
       totalMinutesLogged = 0;
       sessionCount = 0;
-      updateStats();
 
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
@@ -658,6 +652,7 @@
 
         calendarGrid.appendChild(dayCell);
       }
+      updateStats();
     }
 
     function loadUserStudyLogs(userId) {
@@ -674,6 +669,7 @@
         updateStats();
       }, (err) => {
         console.error("Erro ao escutar dados do Firestore:", err);
+        alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
       });
     }
 
