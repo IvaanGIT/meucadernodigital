@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Portal</title>
+  <title>Estudei Portal</title>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -42,7 +42,10 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: 500;
+      transition: background 0.2s;
     }
+
+    .nav-btn:hover { background: var(--primary-hover); }
 
     .hero {
       text-align: center;
@@ -78,14 +81,60 @@
     }
 
     .card h3 { margin-bottom: 0.5rem; }
-    .card p { color: var(--text-muted); font-size: 0.9rem; }
+    .card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+    .card-btn {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .card-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    .close-btn {
+      margin-top: 1rem;
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">Estudei Portal</div>
-    <button class="nav-btn">Sign In</button>
+    <button class="nav-btn" id="loginBtn">Sign In</button>
   </header>
 
   <main>
@@ -98,17 +147,76 @@
       <div class="card">
         <h3>📚 Flashcards</h3>
         <p>Review key terms and practice active recall daily.</p>
+        <button class="card-btn" onclick="openTool('Flashcards')">Open Cards</button>
       </div>
       <div class="card">
         <h3>⏱️ Study Timer</h3>
         <p>Stay focused using Pomodoro study blocks.</p>
+        <button class="card-btn" onclick="startTimer(this)">Start 25m Timer</button>
       </div>
       <div class="card">
         <h3>📊 Analytics</h3>
         <p>Track progress metrics across your courses.</p>
+        <button class="card-btn" onclick="openTool('Analytics')">View Stats</button>
       </div>
     </section>
   </main>
+
+  <!-- Popup Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Header</h2>
+      <p id="modalBody" style="margin-top: 0.5rem; color: var(--text-muted);"></p>
+      <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Login Button Event
+    document.getElementById('loginBtn').addEventListener('click', function() {
+      showModal('Welcome Back!', 'Sign-in functionality can be connected to a backend database next.');
+    });
+
+    // Tool Buttons Function
+    function openTool(toolName) {
+      showModal(toolName, 'You clicked to access the ' + toolName + ' module!');
+    }
+
+    // Pomodoro Timer Function
+    let timerInterval;
+    function startTimer(button) {
+      if (button.textContent.includes('Start')) {
+        let seconds = 25 * 60;
+        button.textContent = '25:00';
+        
+        timerInterval = setInterval(() => {
+          seconds--;
+          let mins = Math.floor(seconds / 60);
+          let secs = seconds % 60;
+          button.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+          
+          if (seconds <= 0) {
+            clearInterval(timerInterval);
+            button.textContent = 'Done!';
+          }
+        }, 1000);
+      } else {
+        clearInterval(timerInterval);
+        button.textContent = 'Start 25m Timer';
+      }
+    }
+
+    // Modal Control Functions
+    function showModal(title, message) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').textContent = message;
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+  </script>
 
 </body>
 </html>
