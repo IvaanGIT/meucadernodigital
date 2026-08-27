@@ -525,7 +525,6 @@
       closeGoalModal();
     });
 
-    // Close modals when clicking on background overlays
     [studyModal, goalModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -591,6 +590,7 @@
       } catch (err) {
         console.error("Erro ao carregar meta: ", err);
       }
+      updateStats();
     }
 
     goalForm.addEventListener('submit', async function(e) {
@@ -600,16 +600,18 @@
       const newGoal = parseInt(goalInput.value, 10);
       if (isNaN(newGoal) || newGoal <= 0) return;
 
+      // Update state immediately so UI changes without waiting
+      monthlyGoalHours = newGoal;
+      updateStats();
+      closeGoalModal();
+
       try {
         await setDoc(doc(db, "user_settings", currentUser.uid), {
           monthlyGoal: newGoal
         }, { merge: true });
-
-        monthlyGoalHours = newGoal;
-        updateStats();
-        closeGoalModal();
       } catch (err) {
-        alert('Erro ao salvar meta: ' + err.message);
+        console.error('Erro ao salvar meta no Firestore: ', err);
+        alert('Meta atualizada localmente, mas ocorreu um erro no servidor: ' + err.message);
       }
     });
 
