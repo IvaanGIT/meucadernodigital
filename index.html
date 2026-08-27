@@ -145,7 +145,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 0.75rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     .metric-card {
@@ -153,6 +153,7 @@
       padding: 1rem;
       border-radius: 12px;
       border: 1px solid var(--border-color);
+      position: relative;
     }
 
     .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
@@ -162,6 +163,51 @@
       .metric-card { padding: 1.25rem; }
       .metric-card span { font-size: 0.8rem; }
       .metric-card .value { font-size: 1.8rem; }
+    }
+
+    .btn-edit-goal {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 0.3rem;
+    }
+
+    .btn-edit-goal:hover { color: var(--accent-purple); }
+
+    /* Goal Progress Bar Container */
+    .goal-progress-panel {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .goal-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+      border-radius: 5px;
+      transition: width 0.4s ease;
     }
 
     .panel {
@@ -346,8 +392,19 @@
           <div class="value" id="totalSessions">0</div>
         </div>
         <div class="metric-card">
-          <span>Meta Mensal</span>
-          <div class="value" style="color: var(--accent-purple);">50 hrs</div>
+          <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
+          <div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
+        </div>
+      </div>
+
+      <!-- Goal Progress Bar -->
+      <div class="goal-progress-panel">
+        <div class="goal-progress-header">
+          <span>Progresso da Meta</span>
+          <span id="goalPercentText">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="goalProgressBar"></div>
         </div>
       </div>
 
@@ -361,6 +418,7 @@
     </main>
   </div>
 
+  <!-- Study Log Modal -->
   <div class="modal-overlay" id="studyModal">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
@@ -386,11 +444,28 @@
     </div>
   </div>
 
+  <!-- Edit Goal Modal -->
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">Definir Meta Mensal</h3>
+      <form id="goalForm" autocomplete="off">
+        <div class="form-group">
+          <label for="goalInput">Nova Meta (em horas)</label>
+          <input type="number" id="goalInput" min="1" max="500" placeholder="Ex: 50" required>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Meta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, query, where, onSnapshot } 
+    import { getFirestore, collection, addDoc, deleteDoc, doc, setDoc, getDoc, query, where, onSnapshot } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -411,12 +486,20 @@
     let currentUser = null;
     let totalMinutesLogged = 0;
     let sessionCount = 0;
+    let monthlyGoalHours = 50;
 
     const calendarGrid = document.getElementById('calendarGrid');
     const studyModal = document.getElementById('studyModal');
     const studyForm = document.getElementById('studyForm');
     const modalDateTitle = document.getElementById('modalDateTitle');
     const selectedDateInput = document.getElementById('selectedDate');
+
+    const goalModal = document.getElementById('goalModal');
+    const goalForm = document.getElementById('goalForm');
+    const goalInput = document.getElementById('goalInput');
+    const monthlyGoalDisplay = document.getElementById('monthlyGoalDisplay');
+    const goalProgressBar = document.getElementById('goalProgressBar');
+    const goalPercentText = document.getElementById('goalPercentText');
 
     document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
       try {
@@ -431,7 +514,21 @@
       studyForm.reset();
     });
 
-    onAuthStateChanged(auth, (user) => {
+    document.getElementById('btnEditGoal').addEventListener('click', () => {
+      if (!currentUser) {
+        alert('Faça login com o Google para alterar sua meta.');
+        return;
+      }
+      goalInput.value = monthlyGoalHours;
+      goalModal.style.display = 'flex';
+    });
+
+    document.getElementById('btnCancelGoal').addEventListener('click', () => {
+      goalModal.style.display = 'none';
+      goalForm.reset();
+    });
+
+    onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       const userInfo = document.getElementById('userInfo');
       const googleBtn = document.getElementById('btnGoogleLogin');
@@ -448,6 +545,7 @@
           document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
         }
 
+        await loadUserGoal(user.uid);
         initCalendar();
         loadUserStudyLogs(user.uid);
       } else {
@@ -455,7 +553,43 @@
         googleBtn.style.display = 'flex';
         document.getElementById('displayUserName').textContent = 'Olá, Estudante';
         document.getElementById('avatarBox').textContent = 'E';
+        monthlyGoalHours = 50;
         initCalendar();
+      }
+    });
+
+    async function loadUserGoal(userId) {
+      try {
+        const goalDocRef = doc(db, "user_settings", userId);
+        const goalSnap = await getDoc(goalDocRef);
+        if (goalSnap.exists() && goalSnap.data().monthlyGoal) {
+          monthlyGoalHours = goalSnap.data().monthlyGoal;
+        } else {
+          monthlyGoalHours = 50;
+        }
+      } catch (err) {
+        console.error("Erro ao carregar meta: ", err);
+      }
+    }
+
+    goalForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const newGoal = parseInt(goalInput.value, 10);
+      if (isNaN(newGoal) || newGoal <= 0) return;
+
+      try {
+        await setDoc(doc(db, "user_settings", currentUser.uid), {
+          monthlyGoal: newGoal
+        }, { merge: true });
+
+        monthlyGoalHours = newGoal;
+        updateStats();
+        goalModal.style.display = 'none';
+        goalForm.reset();
+      } catch (err) {
+        alert('Erro ao salvar meta: ' + err.message);
       }
     });
 
@@ -550,6 +684,14 @@
       const mins = totalMinutesLogged % 60;
       document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
       document.getElementById('totalSessions').textContent = sessionCount;
+      
+      monthlyGoalDisplay.textContent = `${monthlyGoalHours} hrs`;
+
+      const totalHoursDecimal = totalMinutesLogged / 60;
+      const percent = Math.min(Math.round((totalHoursDecimal / monthlyGoalHours) * 100), 100);
+      
+      goalProgressBar.style.width = `${percent}%`;
+      goalPercentText.textContent = `${percent}%`;
     }
 
     function openModal(dateKey, day, monthName) {
