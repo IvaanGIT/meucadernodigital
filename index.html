@@ -141,6 +141,74 @@
 
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
+    /* Welcome Hero Banner Styling */
+    .welcome-hero {
+      display: none;
+      position: relative;
+      background: linear-gradient(135deg, #059669 0%, #10b981 50%, #8b5cf6 100%);
+      color: white;
+      padding: 1.25rem 1.5rem;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
+      overflow: hidden;
+      animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .welcome-hero::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .welcome-hero-content h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .welcome-hero-content p {
+      font-size: 0.875rem;
+      opacity: 0.95;
+      line-height: 1.4;
+    }
+
+    .btn-close-welcome {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .btn-close-welcome:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
     .metrics-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -390,6 +458,14 @@
         </div>
       </header>
 
+      <div class="welcome-hero" id="welcomeHero">
+        <button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
+        <div class="welcome-hero-content">
+          <h3>🚀 <span id="welcomeUserName">Bem-vindo(a)!</span></h3>
+          <p>Seus dados estão sincronizados em tempo real. Pronto para conquistar suas metas de estudo hoje?</p>
+        </div>
+      </div>
+
       <div class="metrics-row">
         <div class="metric-card">
           <span>Tempo Total</span>
@@ -509,6 +585,10 @@
     const goalProgressBar = document.getElementById('goalProgressBar');
     const goalPercentText = document.getElementById('goalPercentText');
 
+    const welcomeHero = document.getElementById('welcomeHero');
+    const welcomeUserName = document.getElementById('welcomeUserName');
+    const btnCloseWelcome = document.getElementById('btnCloseWelcome');
+
     document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -529,6 +609,10 @@
     });
 
     document.getElementById('btnCancelGoal').addEventListener('click', closeGoalModal);
+
+    btnCloseWelcome.addEventListener('click', () => {
+      welcomeHero.style.display = 'none';
+    });
 
     [studyModal, goalModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
@@ -560,6 +644,8 @@
       }
 
       if (user) {
+        const firstName = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
+        
         userInfo.innerHTML = `<strong>${user.displayName || user.email}</strong> <button id="btnLogout" style="background:#ef4444; color:white; border:none; padding:3px 6px; border-radius:4px; margin-left:6px; cursor:pointer; font-size:0.75rem;">Sair</button>`;
         document.getElementById('btnLogout').onclick = () => signOut(auth);
         googleBtn.style.display = 'none';
@@ -571,6 +657,10 @@
           document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
         }
 
+        // Show welcome hero banner
+        welcomeUserName.textContent = `Que bom te ver de novo, ${firstName}!`;
+        welcomeHero.style.display = 'block';
+
         await loadUserGoal(user.uid);
         initCalendar();
         loadUserStudyLogs(user.uid);
@@ -579,6 +669,7 @@
         googleBtn.style.display = 'flex';
         document.getElementById('displayUserName').textContent = 'Olá, Estudante';
         document.getElementById('avatarBox').textContent = 'E';
+        welcomeHero.style.display = 'none';
         monthlyGoalHours = 50;
         initCalendar();
       }
@@ -773,14 +864,12 @@
 
       try {
         if (docId) {
-          // Update existing document
           await updateDoc(doc(db, "study_logs", docId), {
             subject,
             duration,
             notes
           });
         } else {
-          // Add new document
           await addDoc(collection(db, "study_logs"), {
             userId: currentUser.uid,
             dateKey,
