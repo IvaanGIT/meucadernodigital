@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estudei Portal</title>
+  <title>Meu Caderno Digital</title>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -92,6 +92,8 @@
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .card-btn:hover {
@@ -133,7 +135,7 @@
 <body>
 
   <header>
-    <div class="logo">Estudei Portal</div>
+    <div class="logo">Meu Caderno Digital</div>
     <button class="nav-btn" id="loginBtn">Sign In</button>
   </header>
 
@@ -152,12 +154,12 @@
       <div class="card">
         <h3>⏱️ Study Timer</h3>
         <p>Stay focused using Pomodoro study blocks.</p>
-        <button class="card-btn" onclick="startTimer(this)">Start 25m Timer</button>
+        <button class="card-btn" id="timerBtn" onclick="startTimer(this)">Start 25m Timer</button>
       </div>
       <div class="card">
-        <h3>📊 Analytics</h3>
+        <h3>📊 Student Dashboard</h3>
         <p>Track progress metrics across your courses.</p>
-        <button class="card-btn" onclick="openTool('Analytics')">View Stats</button>
+        <a href="studentdashboard.html" class="card-btn">View Dashboard</a>
       </div>
     </section>
   </main>
