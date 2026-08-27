@@ -1,762 +1,800 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meu Caderno Digital - Dashboard</title>
-<style>
-:root {
---bg-color: #f3f4f6;
---card-bg: #ffffff;
---primary: #10b981;
---primary-hover: #059669;
---text-main: #1f2937;
---text-sub: #6b7280;
---border-color: #e5e7eb;
---accent-purple: #8b5cf6;
---danger: #ef4444;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Caderno Digital - Dashboard</title>
+  <style>
+    :root {
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --text-main: #1f2937;
+      --text-sub: #6b7280;
+      --border-color: #e5e7eb;
+      --accent-purple: #8b5cf6;
+      --danger: #ef4444;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
-body {
-background-color: var(--bg-color);
-color: var(--text-main);
-display: flex;
-flex-direction: column;
-min-height: 100vh;
-}
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-#authBanner {
-background: #1e293b;
-color: white;
-padding: 0.75rem 1rem;
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-bottom: 1px solid #334155;
-font-size: 0.85rem;
-gap: 0.5rem;
-}
+    #authBanner {
+      background: #1e293b;
+      color: white;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      font-size: 0.85rem;
+      gap: 0.5rem;
+    }
 
-.btn-google {
-background: #ffffff;
-color: #374151;
-border: 1px solid #d1d5db;
-padding: 0.4rem 0.8rem;
-border-radius: 6px;
-cursor: pointer;
-font-weight: 600;
-font-size: 0.85rem;
-display: flex;
-align-items: center;
-gap: 0.5rem;
-white-space: nowrap;
-}
+    .btn-google {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
 
-.btn-google:hover { background: #f9fafb; }
+    .btn-google:hover { background: #f9fafb; }
 
-.dashboard-container { display: flex; flex: 1; flex-direction: column; }
+    .dashboard-container { display: flex; flex: 1; flex-direction: column; }
 
-@media (min-width: 768px) {
-.dashboard-container { flex-direction: row; }
-}
+    @media (min-width: 768px) {
+      .dashboard-container { flex-direction: row; }
+    }
 
-aside {
-width: 100%;
-background: var(--card-bg);
-border-bottom: 1px solid var(--border-color);
-padding: 1rem;
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-align-items: center;
-}
+    aside {
+      width: 100%;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-@media (min-width: 768px) {
-aside {
-width: 240px;
-border-right: 1px solid var(--border-color);
-border-bottom: none;
-padding: 1.5rem 1rem;
-flex-direction: column;
-justify-content: flex-start;
-gap: 1.5rem;
-}
-}
+    @media (min-width: 768px) {
+      aside {
+        width: 240px;
+        border-right: 1px solid var(--border-color);
+        border-bottom: none;
+        padding: 1.5rem 1rem;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 1.5rem;
+      }
+    }
 
-.brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    
+    .nav-list { 
+      list-style: none; 
+      display: flex; 
+      flex-direction: row; 
+      gap: 0.5rem; 
+    }
 
-.nav-list { 
-list-style: none; 
-display: flex; 
-flex-direction: row; 
-gap: 0.5rem; 
-}
+    @media (min-width: 768px) {
+      .nav-list { flex-direction: column; width: 100%; }
+    }
+    
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
 
-@media (min-width: 768px) {
-.nav-list { flex-direction: column; width: 100%; }
-}
+    @media (min-width: 768px) {
+      .nav-item a { padding: 0.75rem 1rem; font-size: 0.9rem; }
+    }
 
-.nav-item a {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-padding: 0.5rem 0.75rem;
-border-radius: 8px;
-color: var(--text-sub);
-text-decoration: none;
-font-size: 0.85rem;
-font-weight: 500;
-}
+    .nav-item.active a, .nav-item a:hover { background: #ecfdf5; color: var(--primary); }
 
-@media (min-width: 768px) {
-.nav-item a { padding: 0.75rem 1rem; font-size: 0.9rem; }
-}
+    main { flex: 1; padding: 1rem; overflow-y: auto; }
 
-.nav-item.active a, .nav-item a:hover { background: #ecfdf5; color: var(--primary); }
+    @media (min-width: 768px) {
+      main { padding: 1.5rem 2rem; }
+    }
 
-main { flex: 1; padding: 1rem; overflow-y: auto; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .user-profile { display: flex; align-items: center; gap: 0.75rem; }
 
-@media (min-width: 768px) {
-main { padding: 1.5rem 2rem; }
-}
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
 
-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.user-profile { display: flex; align-items: center; gap: 0.75rem; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-.avatar {
-width: 36px;
-height: 36px;
-border-radius: 50%;
-background: var(--primary);
-color: white;
-display: flex;
-align-items: center;
-justify-content: center;
-font-weight: bold;
-overflow: hidden;
-flex-shrink: 0;
-}
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
 
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .metric-card {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
 
-.metrics-row {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-gap: 0.75rem;
-margin-bottom: 1rem;
-}
+    .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
+    .metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
 
-.metric-card {
-background: var(--card-bg);
-padding: 1rem;
-border-radius: 12px;
-border: 1px solid var(--border-color);
-position: relative;
-}
+    @media (min-width: 768px) {
+      .metric-card { padding: 1.25rem; }
+      .metric-card span { font-size: 0.8rem; }
+      .metric-card .value { font-size: 1.8rem; }
+    }
 
-.metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
-.metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+    .btn-edit-goal {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 0.3rem;
+    }
 
-@media (min-width: 768px) {
-.metric-card { padding: 1.25rem; }
-.metric-card span { font-size: 0.8rem; }
-.metric-card .value { font-size: 1.8rem; }
-}
+    .btn-edit-goal:hover { color: var(--accent-purple); }
 
-.btn-edit-goal {
-background: none;
-border: none;
-color: var(--text-sub);
-cursor: pointer;
-font-size: 0.8rem;
-margin-left: 0.3rem;
-}
+    .goal-progress-panel {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
 
-.btn-edit-goal:hover { color: var(--accent-purple); }
+    .goal-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
 
-.goal-progress-panel {
-background: var(--card-bg);
-padding: 1rem;
-border-radius: 12px;
-border: 1px solid var(--border-color);
-margin-bottom: 1.5rem;
-}
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 5px;
+      overflow: hidden;
+    }
 
-.goal-progress-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-font-size: 0.85rem;
-font-weight: 600;
-margin-bottom: 0.5rem;
-}
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+      border-radius: 5px;
+      transition: width 0.4s ease;
+    }
 
-.progress-bar-bg {
-width: 100%;
-height: 10px;
-background: #e5e7eb;
-border-radius: 5px;
-overflow: hidden;
-}
+    .panel {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
 
-.progress-bar-fill {
-height: 100%;
-width: 0%;
-background: linear-gradient(90deg, var(--primary), var(--accent-purple));
-border-radius: 5px;
-transition: width 0.4s ease;
-}
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-.panel {
-background: var(--card-bg);
-padding: 1rem;
-border-radius: 12px;
-border: 1px solid var(--border-color);
-margin-bottom: 1.5rem;
-}
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--border-color);
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      overflow: hidden;
+    }
 
-.calendar-weekdays {
-display: grid;
-grid-template-columns: repeat(7, 1fr);
-text-align: center;
-font-weight: 600;
-color: var(--text-sub);
-font-size: 0.75rem;
-padding-bottom: 0.5rem;
-border-bottom: 1px solid var(--border-color);
-}
+    .calendar-day {
+      background: var(--card-bg);
+      min-height: 70px;
+      padding: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
 
-.calendar-grid {
-display: grid;
-grid-template-columns: repeat(7, 1fr);
-gap: 1px;
-background: var(--border-color);
-margin-top: 0.5rem;
-border-radius: 8px;
-overflow: hidden;
-}
+    @media (min-width: 768px) {
+      .calendar-day { min-height: 110px; padding: 0.5rem; gap: 4px; }
+    }
 
-.calendar-day {
-background: var(--card-bg);
-min-height: 70px;
-padding: 0.25rem;
-display: flex;
-flex-direction: column;
-gap: 2px;
-}
+    .calendar-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-@media (min-width: 768px) {
-.calendar-day { min-height: 110px; padding: 0.5rem; gap: 4px; }
-}
+    .calendar-day.empty { background: #f3f4f6; }
 
-.calendar-day-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
+    .day-number { font-size: 0.75rem; font-weight: 600; }
+    .today { background: #ecfdf5; }
+    .today .day-number { color: var(--primary); font-weight: 800; }
 
-.calendar-day.empty { background: #f3f4f6; }
+    .btn-add-mini {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
 
-.day-number { font-size: 0.75rem; font-weight: 600; }
-.today { background: #ecfdf5; }
-.today .day-number { color: var(--primary); font-weight: 800; }
+    .btn-add-mini:hover { background: var(--primary-hover); }
 
-.btn-add-mini {
-background: var(--primary);
-color: white;
-border: none;
-border-radius: 50%;
-width: 18px;
-height: 18px;
-font-size: 0.75rem;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-line-height: 1;
-}
+    .log-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+      max-height: 50px;
+    }
 
-.btn-add-mini:hover { background: var(--primary-hover); }
+    @media (min-width: 768px) {
+      .log-container { max-height: 75px; gap: 4px; }
+    }
 
-.log-container {
-display: flex;
-flex-direction: column;
-gap: 2px;
-overflow-y: auto;
-max-height: 50px;
-}
+    .study-tag {
+      background: var(--primary);
+      color: white;
+      font-size: 0.65rem;
+      padding: 1px 4px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2px;
+    }
 
-@media (min-width: 768px) {
-.log-container { max-height: 75px; gap: 4px; }
-}
+    .study-tag-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
 
-.study-tag {
-background: var(--primary);
-color: white;
-font-size: 0.65rem;
-padding: 1px 4px;
-border-radius: 4px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 2px;
-}
+    .tag-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
 
-.study-tag-text {
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-flex: 1;
-}
+    .btn-action-tag {
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 0.65rem;
+      opacity: 0.8;
+      padding: 0 1px;
+    }
 
-.btn-delete-tag {
-background: transparent;
-border: none;
-color: white;
-cursor: pointer;
-font-size: 0.65rem;
-opacity: 0.7;
-padding: 0 1px;
-}
+    .btn-action-tag:hover { opacity: 1; }
+    .btn-delete-tag:hover { color: #fca5a5; }
 
-.btn-delete-tag:hover { opacity: 1; color: #fca5a5; }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 1rem;
+    }
 
-.modal-overlay {
-display: none;
-position: fixed;
-top: 0; left: 0; width: 100%; height: 100%;
-background: rgba(0, 0, 0, 0.5);
-justify-content: center;
-align-items: center;
-z-index: 100;
-padding: 1rem;
-}
+    .modal-content {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+    }
 
-.modal-content {
-background: var(--card-bg);
-padding: 1.5rem;
-border-radius: 12px;
-width: 100%;
-max-width: 420px;
-}
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; }
 
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
-.form-group input, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; }
-
-.btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
-.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-.btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-secondary { background: #e5e7eb; }
-.btn-secondary:hover { background: #d1d5db; }
-</style>
+    .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+    .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #e5e7eb; }
+    .btn-secondary:hover { background: #d1d5db; }
+  </style>
 </head>
 <body>
 
-<div id="authBanner">
-<div id="userInfo">Status: <strong>Desconectado</strong></div>
-<button class="btn-google" id="btnGoogleLogin">
-<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-Entrar
-</button>
-</div>
+  <div id="authBanner">
+    <div id="userInfo">Status: <strong>Desconectado</strong></div>
+    <button class="btn-google" id="btnGoogleLogin">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+      Entrar
+    </button>
+  </div>
 
-<div class="dashboard-container">
-<aside>
-<div class="brand">📖 Caderno</div>
-<ul class="nav-list">
-<li class="nav-item active"><a href="#">🏠 Home</a></li>
-<li class="nav-item"><a href="#">📅 Agenda</a></li>
-<li class="nav-item"><a href="#">📊 Stats</a></li>
-</ul>
-</aside>
+  <div class="dashboard-container">
+    <aside>
+      <div class="brand">📖 Caderno</div>
+      <ul class="nav-list">
+        <li class="nav-item active"><a href="#">🏠 Home</a></li>
+        <li class="nav-item"><a href="#">📅 Agenda</a></li>
+        <li class="nav-item"><a href="#">📊 Stats</a></li>
+      </ul>
+    </aside>
 
-<main>
-<header>
-<h2>Painel Principal</h2>
-<div class="user-profile">
-<span id="displayUserName">Olá, Estudante</span>
-<div class="avatar" id="avatarBox">E</div>
-</div>
-</header>
+    <main>
+      <header>
+        <h2>Painel Principal</h2>
+        <div class="user-profile">
+          <span id="displayUserName">Olá, Estudante</span>
+          <div class="avatar" id="avatarBox">E</div>
+        </div>
+      </header>
 
-<div class="metrics-row">
-<div class="metric-card">
-<span>Tempo Total</span>
-<div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
-</div>
-<div class="metric-card">
-<span>Sessões</span>
-<div class="value" id="totalSessions">0</div>
-</div>
-<div class="metric-card">
-<span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
-<div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
-</div>
-</div>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <span>Tempo Total</span>
+          <div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
+        </div>
+        <div class="metric-card">
+          <span>Sessões</span>
+          <div class="value" id="totalSessions">0</div>
+        </div>
+        <div class="metric-card">
+          <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
+          <div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
+        </div>
+      </div>
 
-<div class="goal-progress-panel">
-<div class="goal-progress-header">
-<span>Progresso da Meta</span>
-<span id="goalPercentText">0%</span>
-</div>
-<div class="progress-bar-bg">
-<div class="progress-bar-fill" id="goalProgressBar"></div>
-</div>
-</div>
+      <div class="goal-progress-panel">
+        <div class="goal-progress-header">
+          <span>Progresso da Meta</span>
+          <span id="goalPercentText">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="goalProgressBar"></div>
+        </div>
+      </div>
 
-<div class="panel">
-<h3 id="calendarMonth" style="margin-bottom: 1rem; font-size: 1.1rem;">Calendário de Estudos</h3>
-<div class="calendar-weekdays">
-<div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-</div>
-<div class="calendar-grid" id="calendarGrid"></div>
-</div>
-</main>
-</div>
+      <div class="panel">
+        <h3 id="calendarMonth" style="margin-bottom: 1rem; font-size: 1.1rem;">Calendário de Estudos</h3>
+        <div class="calendar-weekdays">
+          <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+    </main>
+  </div>
 
-<div class="modal-overlay" id="studyModal">
-<div class="modal-content">
-<h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
-<form id="studyForm" autocomplete="off">
-<input type="hidden" id="selectedDate">
-<div class="form-group">
-<label for="subject">Matéria / Disciplina</label>
-<input type="text" id="subject" placeholder="Ex: Matemática, Direito..." required>
-</div>
-<div class="form-group">
-<label for="duration">Tempo de Estudo (em minutos)</label>
-<input type="number" id="duration" min="1" placeholder="Ex: 60" required>
-</div>
-<div class="form-group">
-<label for="notes">O que você estudou?</label>
-<textarea id="notes" rows="3" placeholder="Resumo dos tópicos abordados..."></textarea>
-</div>
-<div class="btn-group">
-<button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
-<button type="submit" class="btn btn-primary">Salvar Registro</button>
-</div>
-</form>
-</div>
-</div>
+  <div class="modal-overlay" id="studyModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
+      <form id="studyForm" autocomplete="off">
+        <input type="hidden" id="selectedDate">
+        <input type="hidden" id="editingDocId" value="">
+        <div class="form-group">
+          <label for="subject">Matéria / Disciplina</label>
+          <input type="text" id="subject" placeholder="Ex: Matemática, Direito..." required>
+        </div>
+        <div class="form-group">
+          <label for="duration">Tempo de Estudo (em minutos)</label>
+          <input type="number" id="duration" min="1" placeholder="Ex: 60" required>
+        </div>
+        <div class="form-group">
+          <label for="notes">O que você estudou?</label>
+          <textarea id="notes" rows="3" placeholder="Resumo dos tópicos abordados..."></textarea>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveStudy">Salvar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-<div class="modal-overlay" id="goalModal">
-<div class="modal-content">
-<h3 style="margin-bottom: 1rem;">Definir Meta Mensal</h3>
-<form id="goalForm" autocomplete="off">
-<div class="form-group">
-<label for="goalInput">Nova Meta (em horas)</label>
-<input type="number" id="goalInput" min="1" max="500" placeholder="Ex: 50" required>
-</div>
-<div class="btn-group">
-<button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
-<button type="submit" class="btn btn-primary" id="btnSaveGoal">Salvar Meta</button>
-</div>
-</form>
-</div>
-</div>
+  <div class="modal-overlay" id="goalModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">Definir Meta Mensal</h3>
+      <form id="goalForm" autocomplete="off">
+        <div class="form-group">
+          <label for="goalInput">Nova Meta (em horas)</label>
+          <input type="number" id="goalInput" min="1" max="500" placeholder="Ex: 50" required>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveGoal">Salvar Meta</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
-from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, setDoc, getDoc, query, where, onSnapshot } 
-from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, where, onSnapshot } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyBr47B_Eg7UGD5UxjpGaQm5wvozpwL7Q2w",
-authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
-projectId: "meu-caderno-digital-6374d",
-storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
-messagingSenderId: "711415733825",
-appId: "1:711415733825:web:6c0841b71d58b6ac2670c0",
-measurementId: "G-S8TXGZ6RPL"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBr47B_Eg7UGD5UxjpGaQm5wvozpwL7Q2w",
+      authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
+      projectId: "meu-caderno-digital-6374d",
+      storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
+      messagingSenderId: "711415733825",
+      appId: "1:711415733825:web:6c0841b71d58b6ac2670c0",
+      measurementId: "G-S8TXGZ6RPL"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-let currentUser = null;
-let totalMinutesLogged = 0;
-let sessionCount = 0;
-let monthlyGoalHours = 50;
-let unsubscribeLogs = null;
+    let currentUser = null;
+    let totalMinutesLogged = 0;
+    let sessionCount = 0;
+    let monthlyGoalHours = 50;
+    let unsubscribeLogs = null;
 
-const calendarGrid = document.getElementById('calendarGrid');
-const studyModal = document.getElementById('studyModal');
-const studyForm = document.getElementById('studyForm');
-const modalDateTitle = document.getElementById('modalDateTitle');
-const selectedDateInput = document.getElementById('selectedDate');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const studyModal = document.getElementById('studyModal');
+    const studyForm = document.getElementById('studyForm');
+    const modalDateTitle = document.getElementById('modalDateTitle');
+    const selectedDateInput = document.getElementById('selectedDate');
+    const editingDocIdInput = document.getElementById('editingDocId');
 
-const goalModal = document.getElementById('goalModal');
-const goalForm = document.getElementById('goalForm');
-const goalInput = document.getElementById('goalInput');
-const monthlyGoalDisplay = document.getElementById('monthlyGoalDisplay');
-const goalProgressBar = document.getElementById('goalProgressBar');
-const goalPercentText = document.getElementById('goalPercentText');
+    const goalModal = document.getElementById('goalModal');
+    const goalForm = document.getElementById('goalForm');
+    const goalInput = document.getElementById('goalInput');
+    const monthlyGoalDisplay = document.getElementById('monthlyGoalDisplay');
+    const goalProgressBar = document.getElementById('goalProgressBar');
+    const goalPercentText = document.getElementById('goalPercentText');
 
-document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
-try {
-await signInWithPopup(auth, provider);
-} catch (err) {
-alert('Erro ao entrar com o Google: ' + err.message);
-}
-});
-
-    document.getElementById('btnCancel').addEventListener('click', () => {
-      closeStudyModal();
+    document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        alert('Erro ao entrar com o Google: ' + err.message);
+      }
     });
+
     document.getElementById('btnCancel').addEventListener('click', closeStudyModal);
 
-document.getElementById('btnEditGoal').addEventListener('click', () => {
-if (!currentUser) {
-alert('Faça login com o Google para alterar sua meta.');
-return;
-}
-goalInput.value = monthlyGoalHours;
-goalModal.style.display = 'flex';
-});
-
-    document.getElementById('btnCancelGoal').addEventListener('click', () => {
-      closeGoalModal();
+    document.getElementById('btnEditGoal').addEventListener('click', () => {
+      if (!currentUser) {
+        alert('Faça login com o Google para alterar sua meta.');
+        return;
+      }
+      goalInput.value = monthlyGoalHours;
+      goalModal.style.display = 'flex';
     });
+
     document.getElementById('btnCancelGoal').addEventListener('click', closeGoalModal);
 
-[studyModal, goalModal].forEach(modal => {
-modal.addEventListener('click', (e) => {
-if (e.target === modal) {
-modal.style.display = 'none';
-}
-});
-});
+    [studyModal, goalModal].forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
 
-function closeStudyModal() {
-studyModal.style.display = 'none';
-studyForm.reset();
-}
+    function closeStudyModal() {
+      studyModal.style.display = 'none';
+      studyForm.reset();
+      editingDocIdInput.value = '';
+    }
 
-function closeGoalModal() {
-goalModal.style.display = 'none';
-goalForm.reset();
-}
+    function closeGoalModal() {
+      goalModal.style.display = 'none';
+      goalForm.reset();
+    }
 
-onAuthStateChanged(auth, async (user) => {
-currentUser = user;
-const userInfo = document.getElementById('userInfo');
-const googleBtn = document.getElementById('btnGoogleLogin');
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      const userInfo = document.getElementById('userInfo');
+      const googleBtn = document.getElementById('btnGoogleLogin');
 
-if (unsubscribeLogs) {
-unsubscribeLogs();
-unsubscribeLogs = null;
-}
+      if (unsubscribeLogs) {
+        unsubscribeLogs();
+        unsubscribeLogs = null;
+      }
 
-if (user) {
-userInfo.innerHTML = `<strong>${user.displayName || user.email}</strong> <button id="btnLogout" style="background:#ef4444; color:white; border:none; padding:3px 6px; border-radius:4px; margin-left:6px; cursor:pointer; font-size:0.75rem;">Sair</button>`;
-document.getElementById('btnLogout').onclick = () => signOut(auth);
-googleBtn.style.display = 'none';
+      if (user) {
+        userInfo.innerHTML = `<strong>${user.displayName || user.email}</strong> <button id="btnLogout" style="background:#ef4444; color:white; border:none; padding:3px 6px; border-radius:4px; margin-left:6px; cursor:pointer; font-size:0.75rem;">Sair</button>`;
+        document.getElementById('btnLogout').onclick = () => signOut(auth);
+        googleBtn.style.display = 'none';
 
-document.getElementById('displayUserName').textContent = user.displayName || user.email;
-if (user.photoURL) {
-document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
-} else {
-document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
-}
+        document.getElementById('displayUserName').textContent = user.displayName || user.email;
+        if (user.photoURL) {
+          document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
+        } else {
+          document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
+        }
 
-await loadUserGoal(user.uid);
-initCalendar();
-loadUserStudyLogs(user.uid);
-} else {
-userInfo.innerHTML = 'Status: <strong>Desconectado</strong>';
-googleBtn.style.display = 'flex';
-document.getElementById('displayUserName').textContent = 'Olá, Estudante';
-document.getElementById('avatarBox').textContent = 'E';
-monthlyGoalHours = 50;
-initCalendar();
-}
-});
+        await loadUserGoal(user.uid);
+        initCalendar();
+        loadUserStudyLogs(user.uid);
+      } else {
+        userInfo.innerHTML = 'Status: <strong>Desconectado</strong>';
+        googleBtn.style.display = 'flex';
+        document.getElementById('displayUserName').textContent = 'Olá, Estudante';
+        document.getElementById('avatarBox').textContent = 'E';
+        monthlyGoalHours = 50;
+        initCalendar();
+      }
+    });
 
-async function loadUserGoal(userId) {
-try {
-const goalDocRef = doc(db, "user_settings", userId);
-const goalSnap = await getDoc(goalDocRef);
-if (goalSnap.exists() && goalSnap.data().monthlyGoal) {
-monthlyGoalHours = goalSnap.data().monthlyGoal;
-} else {
-monthlyGoalHours = 50;
-}
-} catch (err) {
-console.error("Erro ao carregar meta: ", err);
-}
-updateStats();
-}
-
-goalForm.addEventListener('submit', async function(e) {
-e.preventDefault();
-if (!currentUser) return;
-
-const newGoal = parseInt(goalInput.value, 10);
-if (isNaN(newGoal) || newGoal <= 0) return;
-
-      // Update state immediately so UI changes without waiting
-monthlyGoalHours = newGoal;
-updateStats();
-closeGoalModal();
-
-try {
-await setDoc(doc(db, "user_settings", currentUser.uid), {
-monthlyGoal: newGoal
-}, { merge: true });
-} catch (err) {
-console.error('Erro ao salvar meta no Firestore: ', err);
-alert('Meta atualizada localmente, mas ocorreu um erro no servidor: ' + err.message);
-}
-});
-
-function initCalendar() {
-const now = new Date();
-const year = now.getFullYear();
-const month = now.getMonth();
-const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-document.getElementById('calendarMonth').textContent = `Estudos - ${monthNames[month]} ${year}`;
-
-const firstDay = new Date(year, month, 1).getDay();
-const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-calendarGrid.innerHTML = '';
-totalMinutesLogged = 0;
-sessionCount = 0;
+    async function loadUserGoal(userId) {
+      try {
+        const goalDocRef = doc(db, "user_settings", userId);
+        const goalSnap = await getDoc(goalDocRef);
+        if (goalSnap.exists() && goalSnap.data().monthlyGoal) {
+          monthlyGoalHours = goalSnap.data().monthlyGoal;
+        } else {
+          monthlyGoalHours = 50;
+        }
+      } catch (err) {
+        console.error("Erro ao carregar meta: ", err);
+      }
       updateStats();
+    }
 
-for (let i = 0; i < firstDay; i++) {
-const emptyCell = document.createElement('div');
-emptyCell.className = 'calendar-day empty';
-calendarGrid.appendChild(emptyCell);
-}
+    goalForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!currentUser) return;
 
-for (let day = 1; day <= daysInMonth; day++) {
-const dayCell = document.createElement('div');
-dayCell.className = 'calendar-day';
-const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const newGoal = parseInt(goalInput.value, 10);
+      if (isNaN(newGoal) || newGoal <= 0) return;
 
-if (day === now.getDate()) dayCell.classList.add('today');
-
-dayCell.innerHTML = `
-         <div class="calendar-day-header">
-           <span class="day-number">${day}</span>
-           <button class="btn-add-mini" title="Adicionar Estudo">+</button>
-         </div>
-         <div class="log-container" id="logs-${dateKey}"></div>
-       `;
-
-dayCell.querySelector('.btn-add-mini').onclick = (e) => {
-e.stopPropagation();
-openModal(dateKey, day, monthNames[month]);
-};
-
-calendarGrid.appendChild(dayCell);
-}
+      monthlyGoalHours = newGoal;
       updateStats();
-}
+      closeGoalModal();
 
-function loadUserStudyLogs(userId) {
-const q = query(collection(db, "study_logs"), where("userId", "==", userId));
+      try {
+        await setDoc(doc(db, "user_settings", currentUser.uid), {
+          monthlyGoal: newGoal
+        }, { merge: true });
+      } catch (err) {
+        console.error('Erro ao salvar meta no Firestore: ', err);
+        alert('Meta atualizada localmente, mas ocorreu um erro no servidor: ' + err.message);
+      }
+    });
 
-unsubscribeLogs = onSnapshot(q, (snapshot) => {
-initCalendar();
-snapshot.forEach((docSnap) => {
-const log = docSnap.data();
-renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
-totalMinutesLogged += log.duration;
-sessionCount++;
-});
-updateStats();
-}, (err) => {
-console.error("Erro ao escutar dados do Firestore:", err);
+    function initCalendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      document.getElementById('calendarMonth').textContent = `Estudos - ${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      calendarGrid.innerHTML = '';
+      totalMinutesLogged = 0;
+      sessionCount = 0;
+
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        if (day === now.getDate()) dayCell.classList.add('today');
+
+        dayCell.innerHTML = `
+          <div class="calendar-day-header">
+            <span class="day-number">${day}</span>
+            <button class="btn-add-mini" title="Adicionar Estudo">+</button>
+          </div>
+          <div class="log-container" id="logs-${dateKey}"></div>
+        `;
+
+        dayCell.querySelector('.btn-add-mini').onclick = (e) => {
+          e.stopPropagation();
+          openModalForCreate(dateKey, day, monthNames[month]);
+        };
+
+        calendarGrid.appendChild(dayCell);
+      }
+      updateStats();
+    }
+
+    function loadUserStudyLogs(userId) {
+      const q = query(collection(db, "study_logs"), where("userId", "==", userId));
+      
+      unsubscribeLogs = onSnapshot(q, (snapshot) => {
+        initCalendar();
+        snapshot.forEach((docSnap) => {
+          const log = docSnap.data();
+          renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
+          totalMinutesLogged += log.duration;
+          sessionCount++;
+        });
+        updateStats();
+      }, (err) => {
+        console.error("Erro ao escutar dados do Firestore:", err);
         alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
-});
-}
+      });
+    }
 
-function renderTag(docId, dateKey, subject, duration, notes) {
-const logContainer = document.getElementById(`logs-${dateKey}`);
-if (logContainer) {
-const tag = document.createElement('div');
-tag.className = 'study-tag';
-tag.title = `${subject} - ${duration}m (${notes || 'Sem anotações'})`;
+    function renderTag(docId, dateKey, subject, duration, notes) {
+      const logContainer = document.getElementById(`logs-${dateKey}`);
+      if (logContainer) {
+        const tag = document.createElement('div');
+        tag.className = 'study-tag';
+        tag.title = `${subject} - ${duration}m (${notes || 'Sem anotações'})`;
+        
+        tag.innerHTML = `
+          <span class="study-tag-text">${subject}</span>
+          <div class="tag-actions">
+            <button class="btn-action-tag btn-edit-tag" title="Editar">✏️</button>
+            <button class="btn-action-tag btn-delete-tag" title="Excluir">✕</button>
+          </div>
+        `;
 
-tag.innerHTML = `
-         <span class="study-tag-text">${subject}</span>
-         <button class="btn-delete-tag" title="Excluir">✕</button>
-       `;
+        tag.querySelector('.btn-edit-tag').onclick = (e) => {
+          e.stopPropagation();
+          openModalForEdit(docId, dateKey, subject, duration, notes);
+        };
 
-tag.querySelector('.btn-delete-tag').onclick = async (e) => {
-e.stopPropagation();
-if (confirm(`Excluir "${subject}"?`)) {
-try {
-await deleteDoc(doc(db, "study_logs", docId));
-} catch (err) {
-alert("Erro ao excluir: " + err.message);
-}
-}
-};
+        tag.querySelector('.btn-delete-tag').onclick = async (e) => {
+          e.stopPropagation();
+          if (confirm(`Excluir "${subject}"?`)) {
+            try {
+              await deleteDoc(doc(db, "study_logs", docId));
+            } catch (err) {
+              alert("Erro ao excluir: " + err.message);
+            }
+          }
+        };
 
-logContainer.appendChild(tag);
-}
-}
+        logContainer.appendChild(tag);
+      }
+    }
 
-function updateStats() {
-const hrs = Math.floor(totalMinutesLogged / 60);
-const mins = totalMinutesLogged % 60;
-document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
-document.getElementById('totalSessions').textContent = sessionCount;
+    function updateStats() {
+      const hrs = Math.floor(totalMinutesLogged / 60);
+      const mins = totalMinutesLogged % 60;
+      document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
+      document.getElementById('totalSessions').textContent = sessionCount;
+      
+      monthlyGoalDisplay.textContent = `${monthlyGoalHours} hrs`;
 
-monthlyGoalDisplay.textContent = `${monthlyGoalHours} hrs`;
+      const totalHoursDecimal = totalMinutesLogged / 60;
+      const percent = Math.min(Math.round((totalHoursDecimal / monthlyGoalHours) * 100), 100);
+      
+      goalProgressBar.style.width = `${percent}%`;
+      goalPercentText.textContent = `${percent}%`;
+    }
 
-const totalHoursDecimal = totalMinutesLogged / 60;
-const percent = Math.min(Math.round((totalHoursDecimal / monthlyGoalHours) * 100), 100);
+    function openModalForCreate(dateKey, day, monthName) {
+      if (!currentUser) {
+        alert('Faça login com o Google para registrar seus estudos.');
+        return;
+      }
+      studyForm.reset();
+      editingDocIdInput.value = '';
+      selectedDateInput.value = dateKey;
+      modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
+      document.getElementById('btnSaveStudy').textContent = 'Salvar Registro';
+      studyModal.style.display = 'flex';
+    }
 
-goalProgressBar.style.width = `${percent}%`;
-goalPercentText.textContent = `${percent}%`;
-}
+    function openModalForEdit(docId, dateKey, subject, duration, notes) {
+      if (!currentUser) return;
 
-function openModal(dateKey, day, monthName) {
-if (!currentUser) {
-alert('Faça login com o Google para registrar seus estudos.');
-return;
-}
-studyForm.reset();
-selectedDateInput.value = dateKey;
-modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
-studyModal.style.display = 'flex';
-}
+      editingDocIdInput.value = docId;
+      selectedDateInput.value = dateKey;
+      document.getElementById('subject').value = subject;
+      document.getElementById('duration').value = duration;
+      document.getElementById('notes').value = notes || '';
 
-studyForm.addEventListener('submit', async function(e) {
-e.preventDefault();
-if (!currentUser) return;
+      const dateParts = dateKey.split('-');
+      modalDateTitle.textContent = `Editar Estudo (${dateParts[2]}/${dateParts[1]})`;
+      document.getElementById('btnSaveStudy').textContent = 'Atualizar Registro';
+      studyModal.style.display = 'flex';
+    }
 
-const dateKey = selectedDateInput.value;
-const subject = document.getElementById('subject').value;
-const duration = parseInt(document.getElementById('duration').value, 10);
-const notes = document.getElementById('notes').value;
+    studyForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!currentUser) return;
 
-try {
-await addDoc(collection(db, "study_logs"), {
-userId: currentUser.uid,
-dateKey,
-subject,
-duration,
-notes,
-timestamp: new Date()
-});
-closeStudyModal();
-} catch (err) {
-alert('Erro ao salvar estudo: ' + err.message);
-}
-});
-</script>
+      const docId = editingDocIdInput.value;
+      const dateKey = selectedDateInput.value;
+      const subject = document.getElementById('subject').value;
+      const duration = parseInt(document.getElementById('duration').value, 10);
+      const notes = document.getElementById('notes').value;
+
+      try {
+        if (docId) {
+          // Update existing document
+          await updateDoc(doc(db, "study_logs", docId), {
+            subject,
+            duration,
+            notes
+          });
+        } else {
+          // Add new document
+          await addDoc(collection(db, "study_logs"), {
+            userId: currentUser.uid,
+            dateKey,
+            subject,
+            duration,
+            notes,
+            timestamp: new Date()
+          });
+        }
+        closeStudyModal();
+      } catch (err) {
+        alert('Erro ao salvar estudo: ' + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
