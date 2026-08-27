@@ -217,18 +217,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .welcome-hero::before {
-      content: "";
-      position: absolute;
-      top: -50px;
-      right: -50px;
-      width: 150px;
-      height: 150px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
     .welcome-hero-content h3 {
       font-size: 1.25rem;
       font-weight: 800;
@@ -259,10 +247,7 @@
       align-items: center;
       justify-content: center;
       font-size: 0.85rem;
-      transition: background 0.2s;
     }
-
-    .btn-close-welcome:hover { background: rgba(255, 255, 255, 0.35); }
 
     .metrics-row {
       display: grid;
@@ -276,17 +261,10 @@
       padding: 1rem;
       border-radius: 12px;
       border: 1px solid var(--border-color);
-      position: relative;
     }
 
     .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
     .metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
-
-    @media (min-width: 768px) {
-      .metric-card { padding: 1.25rem; }
-      .metric-card span { font-size: 0.8rem; }
-      .metric-card .value { font-size: 1.8rem; }
-    }
 
     .btn-edit-goal {
       background: none;
@@ -296,8 +274,6 @@
       font-size: 0.8rem;
       margin-left: 0.3rem;
     }
-
-    .btn-edit-goal:hover { color: var(--accent-purple); }
 
     .goal-progress-panel {
       background: var(--card-bg);
@@ -381,7 +357,6 @@
     }
 
     .calendar-day.empty { background: var(--empty-day-bg); }
-
     .day-number { font-size: 0.75rem; font-weight: 600; }
     .today { background: var(--today-bg); }
     .today .day-number { color: var(--primary); font-weight: 800; }
@@ -398,10 +373,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1;
     }
-
-    .btn-add-mini:hover { background: var(--primary-hover); }
 
     .log-container {
       display: flex;
@@ -434,11 +406,7 @@
       flex: 1;
     }
 
-    .tag-actions {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
+    .tag-actions { display: flex; align-items: center; gap: 2px; }
 
     .btn-action-tag {
       background: transparent;
@@ -449,9 +417,6 @@
       opacity: 0.8;
       padding: 0 1px;
     }
-
-    .btn-action-tag:hover { opacity: 1; }
-    .btn-delete-tag:hover { color: #fca5a5; }
 
     .modal-overlay {
       display: none;
@@ -488,11 +453,8 @@
     .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
     .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-hover); }
     .btn-secondary { background: var(--border-color); color: var(--text-main); }
-    .btn-secondary:hover { opacity: 0.8; }
 
-    /* Chronogram Tab Specific Styles */
     .chronogram-container {
       display: grid;
       grid-template-columns: 1fr;
@@ -500,9 +462,7 @@
     }
 
     @media (min-width: 992px) {
-      .chronogram-container {
-        grid-template-columns: 350px 1fr;
-      }
+      .chronogram-container { grid-template-columns: 350px 1fr; }
     }
 
     .chronogram-results {
@@ -521,7 +481,73 @@
       font-size: 0.85rem;
     }
 
-    .chrono-day-card strong { display: block; margin-bottom: 0.25rem; color: var(--accent-purple); font-size: 0.95rem; }
+    /* Subject Breakdown Chart Styles */
+    .subject-chart-container {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stacked-bar-chart {
+      height: 24px;
+      width: 100%;
+      background: var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .stacked-bar-segment {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    .subject-legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .subject-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .subject-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .subject-name-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .subject-progress-bg {
+      height: 8px;
+      width: 100%;
+      background: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .subject-progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
   </style>
 </head>
 <body>
@@ -558,6 +584,7 @@
         </div>
       </header>
 
+      <!-- HOME TAB CONTENT -->
       <div id="tab-home" class="tab-content active">
         <div class="welcome-hero" id="welcomeHero">
           <button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
@@ -601,6 +628,7 @@
         </div>
       </div>
 
+      <!-- CRONOGRAMA TAB CONTENT -->
       <div id="tab-chronogram" class="tab-content">
         <div class="chronogram-container">
           <div class="panel">
@@ -630,10 +658,18 @@
         </div>
       </div>
 
+      <!-- STATS TAB CONTENT -->
       <div id="tab-stats" class="tab-content">
         <div class="panel">
-          <h3>📊 Estatísticas Detalhadas</h3>
-          <p style="margin-top: 0.5rem; color: var(--text-sub); font-size: 0.9rem;">Em breve: gráficos avançados de desempenho por matéria e tempo investido.</p>
+          <h3>📊 Distribuição de Estudos por Matéria</h3>
+          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Veja como seu tempo acumulado está dividido entre suas disciplinas.</p>
+          
+          <div class="subject-chart-container">
+            <div class="stacked-bar-chart" id="stackedBarChart"></div>
+            <div class="subject-legend-list" id="subjectLegendList">
+              <p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -709,6 +745,12 @@
     let sessionCount = 0;
     let monthlyGoalHours = 50;
     let unsubscribeLogs = null;
+    let subjectTotals = {};
+
+    const colorPalette = [
+      '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', 
+      '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
+    ];
 
     // --- Tab Navigation Logic ---
     const navItems = document.querySelectorAll('.nav-item');
@@ -899,7 +941,9 @@
         document.getElementById('avatarBox').textContent = 'E';
         welcomeHero.style.display = 'none';
         monthlyGoalHours = 50;
+        subjectTotals = {};
         initCalendar();
+        renderSubjectChart();
       }
     });
 
@@ -952,6 +996,7 @@
       calendarGrid.innerHTML = '';
       totalMinutesLogged = 0;
       sessionCount = 0;
+      subjectTotals = {};
 
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
@@ -994,8 +1039,12 @@
           renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
           totalMinutesLogged += log.duration;
           sessionCount++;
+
+          const normSubject = log.subject.trim();
+          subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
         });
         updateStats();
+        renderSubjectChart();
       }, (err) => {
         console.error("Erro ao escutar dados do Firestore:", err);
         alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
@@ -1050,6 +1099,52 @@
       
       goalProgressBar.style.width = `${percent}%`;
       goalPercentText.textContent = `${percent}%`;
+    }
+
+    function renderSubjectChart() {
+      const stackedBarChart = document.getElementById('stackedBarChart');
+      const subjectLegendList = document.getElementById('subjectLegendList');
+
+      stackedBarChart.innerHTML = '';
+      subjectLegendList.innerHTML = '';
+
+      const entries = Object.entries(subjectTotals);
+
+      if (entries.length === 0 || totalMinutesLogged === 0) {
+        subjectLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>';
+        return;
+      }
+
+      entries.sort((a, b) => b[1] - a[1]);
+
+      entries.forEach(([subject, mins], index) => {
+        const color = colorPalette[index % colorPalette.length];
+        const percent = ((mins / totalMinutesLogged) * 100).toFixed(1);
+        const hrs = (mins / 60).toFixed(1);
+
+        const segment = document.createElement('div');
+        segment.className = 'stacked-bar-segment';
+        segment.style.width = `${percent}%`;
+        segment.style.backgroundColor = color;
+        segment.title = `${subject}: ${hrs}h (${percent}%)`;
+        stackedBarChart.appendChild(segment);
+
+        const item = document.createElement('div');
+        item.className = 'subject-item';
+        item.innerHTML = `
+          <div class="subject-info">
+            <span class="subject-name-tag">
+              <span class="color-dot" style="background-color: ${color};"></span>
+              ${subject}
+            </span>
+            <span>${hrs}h (${percent}%)</span>
+          </div>
+          <div class="subject-progress-bg">
+            <div class="subject-progress-fill" style="width: ${percent}%; background-color: ${color};"></div>
+          </div>
+        `;
+        subjectLegendList.appendChild(item);
+      });
     }
 
     function openModalForCreate(dateKey, day, monthName) {
