@@ -14,6 +14,7 @@
       --text-sub: #6b7280;
       --border-color: #e5e7eb;
       --accent-purple: #8b5cf6;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -149,32 +150,80 @@
 
     .calendar-day {
       background: var(--card-bg);
-      min-height: 90px;
+      min-height: 110px;
       padding: 0.5rem;
-      cursor: pointer;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 4px;
     }
 
-    .calendar-day:hover { background: #f9fafb; }
-    .calendar-day.empty { background: #f3f4f6; cursor: default; }
+    .calendar-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calendar-day.empty { background: #f3f4f6; }
 
     .day-number { font-size: 0.85rem; font-weight: 600; }
     .today { background: #ecfdf5; }
     .today .day-number { color: var(--primary); font-weight: 800; }
 
+    .btn-add-mini {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .btn-add-mini:hover { background: var(--primary-hover); }
+
+    .log-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+      max-height: 75px;
+    }
+
     .study-tag {
       background: var(--primary);
       color: white;
       font-size: 0.7rem;
-      padding: 2px 4px;
+      padding: 2px 6px;
       border-radius: 4px;
-      margin-top: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .study-tag-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      flex: 1;
     }
+
+    .btn-delete-tag {
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 0.7rem;
+      opacity: 0.7;
+      padding: 0 2px;
+    }
+
+    .btn-delete-tag:hover { opacity: 1; color: #fca5a5; }
 
     .modal-overlay {
       display: none;
@@ -287,11 +336,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot } 
+    import { getFirestore, collection, addDoc, deleteDoc, doc, query, where, onSnapshot } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBr47B_Eg7UGD5UxjpGaQm5wvozpwL7Q2w",
+      apiKey: "AIzaSyC5QaSLwdMwA7330Mjm5rGDtALLM_4EKNQ",
       authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
       projectId: "meu-caderno-digital-6374d",
       storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
@@ -381,8 +430,18 @@
         
         if (day === now.getDate()) dayCell.classList.add('today');
 
-        dayCell.innerHTML = `<span class="day-number">${day}</span><div class="log-container" id="logs-${dateKey}"></div>`;
-        dayCell.onclick = () => openModal(dateKey, day, monthNames[month]);
+        dayCell.innerHTML = `
+          <div class="calendar-day-header">
+            <span class="day-number">${day}</span>
+            <button class="btn-add-mini" title="Adicionar Estudo">+</button>
+          </div>
+          <div class="log-container" id="logs-${dateKey}"></div>
+        `;
+
+        dayCell.querySelector('.btn-add-mini').onclick = (e) => {
+          e.stopPropagation();
+          openModal(dateKey, day, monthNames[month]);
+        };
 
         calendarGrid.appendChild(dayCell);
       }
@@ -392,9 +451,9 @@
       const q = query(collection(db, "study_logs"), where("userId", "==", userId));
       onSnapshot(q, (snapshot) => {
         initCalendar();
-        snapshot.forEach((doc) => {
-          const log = doc.data();
-          renderTag(log.dateKey, log.subject, log.duration, log.notes);
+        snapshot.forEach((docSnap) => {
+          const log = docSnap.data();
+          renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
           totalMinutesLogged += log.duration;
           sessionCount++;
         });
@@ -402,13 +461,29 @@
       });
     }
 
-    function renderTag(dateKey, subject, duration, notes) {
+    function renderTag(docId, dateKey, subject, duration, notes) {
       const logContainer = document.getElementById(`logs-${dateKey}`);
       if (logContainer) {
         const tag = document.createElement('div');
         tag.className = 'study-tag';
-        tag.title = `${subject} - ${duration}m (${notes})`;
-        tag.textContent = `${subject} (${duration}m)`;
+        tag.title = `${subject} - ${duration}m (${notes || 'Sem anotações'})`;
+        
+        tag.innerHTML = `
+          <span class="study-tag-text">${subject} (${duration}m)</span>
+          <button class="btn-delete-tag" title="Excluir">✕</button>
+        `;
+
+        tag.querySelector('.btn-delete-tag').onclick = async (e) => {
+          e.stopPropagation();
+          if (confirm(`Excluir o registro "${subject}"?`)) {
+            try {
+              await deleteDoc(doc(db, "study_logs", docId));
+            } catch (err) {
+              alert("Erro ao excluir: " + err.message);
+            }
+          }
+        };
+
         logContainer.appendChild(tag);
       }
     }
