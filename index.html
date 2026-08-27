@@ -364,7 +364,7 @@
   <div class="modal-overlay" id="studyModal">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
-      <form id="studyForm">
+      <form id="studyForm" autocomplete="off">
         <input type="hidden" id="selectedDate">
         <div class="form-group">
           <label for="subject">Matéria / Disciplina</label>
@@ -426,7 +426,10 @@
       }
     });
 
-    document.getElementById('btnCancel').addEventListener('click', () => studyModal.style.display = 'none');
+    document.getElementById('btnCancel').addEventListener('click', () => {
+      studyModal.style.display = 'none';
+      studyForm.reset();
+    });
 
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
@@ -554,6 +557,7 @@
         alert('Faça login com o Google para registrar seus estudos.');
         return;
       }
+      studyForm.reset();
       selectedDateInput.value = dateKey;
       modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
       studyModal.style.display = 'flex';
@@ -577,8 +581,8 @@
           notes,
           timestamp: new Date()
         });
-        studyModal.style.display = 'none';
         studyForm.reset();
+        studyModal.style.display = 'none';
       } catch (err) {
         alert('Erro ao salvar estudo: ' + err.message);
       }
