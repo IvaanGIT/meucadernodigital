@@ -24,7 +24,46 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       display: flex;
+      flex-direction: column;
       min-height: 100vh;
+    }
+
+    /* Auth Bar */
+    #authBanner {
+      background: #1e293b;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+    }
+
+    #authForm { display: flex; gap: 0.5rem; }
+
+    #authBanner input {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      font-size: 0.85rem;
+    }
+
+    .btn-auth {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .dashboard-container {
+      display: flex;
+      flex: 1;
     }
 
     /* Sidebar Navigation */
@@ -206,9 +245,7 @@
       border: 1px solid var(--border-color);
     }
 
-    .form-group {
-      margin-bottom: 1rem;
-    }
+    .form-group { margin-bottom: 1rem; }
 
     .form-group label {
       display: block;
@@ -247,7 +284,7 @@
     .btn-secondary { background: #e5e7eb; color: var(--text-main); }
 
     @media (max-width: 900px) {
-      body { flex-direction: column; }
+      .dashboard-container { flex-direction: column; }
       aside { width: 100%; }
       .calendar-day { min-height: 60px; }
     }
@@ -255,56 +292,69 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <aside>
-    <div class="brand">📖 Meu Caderno Digital</div>
-    <ul class="nav-list">
-      <li class="nav-item active"><a href="#">🏠 Home</a></li>
-      <li class="nav-item"><a href="#">📅 Calendário</a></li>
-      <li class="nav-item"><a href="#">📊 Desempenho</a></li>
-      <li class="nav-item"><a href="#">📚 Disciplinas</a></li>
-    </ul>
-  </aside>
-
-  <!-- Main Content -->
-  <main>
-    <header>
-      <h2>Painel Principal</h2>
-      <div class="user-profile">
-        <span>Olá, Estudante</span>
-        <div class="avatar">E</div>
-      </div>
-    </header>
-
-    <!-- Top Metrics -->
-    <div class="metrics-row">
-      <div class="metric-card">
-        <span>Tempo Total Registrado</span>
-        <div class="value" id="totalHours" style="color: var(--primary);">0h 0min</div>
-      </div>
-      <div class="metric-card">
-        <span>Sessões Registradas</span>
-        <div class="value" id="totalSessions">0</div>
-      </div>
-      <div class="metric-card">
-        <span>Meta Mensal</span>
-        <div class="value" style="color: var(--accent-purple);">50 hrs</div>
-      </div>
+  <!-- Top Auth Banner -->
+  <div id="authBanner">
+    <div id="userInfo">Status: <strong>Desconectado</strong> (Faça login para salvar seus estudos na nuvem)</div>
+    <div id="authForm">
+      <input type="email" id="authEmail" placeholder="Seu email">
+      <input type="password" id="authPassword" placeholder="Sua senha">
+      <button class="btn-auth" id="btnLogin">Entrar</button>
+      <button class="btn-auth" id="btnSignup" style="background: #6366f1;">Criar Conta</button>
     </div>
+  </div>
 
-    <!-- Calendar Panel -->
-    <div class="panel">
-      <div class="panel-header">
-        <h3 class="panel-title" id="calendarMonth">Calendário de Estudos</h3>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside>
+      <div class="brand">📖 Meu Caderno Digital</div>
+      <ul class="nav-list">
+        <li class="nav-item active"><a href="#">🏠 Home</a></li>
+        <li class="nav-item"><a href="#">📅 Calendário</a></li>
+        <li class="nav-item"><a href="#">📊 Desempenho</a></li>
+        <li class="nav-item"><a href="#">📚 Disciplinas</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      <header>
+        <h2>Painel Principal</h2>
+        <div class="user-profile">
+          <span id="displayUserName">Olá, Estudante</span>
+          <div class="avatar" id="avatarInitial">E</div>
+        </div>
+      </header>
+
+      <!-- Top Metrics -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <span>Tempo Total Registrado</span>
+          <div class="value" id="totalHours" style="color: var(--primary);">0h 0min</div>
+        </div>
+        <div class="metric-card">
+          <span>Sessões Registradas</span>
+          <div class="value" id="totalSessions">0</div>
+        </div>
+        <div class="metric-card">
+          <span>Meta Mensal</span>
+          <div class="value" style="color: var(--accent-purple);">50 hrs</div>
+        </div>
       </div>
-      
-      <div class="calendar-weekdays">
-        <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+
+      <!-- Calendar Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title" id="calendarMonth">Calendário de Estudos</h3>
+        </div>
+        
+        <div class="calendar-weekdays">
+          <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+        </div>
+        
+        <div class="calendar-grid" id="calendarGrid"></div>
       </div>
-      
-      <div class="calendar-grid" id="calendarGrid"></div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <!-- Study Logger Modal -->
   <div class="modal-overlay" id="studyModal">
@@ -330,16 +380,37 @@
         </div>
 
         <div class="btn-group">
-          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
           <button type="submit" class="btn btn-primary">Salvar Registro</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script>
-    // State management
-    const studyLogs = {};
+  <!-- Firebase Script Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot } 
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Your exact Firebase project configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5QaSLwdMwA7330Mjm5rGDtALLM_4EKNQ",
+      authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
+      projectId: "meu-caderno-digital-6374d",
+      storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
+      messagingSenderId: "711415733825",
+      appId: "1:711415733825:web:6c0841b71d58b6ac2670c0",
+      measurementId: "G-S8TXGZ6RPL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
     let totalMinutesLogged = 0;
     let sessionCount = 0;
 
@@ -349,7 +420,58 @@
     const modalDateTitle = document.getElementById('modalDateTitle');
     const selectedDateInput = document.getElementById('selectedDate');
 
-    // Generate current month calendar
+    // UI Event Listeners for Login / Signup
+    document.getElementById('btnLogin').addEventListener('click', () => handleAuth('login'));
+    document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
+    document.getElementById('btnCancel').addEventListener('click', closeModal);
+
+    async function handleAuth(type) {
+      const email = document.getElementById('authEmail').value;
+      const pass = document.getElementById('authPassword').value;
+
+      if (!email || !pass) {
+        alert('Por favor, digite o e-mail e a senha.');
+        return;
+      }
+
+      try {
+        if (type === 'signup') {
+          await createUserWithEmailAndPassword(auth, email, pass);
+          alert('Conta criada com sucesso!');
+        } else {
+          await signInWithEmailAndPassword(auth, email, pass);
+        }
+      } catch (err) {
+        alert('Erro de autenticação: ' + err.message);
+      }
+    }
+
+    // Monitor Auth State
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      const userInfo = document.getElementById('userInfo');
+      const authForm = document.getElementById('authForm');
+
+      if (user) {
+        userInfo.innerHTML = `Conectado como: <strong>${user.email}</strong> <button id="btnLogout" class="btn-auth" style="background:#ef4444; margin-left:10px;">Sair</button>`;
+        document.getElementById('btnLogout').onclick = () => signOut(auth);
+        authForm.style.display = 'none';
+        
+        document.getElementById('displayUserName').textContent = user.email.split('@')[0];
+        document.getElementById('avatarInitial').textContent = user.email.charAt(0).toUpperCase();
+
+        initCalendar();
+        loadUserStudyLogs(user.uid);
+      } else {
+        userInfo.innerHTML = 'Status: <strong>Desconectado</strong> (Faça login para salvar e ver seus estudos)';
+        authForm.style.display = 'flex';
+        document.getElementById('displayUserName').textContent = 'Olá, Estudante';
+        document.getElementById('avatarInitial').textContent = 'E';
+        initCalendar();
+      }
+    });
+
+    // Calendar Generation
     function initCalendar() {
       const now = new Date();
       const year = now.getFullYear();
@@ -362,8 +484,11 @@
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       calendarGrid.innerHTML = '';
+      totalMinutesLogged = 0;
+      sessionCount = 0;
+      updateStats();
 
-      // Blank cells before day 1
+      // Empty cells prior to day 1
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'calendar-day empty';
@@ -388,7 +513,45 @@
       }
     }
 
+    // Load logs real-time from Firestore for logged in user
+    function loadUserStudyLogs(userId) {
+      const q = query(collection(db, "study_logs"), where("userId", "==", userId));
+      
+      onSnapshot(q, (snapshot) => {
+        initCalendar(); // Reset grid before rendering new remote logs
+        snapshot.forEach((doc) => {
+          const log = doc.data();
+          renderTag(log.dateKey, log.subject, log.duration, log.notes);
+          totalMinutesLogged += log.duration;
+          sessionCount++;
+        });
+        updateStats();
+      });
+    }
+
+    function renderTag(dateKey, subject, duration, notes) {
+      const logContainer = document.getElementById(`logs-${dateKey}`);
+      if (logContainer) {
+        const tag = document.createElement('div');
+        tag.className = 'study-tag';
+        tag.title = `${subject} - ${duration}m (${notes})`;
+        tag.textContent = `${subject} (${duration}m)`;
+        logContainer.appendChild(tag);
+      }
+    }
+
+    function updateStats() {
+      const hrs = Math.floor(totalMinutesLogged / 60);
+      const mins = totalMinutesLogged % 60;
+      document.getElementById('totalHours').textContent = `${hrs}h ${mins}min`;
+      document.getElementById('totalSessions').textContent = sessionCount;
+    }
+
     function openModal(dateKey, day, monthName) {
+      if (!currentUser) {
+        alert('Por favor, faça login ou crie uma conta na barra superior para poder registrar seus estudos.');
+        return;
+      }
       selectedDateInput.value = dateKey;
       modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
       studyModal.style.display = 'flex';
@@ -399,43 +562,31 @@
       studyForm.reset();
     }
 
-    // Handle form submit
-    studyForm.addEventListener('submit', function(e) {
+    // Submit form -> Save to Firestore
+    studyForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+
+      if (!currentUser) return;
 
       const dateKey = selectedDateInput.value;
       const subject = document.getElementById('subject').value;
       const duration = parseInt(document.getElementById('duration').value, 10);
       const notes = document.getElementById('notes').value;
 
-      if (!studyLogs[dateKey]) {
-        studyLogs[dateKey] = [];
+      try {
+        await addDoc(collection(db, "study_logs"), {
+          userId: currentUser.uid,
+          dateKey,
+          subject,
+          duration,
+          notes,
+          timestamp: new Date()
+        });
+        closeModal();
+      } catch (err) {
+        alert('Erro ao salvar estudo: ' + err.message);
       }
-
-      studyLogs[dateKey].push({ subject, duration, notes });
-      
-      // Render tag inside day box
-      const logContainer = document.getElementById(`logs-${dateKey}`);
-      const tag = document.createElement('div');
-      tag.className = 'study-tag';
-      tag.title = `${subject} - ${duration}m (${notes})`;
-      tag.textContent = `${subject} (${duration}m)`;
-      logContainer.appendChild(tag);
-
-      // Update total stats
-      totalMinutesLogged += duration;
-      sessionCount++;
-      
-      const hrs = Math.floor(totalMinutesLogged / 60);
-      const mins = totalMinutesLogged % 60;
-      document.getElementById('totalHours').textContent = `${hrs}h ${mins}min`;
-      document.getElementById('totalSessions').textContent = sessionCount;
-
-      closeModal();
     });
-
-    // Run on load
-    initCalendar();
   </script>
 </body>
 </html>
