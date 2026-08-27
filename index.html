@@ -14,8 +14,6 @@
       --text-sub: #6b7280;
       --border-color: #e5e7eb;
       --accent-purple: #8b5cf6;
-      --accent-red: #ef4444;
-      --accent-yellow: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -28,7 +26,6 @@
       min-height: 100vh;
     }
 
-    /* Auth Bar */
     #authBanner {
       background: #1e293b;
       color: white;
@@ -39,34 +36,24 @@
       border-bottom: 1px solid #334155;
     }
 
-    #authForm { display: flex; gap: 0.5rem; }
-
-    #authBanner input {
-      padding: 0.4rem 0.6rem;
-      border-radius: 4px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: white;
-      font-size: 0.85rem;
-    }
-
-    .btn-auth {
-      background: var(--primary);
-      color: white;
-      border: none;
+    .btn-google {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
       padding: 0.4rem 0.8rem;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
-    }
-
-    .dashboard-container {
       display: flex;
-      flex: 1;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    /* Sidebar Navigation */
+    .btn-google:hover { background: #f9fafb; }
+
+    .dashboard-container { display: flex; flex: 1; }
+
     aside {
       width: 240px;
       background: var(--card-bg);
@@ -77,15 +64,7 @@
       gap: 1.5rem;
     }
 
-    .brand {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
+    .brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
     .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
     
     .nav-item a {
@@ -100,30 +79,12 @@
       font-weight: 500;
     }
 
-    .nav-item.active a, .nav-item a:hover {
-      background: #ecfdf5;
-      color: var(--primary);
-    }
+    .nav-item.active a, .nav-item a:hover { background: #ecfdf5; color: var(--primary); }
 
-    /* Main Container */
-    main {
-      flex: 1;
-      padding: 1.5rem 2rem;
-      overflow-y: auto;
-    }
+    main { flex: 1; padding: 1.5rem 2rem; overflow-y: auto; }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .user-profile { display: flex; align-items: center; gap: 1rem; }
 
     .avatar {
       width: 36px;
@@ -135,9 +96,11 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
+      overflow: hidden;
     }
 
-    /* Metrics Bar */
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
     .metrics-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -150,7 +113,6 @@
       padding: 1.25rem;
       border-radius: 12px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .metric-card span { font-size: 0.8rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
@@ -164,16 +126,6 @@
       margin-bottom: 1.5rem;
     }
 
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .panel-title { font-size: 1rem; font-weight: 700; color: var(--text-main); }
-
-    /* Calendar Styling */
     .calendar-weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -203,13 +155,12 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: background 0.2s;
     }
 
     .calendar-day:hover { background: #f9fafb; }
     .calendar-day.empty { background: #f3f4f6; cursor: default; }
 
-    .day-number { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+    .day-number { font-size: 0.85rem; font-weight: 600; }
     .today { background: #ecfdf5; }
     .today .day-number { color: var(--primary); font-weight: 800; }
 
@@ -225,7 +176,6 @@
       white-space: nowrap;
     }
 
-    /* Modal Component */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -242,90 +192,47 @@
       border-radius: 12px;
       width: 100%;
       max-width: 420px;
-      border: 1px solid var(--border-color);
     }
 
     .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; }
 
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      color: var(--text-sub);
-    }
-
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-
-    .btn-group {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .btn {
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
+    .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+    .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #e5e7eb; color: var(--text-main); }
-
-    @media (max-width: 900px) {
-      .dashboard-container { flex-direction: column; }
-      aside { width: 100%; }
-      .calendar-day { min-height: 60px; }
-    }
+    .btn-secondary { background: #e5e7eb; }
   </style>
 </head>
 <body>
 
-  <!-- Top Auth Banner -->
   <div id="authBanner">
     <div id="userInfo">Status: <strong>Desconectado</strong> (Faça login para salvar seus estudos na nuvem)</div>
-    <div id="authForm">
-      <input type="email" id="authEmail" placeholder="Seu email">
-      <input type="password" id="authPassword" placeholder="Sua senha">
-      <button class="btn-auth" id="btnLogin">Entrar</button>
-      <button class="btn-auth" id="btnSignup" style="background: #6366f1;">Criar Conta</button>
-    </div>
+    <button class="btn-google" id="btnGoogleLogin">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+      Entrar com o Google
+    </button>
   </div>
 
   <div class="dashboard-container">
-    <!-- Sidebar -->
     <aside>
       <div class="brand">📖 Meu Caderno Digital</div>
       <ul class="nav-list">
         <li class="nav-item active"><a href="#">🏠 Home</a></li>
         <li class="nav-item"><a href="#">📅 Calendário</a></li>
         <li class="nav-item"><a href="#">📊 Desempenho</a></li>
-        <li class="nav-item"><a href="#">📚 Disciplinas</a></li>
       </ul>
     </aside>
 
-    <!-- Main Content -->
     <main>
       <header>
         <h2>Painel Principal</h2>
         <div class="user-profile">
           <span id="displayUserName">Olá, Estudante</span>
-          <div class="avatar" id="avatarInitial">E</div>
+          <div class="avatar" id="avatarBox">E</div>
         </div>
       </header>
 
-      <!-- Top Metrics -->
       <div class="metrics-row">
         <div class="metric-card">
           <span>Tempo Total Registrado</span>
@@ -341,44 +248,33 @@
         </div>
       </div>
 
-      <!-- Calendar Panel -->
       <div class="panel">
-        <div class="panel-header">
-          <h3 class="panel-title" id="calendarMonth">Calendário de Estudos</h3>
-        </div>
-        
+        <h3 id="calendarMonth" style="margin-bottom: 1rem;">Calendário de Estudos</h3>
         <div class="calendar-weekdays">
           <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
         </div>
-        
         <div class="calendar-grid" id="calendarGrid"></div>
       </div>
     </main>
   </div>
 
-  <!-- Study Logger Modal -->
   <div class="modal-overlay" id="studyModal">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
-      
       <form id="studyForm">
         <input type="hidden" id="selectedDate">
-        
         <div class="form-group">
           <label for="subject">Matéria / Disciplina</label>
           <input type="text" id="subject" placeholder="Ex: Matemática, Direito..." required>
         </div>
-
         <div class="form-group">
           <label for="duration">Tempo de Estudo (em minutos)</label>
           <input type="number" id="duration" min="1" placeholder="Ex: 60" required>
         </div>
-
         <div class="form-group">
           <label for="notes">O que você estudou?</label>
           <textarea id="notes" rows="3" placeholder="Resumo dos tópicos abordados..."></textarea>
         </div>
-
         <div class="btn-group">
           <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
           <button type="submit" class="btn btn-primary">Salvar Registro</button>
@@ -387,17 +283,15 @@
     </div>
   </div>
 
-  <!-- Firebase Script Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, onSnapshot } 
       from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Your exact Firebase project configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyC5QaSLwdMwA7330Mjm5rGDtAlLM_4EKNQ",
+      apiKey: "AIzaSyC5QaSLwdMwA7330Mjm5rGDtALLM_4EKNQ",
       authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
       projectId: "meu-caderno-digital-6374d",
       storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
@@ -409,6 +303,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
     let currentUser = null;
     let totalMinutesLogged = 0;
@@ -420,63 +315,48 @@
     const modalDateTitle = document.getElementById('modalDateTitle');
     const selectedDateInput = document.getElementById('selectedDate');
 
-    // UI Event Listeners for Login / Signup
-    document.getElementById('btnLogin').addEventListener('click', () => handleAuth('login'));
-    document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
-    document.getElementById('btnCancel').addEventListener('click', closeModal);
-
-    async function handleAuth(type) {
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-
-      if (!email || !pass) {
-        alert('Por favor, digite o e-mail e a senha.');
-        return;
-      }
-
+    document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
       try {
-        if (type === 'signup') {
-          await createUserWithEmailAndPassword(auth, email, pass);
-          alert('Conta criada com sucesso!');
-        } else {
-          await signInWithEmailAndPassword(auth, email, pass);
-        }
+        await signInWithPopup(auth, provider);
       } catch (err) {
-        alert('Erro de autenticação: ' + err.message);
+        alert('Erro ao entrar com o Google: ' + err.message);
       }
-    }
+    });
 
-    // Monitor Auth State
+    document.getElementById('btnCancel').addEventListener('click', () => studyModal.style.display = 'none');
+
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
       const userInfo = document.getElementById('userInfo');
-      const authForm = document.getElementById('authForm');
+      const googleBtn = document.getElementById('btnGoogleLogin');
 
       if (user) {
-        userInfo.innerHTML = `Conectado como: <strong>${user.email}</strong> <button id="btnLogout" class="btn-auth" style="background:#ef4444; margin-left:10px;">Sair</button>`;
+        userInfo.innerHTML = `Conectado como: <strong>${user.displayName || user.email}</strong> <button id="btnLogout" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; margin-left:10px; cursor:pointer;">Sair</button>`;
         document.getElementById('btnLogout').onclick = () => signOut(auth);
-        authForm.style.display = 'none';
-        
-        document.getElementById('displayUserName').textContent = user.email.split('@')[0];
-        document.getElementById('avatarInitial').textContent = user.email.charAt(0).toUpperCase();
+        googleBtn.style.display = 'none';
+
+        document.getElementById('displayUserName').textContent = user.displayName || user.email;
+        if (user.photoURL) {
+          document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
+        } else {
+          document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
+        }
 
         initCalendar();
         loadUserStudyLogs(user.uid);
       } else {
-        userInfo.innerHTML = 'Status: <strong>Desconectado</strong> (Faça login para salvar e ver seus estudos)';
-        authForm.style.display = 'flex';
+        userInfo.innerHTML = 'Status: <strong>Desconectado</strong> (Faça login para salvar seus estudos)';
+        googleBtn.style.display = 'flex';
         document.getElementById('displayUserName').textContent = 'Olá, Estudante';
-        document.getElementById('avatarInitial').textContent = 'E';
+        document.getElementById('avatarBox').textContent = 'E';
         initCalendar();
       }
     });
 
-    // Calendar Generation
     function initCalendar() {
       const now = new Date();
       const year = now.getFullYear();
       const month = now.getMonth();
-
       const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
       document.getElementById('calendarMonth').textContent = `Calendário de Estudos - ${monthNames[month]} ${year}`;
 
@@ -488,23 +368,18 @@
       sessionCount = 0;
       updateStats();
 
-      // Empty cells prior to day 1
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'calendar-day empty';
         calendarGrid.appendChild(emptyCell);
       }
 
-      // Day cells
       for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'calendar-day';
-        
         const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
-        if (day === now.getDate()) {
-          dayCell.classList.add('today');
-        }
+        if (day === now.getDate()) dayCell.classList.add('today');
 
         dayCell.innerHTML = `<span class="day-number">${day}</span><div class="log-container" id="logs-${dateKey}"></div>`;
         dayCell.onclick = () => openModal(dateKey, day, monthNames[month]);
@@ -513,12 +388,10 @@
       }
     }
 
-    // Load logs real-time from Firestore for logged in user
     function loadUserStudyLogs(userId) {
       const q = query(collection(db, "study_logs"), where("userId", "==", userId));
-      
       onSnapshot(q, (snapshot) => {
-        initCalendar(); // Reset grid before rendering new remote logs
+        initCalendar();
         snapshot.forEach((doc) => {
           const log = doc.data();
           renderTag(log.dateKey, log.subject, log.duration, log.notes);
@@ -549,7 +422,7 @@
 
     function openModal(dateKey, day, monthName) {
       if (!currentUser) {
-        alert('Por favor, faça login ou crie uma conta na barra superior para poder registrar seus estudos.');
+        alert('Por favor, faça login com o Google para registrar seus estudos.');
         return;
       }
       selectedDateInput.value = dateKey;
@@ -557,15 +430,8 @@
       studyModal.style.display = 'flex';
     }
 
-    function closeModal() {
-      studyModal.style.display = 'none';
-      studyForm.reset();
-    }
-
-    // Submit form -> Save to Firestore
     studyForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-
       if (!currentUser) return;
 
       const dateKey = selectedDateInput.value;
@@ -582,7 +448,8 @@
           notes,
           timestamp: new Date()
         });
-        closeModal();
+        studyModal.style.display = 'none';
+        studyForm.reset();
       } catch (err) {
         alert('Erro ao salvar estudo: ' + err.message);
       }
