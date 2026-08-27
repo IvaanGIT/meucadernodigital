@@ -176,7 +176,6 @@
 
     .btn-edit-goal:hover { color: var(--accent-purple); }
 
-    /* Goal Progress Bar Container */
     .goal-progress-panel {
       background: var(--card-bg);
       padding: 1rem;
@@ -397,7 +396,6 @@
         </div>
       </div>
 
-      <!-- Goal Progress Bar -->
       <div class="goal-progress-panel">
         <div class="goal-progress-header">
           <span>Progresso da Meta</span>
@@ -418,7 +416,6 @@
     </main>
   </div>
 
-  <!-- Study Log Modal -->
   <div class="modal-overlay" id="studyModal">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
@@ -444,7 +441,6 @@
     </div>
   </div>
 
-  <!-- Edit Goal Modal -->
   <div class="modal-overlay" id="goalModal">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;">Definir Meta Mensal</h3>
@@ -487,6 +483,7 @@
     let totalMinutesLogged = 0;
     let sessionCount = 0;
     let monthlyGoalHours = 50;
+    let unsubscribeLogs = null;
 
     const calendarGrid = document.getElementById('calendarGrid');
     const studyModal = document.getElementById('studyModal');
@@ -532,6 +529,11 @@
       currentUser = user;
       const userInfo = document.getElementById('userInfo');
       const googleBtn = document.getElementById('btnGoogleLogin');
+
+      if (unsubscribeLogs) {
+        unsubscribeLogs();
+        unsubscribeLogs = null;
+      }
 
       if (user) {
         userInfo.innerHTML = `<strong>${user.displayName || user.email}</strong> <button id="btnLogout" style="background:#ef4444; color:white; border:none; padding:3px 6px; border-radius:4px; margin-left:6px; cursor:pointer; font-size:0.75rem;">Sair</button>`;
@@ -640,7 +642,8 @@
 
     function loadUserStudyLogs(userId) {
       const q = query(collection(db, "study_logs"), where("userId", "==", userId));
-      onSnapshot(q, (snapshot) => {
+      
+      unsubscribeLogs = onSnapshot(q, (snapshot) => {
         initCalendar();
         snapshot.forEach((docSnap) => {
           const log = docSnap.data();
@@ -649,6 +652,8 @@
           sessionCount++;
         });
         updateStats();
+      }, (err) => {
+        console.error("Erro ao escutar dados do Firestore:", err);
       });
     }
 
