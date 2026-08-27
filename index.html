@@ -144,7 +144,7 @@
       .nav-list { flex-direction: column; width: 100%; }
     }
     
-    .nav-item a, .nav-item button {
+    .nav-item button {
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -159,19 +159,26 @@
       width: 100%;
       cursor: pointer;
       text-align: left;
+      transition: all 0.2s;
     }
 
     @media (min-width: 768px) {
-      .nav-item a, .nav-item button { padding: 0.75rem 1rem; font-size: 0.9rem; }
+      .nav-item button { padding: 0.75rem 1rem; font-size: 0.9rem; }
     }
 
-    .nav-item.active a, .nav-item a:hover, .nav-item button:hover { background: var(--today-bg); color: var(--primary); }
+    .nav-item.active button, .nav-item button:hover { 
+      background: var(--today-bg); 
+      color: var(--primary); 
+    }
 
     main { flex: 1; padding: 1rem; overflow-y: auto; }
 
     @media (min-width: 768px) {
       main { padding: 1.5rem 2rem; }
     }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     .user-profile { display: flex; align-items: center; gap: 0.75rem; }
@@ -463,10 +470,8 @@
       padding: 1.5rem;
       border-radius: 12px;
       width: 100%;
-      max-width: 500px;
+      max-width: 420px;
       border: 1px solid var(--border-color);
-      max-height: 90vh;
-      overflow-y: auto;
     }
 
     .form-group { margin-bottom: 1rem; }
@@ -487,23 +492,36 @@
     .btn-secondary { background: var(--border-color); color: var(--text-main); }
     .btn-secondary:hover { opacity: 0.8; }
 
-    /* Chronogram Results Styling */
+    /* Chronogram Tab Specific Styles */
+    .chronogram-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 992px) {
+      .chronogram-container {
+        grid-template-columns: 350px 1fr;
+      }
+    }
+
     .chronogram-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
       margin-top: 1rem;
-      border-top: 1px solid var(--border-color);
-      padding-top: 1rem;
     }
 
     .chrono-day-card {
-      background: var(--bg-color);
-      padding: 0.75rem;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
       border-left: 4px solid var(--accent-purple);
       font-size: 0.85rem;
     }
 
-    .chrono-day-card strong { display: block; margin-bottom: 0.25rem; color: var(--accent-purple); }
+    .chrono-day-card strong { display: block; margin-bottom: 0.25rem; color: var(--accent-purple); font-size: 0.95rem; }
   </style>
 </head>
 <body>
@@ -525,61 +543,100 @@
         </button>
       </div>
       <ul class="nav-list">
-        <li class="nav-item active"><a href="#">🏠 Home</a></li>
-        <li class="nav-item"><button id="btnOpenChronogram">🤖 Cronograma</button></li>
-        <li class="nav-item"><a href="#">📊 Stats</a></li>
+        <li class="nav-item active" data-tab="tab-home"><button>🏠 Home</button></li>
+        <li class="nav-item" data-tab="tab-chronogram"><button>🤖 Cronograma</button></li>
+        <li class="nav-item" data-tab="tab-stats"><button>📊 Stats</button></li>
       </ul>
     </aside>
 
     <main>
       <header>
-        <h2>Painel Principal</h2>
+        <h2 id="pageTitle">Painel Principal</h2>
         <div class="user-profile">
           <span id="displayUserName">Olá, Estudante</span>
           <div class="avatar" id="avatarBox">E</div>
         </div>
       </header>
 
-      <div class="welcome-hero" id="welcomeHero">
-        <button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
-        <div class="welcome-hero-content">
-          <h3>🚀 <span id="welcomeUserName">Bem-vindo(a)!</span></h3>
-          <p>Seus dados estão sincronizados em tempo real. Pronto para conquistar suas metas de estudo hoje?</p>
+      <div id="tab-home" class="tab-content active">
+        <div class="welcome-hero" id="welcomeHero">
+          <button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
+          <div class="welcome-hero-content">
+            <h3>🚀 <span id="welcomeUserName">Bem-vindo(a)!</span></h3>
+            <p>Seus dados estão sincronizados em tempo real. Pronto para conquistar suas metas de estudo hoje?</p>
+          </div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <span>Tempo Total</span>
+            <div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
+          </div>
+          <div class="metric-card">
+            <span>Sessões</span>
+            <div class="value" id="totalSessions">0</div>
+          </div>
+          <div class="metric-card">
+            <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
+            <div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
+          </div>
+        </div>
+
+        <div class="goal-progress-panel">
+          <div class="goal-progress-header">
+            <span>Progresso da Meta</span>
+            <span id="goalPercentText">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="goalProgressBar"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 id="calendarMonth" style="margin-bottom: 1rem; font-size: 1.1rem;">Calendário de Estudos</h3>
+          <div class="calendar-weekdays">
+            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
         </div>
       </div>
 
-      <div class="metrics-row">
-        <div class="metric-card">
-          <span>Tempo Total</span>
-          <div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
-        </div>
-        <div class="metric-card">
-          <span>Sessões</span>
-          <div class="value" id="totalSessions">0</div>
-        </div>
-        <div class="metric-card">
-          <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
-          <div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
+      <div id="tab-chronogram" class="tab-content">
+        <div class="chronogram-container">
+          <div class="panel">
+            <h3 style="margin-bottom: 1rem;">🤖 Gerador de Cronograma IA</h3>
+            <form id="chronogramForm" autocomplete="off">
+              <div class="form-group">
+                <label for="examDate">Data da Prova / Exame</label>
+                <input type="date" id="examDate" required>
+              </div>
+              <div class="form-group">
+                <label for="topicsInput">Tópicos para estudar (separados por vírgula)</label>
+                <textarea id="topicsInput" rows="4" placeholder="Ex: Álgebra, Geometria, História do Brasil, Física Quântica..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="dailyHours">Horas disponíveis por dia</label>
+                <input type="number" id="dailyHours" min="1" max="16" value="2" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Gerar Cronograma</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <h3 style="margin-bottom: 0.5rem;" id="chronoResultHeader">Seu Plano de Estudos</h3>
+            <p style="font-size: 0.85rem; color: var(--text-sub);" id="chronoSubtext">Preencha o formulário para gerar uma rotina personalizada.</p>
+            <div id="chronogramOutput" class="chronogram-results"></div>
+          </div>
         </div>
       </div>
 
-      <div class="goal-progress-panel">
-        <div class="goal-progress-header">
-          <span>Progresso da Meta</span>
-          <span id="goalPercentText">0%</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="goalProgressBar"></div>
+      <div id="tab-stats" class="tab-content">
+        <div class="panel">
+          <h3>📊 Estatísticas Detalhadas</h3>
+          <p style="margin-top: 0.5rem; color: var(--text-sub); font-size: 0.9rem;">Em breve: gráficos avançados de desempenho por matéria e tempo investido.</p>
         </div>
       </div>
 
-      <div class="panel">
-        <h3 id="calendarMonth" style="margin-bottom: 1rem; font-size: 1.1rem;">Calendário de Estudos</h3>
-        <div class="calendar-weekdays">
-          <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
-      </div>
     </main>
   </div>
 
@@ -625,31 +682,6 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="chronogramModal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">🤖 Gerador de Cronograma IA</h3>
-      <form id="chronogramForm" autocomplete="off">
-        <div class="form-group">
-          <label for="examDate">Data da Prova / Exame</label>
-          <input type="date" id="examDate" required>
-        </div>
-        <div class="form-group">
-          <label for="topicsInput">Tópicos para estudar (separados por vírgula)</label>
-          <textarea id="topicsInput" rows="3" placeholder="Ex: Álgebra, Geometria, História do Brasil, Física Quântica..." required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="dailyHours">Horas disponíveis por dia</label>
-          <input type="number" id="dailyHours" min="1" max="16" value="2" required>
-        </div>
-        <div class="btn-group">
-          <button type="button" class="btn btn-secondary" id="btnCancelChrono">Fechar</button>
-          <button type="submit" class="btn btn-primary">Gerar Cronograma</button>
-        </div>
-      </form>
-      <div id="chronogramOutput" class="chronogram-results" style="display:none;"></div>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
@@ -677,6 +709,30 @@
     let sessionCount = 0;
     let monthlyGoalHours = 50;
     let unsubscribeLogs = null;
+
+    // --- Tab Navigation Logic ---
+    const navItems = document.querySelectorAll('.nav-item');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const pageTitle = document.getElementById('pageTitle');
+
+    const tabTitles = {
+      'tab-home': 'Painel Principal',
+      'tab-chronogram': 'Cronograma Inteligente',
+      'tab-stats': 'Estatísticas'
+    };
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const targetTab = item.getAttribute('data-tab');
+        
+        navItems.forEach(i => i.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        item.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+        pageTitle.textContent = tabTitles[targetTab] || 'Painel';
+      });
+    });
 
     // Theme Switcher
     const btnToggleTheme = document.getElementById('btnToggleTheme');
@@ -716,21 +772,11 @@
     const welcomeUserName = document.getElementById('welcomeUserName');
     const btnCloseWelcome = document.getElementById('btnCloseWelcome');
 
-    // Chronogram Modal Elements
-    const chronogramModal = document.getElementById('chronogramModal');
-    const btnOpenChronogram = document.getElementById('btnOpenChronogram');
-    const btnCancelChrono = document.getElementById('btnCancelChrono');
+    // Chronogram Generator Logic
     const chronogramForm = document.getElementById('chronogramForm');
     const chronogramOutput = document.getElementById('chronogramOutput');
-
-    btnOpenChronogram.addEventListener('click', () => {
-      chronogramModal.style.display = 'flex';
-    });
-
-    btnCancelChrono.addEventListener('click', () => {
-      chronogramModal.style.display = 'none';
-      chronogramOutput.style.display = 'none';
-    });
+    const chronoResultHeader = document.getElementById('chronoResultHeader');
+    const chronoSubtext = document.getElementById('chronoSubtext');
 
     chronogramForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -751,27 +797,25 @@
         return;
       }
 
-      chronogramOutput.innerHTML = `<h4 style="margin-bottom:0.5rem; color:var(--primary);">🗓️ Plano de Estudo (${diffDays} dias restantes)</h4>`;
+      chronoResultHeader.textContent = `🗓️ Plano de Estudo (${diffDays} dias até a prova)`;
+      chronoSubtext.textContent = `Meta: ${dailyHours} hora(s) diária(s) distribuídas entre ${topics.length} matérias.`;
+      chronogramOutput.innerHTML = '';
 
       let currentTopicIdx = 0;
-      for (let day = 1; day <= Math.min(diffDays, 14); day++) {
+      for (let day = 1; day <= diffDays; day++) {
         const topic = topics[currentTopicIdx % topics.length];
         const isRevisionDay = day % 4 === 0;
 
-        chronogramOutput.innerHTML += `
-          <div class="chrono-day-card">
-            <strong>Dia ${day} ${isRevisionDay ? '🔄 (Revisão)' : ''}</strong>
-            ${isRevisionDay ? `Revisar tópicos anteriores + Exercícios (${dailyHours}h)` : `Estudar: ${topic} (${dailyHours}h)`}
-          </div>
+        const card = document.createElement('div');
+        card.className = 'chrono-day-card';
+        card.innerHTML = `
+          <strong>Dia ${day} ${isRevisionDay ? '🔄 (Revisão)' : ''}</strong>
+          ${isRevisionDay ? `Revisar conteúdos anteriores + Exercícios (${dailyHours}h)` : `Estudar: ${topic} (${dailyHours}h)`}
         `;
+        chronogramOutput.appendChild(card);
+
         if (!isRevisionDay) currentTopicIdx++;
       }
-
-      if (diffDays > 14) {
-        chronogramOutput.innerHTML += `<p style="font-size:0.8rem; color:var(--text-sub); text-align:center;">...e mais ${diffDays - 14} dias planejados sequencialmente.</p>`;
-      }
-
-      chronogramOutput.style.display = 'block';
     });
 
     document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
@@ -799,7 +843,7 @@
       welcomeHero.style.display = 'none';
     });
 
-    [studyModal, goalModal, chronogramModal].forEach(modal => {
+    [studyModal, goalModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.style.display = 'none';
