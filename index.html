@@ -481,72 +481,74 @@
       font-size: 0.85rem;
     }
 
-    /* Subject Breakdown Chart Styles */
-    .subject-chart-container {
-      margin-top: 1.5rem;
+    /* Pie / Donut Chart Layout */
+    .pie-chart-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
     }
 
-    .stacked-bar-chart {
-      height: 24px;
-      width: 100%;
-      background: var(--border-color);
-      border-radius: 12px;
-      display: flex;
-      overflow: hidden;
+    @media (min-width: 600px) {
+      .pie-chart-wrapper {
+        flex-direction: row;
+        justify-content: space-around;
+      }
     }
 
-    .stacked-bar-segment {
-      height: 100%;
-      transition: width 0.4s ease;
+    .pie-chart {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: conic-gradient(var(--border-color) 0% 100%);
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: background 0.4s ease;
     }
 
-    .subject-legend-list {
+    /* Donut Center Cutout */
+    .pie-chart::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      background: var(--card-bg);
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+    }
+
+    .pie-legend-list {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
+      width: 100%;
+      max-width: 280px;
     }
 
-    .subject-item {
+    .pie-legend-item {
       display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .subject-info {
-      display: flex;
+      align-items: center;
       justify-content: space-between;
       font-size: 0.85rem;
-      font-weight: 600;
     }
 
-    .subject-name-tag {
+    .legend-name {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      font-weight: 600;
     }
 
     .color-dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       display: inline-block;
-    }
-
-    .subject-progress-bg {
-      height: 8px;
-      width: 100%;
-      background: var(--border-color);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .subject-progress-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.4s ease;
     }
   </style>
 </head>
@@ -661,12 +663,12 @@
       <!-- STATS TAB CONTENT -->
       <div id="tab-stats" class="tab-content">
         <div class="panel">
-          <h3>📊 Distribuição de Estudos por Matéria</h3>
-          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Veja como seu tempo acumulado está dividido entre suas disciplinas.</p>
+          <h3>📊 Gráfico por Matéria</h3>
+          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Distribuição percentual do seu tempo total de estudo.</p>
           
-          <div class="subject-chart-container">
-            <div class="stacked-bar-chart" id="stackedBarChart"></div>
-            <div class="subject-legend-list" id="subjectLegendList">
+          <div class="pie-chart-wrapper">
+            <div class="pie-chart" id="pieChart"></div>
+            <div class="pie-legend-list" id="pieLegendList">
               <p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>
             </div>
           </div>
@@ -752,7 +754,7 @@
       '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
     ];
 
-    // --- Tab Navigation Logic ---
+    // --- Tab Navigation ---
     const navItems = document.querySelectorAll('.nav-item');
     const tabContents = document.querySelectorAll('.tab-content');
     const pageTitle = document.getElementById('pageTitle');
@@ -943,7 +945,7 @@
         monthlyGoalHours = 50;
         subjectTotals = {};
         initCalendar();
-        renderSubjectChart();
+        renderPieChart();
       }
     });
 
@@ -1044,7 +1046,7 @@
           subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
         });
         updateStats();
-        renderSubjectChart();
+        renderPieChart();
       }, (err) => {
         console.error("Erro ao escutar dados do Firestore:", err);
         alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
@@ -1101,50 +1103,47 @@
       goalPercentText.textContent = `${percent}%`;
     }
 
-    function renderSubjectChart() {
-      const stackedBarChart = document.getElementById('stackedBarChart');
-      const subjectLegendList = document.getElementById('subjectLegendList');
+    function renderPieChart() {
+      const pieChart = document.getElementById('pieChart');
+      const pieLegendList = document.getElementById('pieLegendList');
 
-      stackedBarChart.innerHTML = '';
-      subjectLegendList.innerHTML = '';
-
+      pieLegendList.innerHTML = '';
       const entries = Object.entries(subjectTotals);
 
       if (entries.length === 0 || totalMinutesLogged === 0) {
-        subjectLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>';
+        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
+        pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>';
         return;
       }
 
       entries.sort((a, b) => b[1] - a[1]);
 
+      let cumulativePercent = 0;
+      const gradientStops = [];
+
       entries.forEach(([subject, mins], index) => {
         const color = colorPalette[index % colorPalette.length];
-        const percent = ((mins / totalMinutesLogged) * 100).toFixed(1);
+        const percent = (mins / totalMinutesLogged) * 100;
+        const formattedPercent = percent.toFixed(1);
         const hrs = (mins / 60).toFixed(1);
 
-        const segment = document.createElement('div');
-        segment.className = 'stacked-bar-segment';
-        segment.style.width = `${percent}%`;
-        segment.style.backgroundColor = color;
-        segment.title = `${subject}: ${hrs}h (${percent}%)`;
-        stackedBarChart.appendChild(segment);
+        const startPercent = cumulativePercent;
+        cumulativePercent += percent;
+        gradientStops.push(`${color} ${startPercent}% ${cumulativePercent}%`);
 
-        const item = document.createElement('div');
-        item.className = 'subject-item';
-        item.innerHTML = `
-          <div class="subject-info">
-            <span class="subject-name-tag">
-              <span class="color-dot" style="background-color: ${color};"></span>
-              ${subject}
-            </span>
-            <span>${hrs}h (${percent}%)</span>
-          </div>
-          <div class="subject-progress-bg">
-            <div class="subject-progress-fill" style="width: ${percent}%; background-color: ${color};"></div>
-          </div>
+        const legendItem = document.createElement('div');
+        legendItem.className = 'pie-legend-item';
+        legendItem.innerHTML = `
+          <span class="legend-name">
+            <span class="color-dot" style="background-color: ${color};"></span>
+            ${subject}
+          </span>
+          <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
         `;
-        subjectLegendList.appendChild(item);
+        pieLegendList.appendChild(legendItem);
       });
+
+      pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
     }
 
     function openModalForCreate(dateKey, day, monthName) {
