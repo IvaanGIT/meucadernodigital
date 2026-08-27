@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu Caderno Digital - Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-color: #f3f4f6;
@@ -15,6 +16,7 @@
       --border-color: #e5e7eb;
       --accent-purple: #8b5cf6;
       --danger: #ef4444;
+      --fire-orange: #f97316;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -143,7 +145,7 @@
 
     .metrics-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
@@ -207,6 +209,46 @@
       background: linear-gradient(90deg, var(--primary), var(--accent-purple));
       border-radius: 5px;
       transition: width 0.4s ease;
+    }
+
+    /* Visual Analytics Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chart-card h4 {
+      width: 100%;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-height: 220px;
+      display: flex;
+      justify-content: center;
     }
 
     .panel {
@@ -393,6 +435,10 @@
           <div class="value" id="totalSessions">0</div>
         </div>
         <div class="metric-card">
+          <span>Sequência</span>
+          <div class="value" id="streakDisplay" style="color: var(--fire-orange);">🔥 0 Dias</div>
+        </div>
+        <div class="metric-card">
           <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
           <div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
         </div>
@@ -405,6 +451,21 @@
         </div>
         <div class="progress-bar-bg">
           <div class="progress-bar-fill" id="goalProgressBar"></div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4>📊 Horas nos Últimos 7 Dias</h4>
+          <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h4>🧩 Distribuição por Matéria</h4>
+          <div class="chart-container">
+            <canvas id="subjectChart"></canvas>
+          </div>
         </div>
       </div>
 
@@ -486,6 +547,10 @@
     let sessionCount = 0;
     let monthlyGoalHours = 50;
     let unsubscribeLogs = null;
+    let allUserLogs = [];
+
+    let weeklyChartInstance = null;
+    let subjectChartInstance = null;
 
     const calendarGrid = document.getElementById('calendarGrid');
     const studyModal = document.getElementById('studyModal');
@@ -570,7 +635,9 @@
         document.getElementById('displayUserName').textContent = 'Olá, Estudante';
         document.getElementById('avatarBox').textContent = 'E';
         monthlyGoalHours = 50;
+        allUserLogs = [];
         initCalendar();
+        updateAnalytics();
       }
     });
 
@@ -626,129 +693,4 @@
 
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day empty';
-        calendarGrid.appendChild(emptyCell);
-      }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'calendar-day';
-        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        if (day === now.getDate()) dayCell.classList.add('today');
-
-        dayCell.innerHTML = `
-          <div class="calendar-day-header">
-            <span class="day-number">${day}</span>
-            <button class="btn-add-mini" title="Adicionar Estudo">+</button>
-          </div>
-          <div class="log-container" id="logs-${dateKey}"></div>
-        `;
-
-        dayCell.querySelector('.btn-add-mini').onclick = (e) => {
-          e.stopPropagation();
-          openModal(dateKey, day, monthNames[month]);
-        };
-
-        calendarGrid.appendChild(dayCell);
-      }
-      updateStats();
-    }
-
-    function loadUserStudyLogs(userId) {
-      const q = query(collection(db, "study_logs"), where("userId", "==", userId));
-      
-      unsubscribeLogs = onSnapshot(q, (snapshot) => {
-        initCalendar();
-        snapshot.forEach((docSnap) => {
-          const log = docSnap.data();
-          renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
-          totalMinutesLogged += log.duration;
-          sessionCount++;
-        });
-        updateStats();
-      }, (err) => {
-        console.error("Erro ao escutar dados do Firestore:", err);
-        alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
-      });
-    }
-
-    function renderTag(docId, dateKey, subject, duration, notes) {
-      const logContainer = document.getElementById(`logs-${dateKey}`);
-      if (logContainer) {
-        const tag = document.createElement('div');
-        tag.className = 'study-tag';
-        tag.title = `${subject} - ${duration}m (${notes || 'Sem anotações'})`;
-        
-        tag.innerHTML = `
-          <span class="study-tag-text">${subject}</span>
-          <button class="btn-delete-tag" title="Excluir">✕</button>
-        `;
-
-        tag.querySelector('.btn-delete-tag').onclick = async (e) => {
-          e.stopPropagation();
-          if (confirm(`Excluir "${subject}"?`)) {
-            try {
-              await deleteDoc(doc(db, "study_logs", docId));
-            } catch (err) {
-              alert("Erro ao excluir: " + err.message);
-            }
-          }
-        };
-
-        logContainer.appendChild(tag);
-      }
-    }
-
-    function updateStats() {
-      const hrs = Math.floor(totalMinutesLogged / 60);
-      const mins = totalMinutesLogged % 60;
-      document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
-      document.getElementById('totalSessions').textContent = sessionCount;
-      
-      monthlyGoalDisplay.textContent = `${monthlyGoalHours} hrs`;
-
-      const totalHoursDecimal = totalMinutesLogged / 60;
-      const percent = Math.min(Math.round((totalHoursDecimal / monthlyGoalHours) * 100), 100);
-      
-      goalProgressBar.style.width = `${percent}%`;
-      goalPercentText.textContent = `${percent}%`;
-    }
-
-    function openModal(dateKey, day, monthName) {
-      if (!currentUser) {
-        alert('Faça login com o Google para registrar seus estudos.');
-        return;
-      }
-      studyForm.reset();
-      selectedDateInput.value = dateKey;
-      modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
-      studyModal.style.display = 'flex';
-    }
-
-    studyForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const dateKey = selectedDateInput.value;
-      const subject = document.getElementById('subject').value;
-      const duration = parseInt(document.getElementById('duration').value, 10);
-      const notes = document.getElementById('notes').value;
-
-      try {
-        await addDoc(collection(db, "study_logs"), {
-          userId: currentUser.uid,
-          dateKey,
-          subject,
-          duration,
-          notes,
-          timestamp: new Date()
-        });
-        closeStudyModal();
-      } catch (err) {
-        alert('Erro ao salvar estudo: ' + err.message);
-      }
-    });
-  </script>
-</body>
-</html>
+        emptyCell.className =
