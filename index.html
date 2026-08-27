@@ -349,7 +349,9 @@
     .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
     .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
     .btn-secondary { background: #e5e7eb; }
+    .btn-secondary:hover { background: #d1d5db; }
   </style>
 </head>
 <body>
@@ -507,8 +509,7 @@
     });
 
     document.getElementById('btnCancel').addEventListener('click', () => {
-      studyModal.style.display = 'none';
-      studyForm.reset();
+      closeStudyModal();
     });
 
     document.getElementById('btnEditGoal').addEventListener('click', () => {
@@ -521,9 +522,27 @@
     });
 
     document.getElementById('btnCancelGoal').addEventListener('click', () => {
+      closeGoalModal();
+    });
+
+    // Close modals when clicking on background overlays
+    [studyModal, goalModal].forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+
+    function closeStudyModal() {
+      studyModal.style.display = 'none';
+      studyForm.reset();
+    }
+
+    function closeGoalModal() {
       goalModal.style.display = 'none';
       goalForm.reset();
-    });
+    }
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
@@ -588,8 +607,7 @@
 
         monthlyGoalHours = newGoal;
         updateStats();
-        goalModal.style.display = 'none';
-        goalForm.reset();
+        closeGoalModal();
       } catch (err) {
         alert('Erro ao salvar meta: ' + err.message);
       }
@@ -728,8 +746,7 @@
           notes,
           timestamp: new Date()
         });
-        studyForm.reset();
-        studyModal.style.display = 'none';
+        closeStudyModal();
       } catch (err) {
         alert('Erro ao salvar estudo: ' + err.message);
       }
