@@ -680,14 +680,14 @@
             <div class="value" id="totalAssuntos">0</div>
           </div>
           <div class="metric-card">
-            <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
-            <div class="value" id="monthlyGoalDisplay" style="color: var(--accent-purple);">50 hrs</div>
+            <span>Meta Diária <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
+            <div class="value" id="dailyGoalDisplay" style="color: var(--accent-purple);">2 hrs</div>
           </div>
         </div>
 
         <div class="goal-progress-panel">
           <div class="goal-progress-header">
-            <span>Progresso da Meta</span>
+            <span>Progresso Hoje</span>
             <span id="goalPercentText">0%</span>
           </div>
           <div class="progress-bar-bg">
@@ -802,11 +802,11 @@
 
   <div class="modal-overlay" id="goalModal">
     <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">Definir Meta Mensal</h3>
+      <h3 style="margin-bottom: 1rem;">Definir Meta Diária</h3>
       <form id="goalForm" autocomplete="off">
         <div class="form-group">
-          <label for="goalInput">Nova Meta (em horas)</label>
-          <input type="number" id="goalInput" min="1" max="500" placeholder="Ex: 50" required>
+          <label for="goalInput">Nova Meta (horas por dia)</label>
+          <input type="number" id="goalInput" min="0.5" max="24" step="0.5" placeholder="Ex: 2" required>
         </div>
         <div class="btn-group">
           <button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
@@ -850,7 +850,7 @@
 
     let currentUser = null;
     let totalMinutesLogged = 0;
-    let monthlyGoalHours = 50;
+    let dailyGoalHours = 2;
     let unsubscribeLogs = null;
     let subjectTotals = {};
     let dailyLogData = {};
@@ -920,7 +920,7 @@
     const goalModal = document.getElementById('goalModal');
     const goalForm = document.getElementById('goalForm');
     const goalInput = document.getElementById('goalInput');
-    const monthlyGoalDisplay = document.getElementById('monthlyGoalDisplay');
+    const dailyGoalDisplay = document.getElementById('dailyGoalDisplay');
     const goalProgressBar = document.getElementById('goalProgressBar');
     const goalPercentText = document.getElementById('goalPercentText');
 
@@ -1041,7 +1041,7 @@
         alert('Faça login com o Google para alterar sua meta.');
         return;
       }
-      goalInput.value = monthlyGoalHours;
+      goalInput.value = dailyGoalHours;
       goalModal.style.display = 'flex';
     });
 
@@ -1106,7 +1106,7 @@
         document.getElementById('displayUserName').textContent = 'Olá, Estudante';
         document.getElementById('avatarBox').textContent = 'E';
         welcomeHero.style.display = 'none';
-        monthlyGoalHours = 50;
+        dailyGoalHours = 2;
         subjectTotals = {};
         dailyLogData = {};
         uniqueTopicsList = [];
@@ -1120,10 +1120,10 @@
       try {
         const goalDocRef = doc(db, "user_settings", userId);
         const goalSnap = await getDoc(goalDocRef);
-        if (goalSnap.exists() && goalSnap.data().monthlyGoal) {
-          monthlyGoalHours = goalSnap.data().monthlyGoal;
+        if (goalSnap.exists() && goalSnap.data().dailyGoal) {
+          dailyGoalHours = goalSnap.data().dailyGoal;
         } else {
-          monthlyGoalHours = 50;
+          dailyGoalHours = 2;
         }
       } catch (err) {
         console.error("Erro ao carregar meta: ", err);
@@ -1135,16 +1135,16 @@
       e.preventDefault();
       if (!currentUser) return;
 
-      const newGoal = parseInt(goalInput.value, 10);
+      const newGoal = parseFloat(goalInput.value);
       if (isNaN(newGoal) || newGoal <= 0) return;
 
-      monthlyGoalHours = newGoal;
+      dailyGoalHours = newGoal;
       updateStats();
       closeGoalModal();
 
       try {
         await setDoc(doc(db, "user_settings", currentUser.uid), {
-          monthlyGoal: newGoal
+          dailyGoal: newGoal
         }, { merge: true });
       } catch (err) {
         console.error('Erro ao salvar meta no Firestore: ', err);
@@ -1280,10 +1280,14 @@
       document.getElementById('totalMaterias').textContent = uniqueSubjectsCount;
       document.getElementById('totalAssuntos').textContent = uniqueTopicsList.length;
 
-      monthlyGoalDisplay.textContent = `${monthlyGoalHours} hrs`;
+      dailyGoalDisplay.textContent = `${dailyGoalHours} hrs`;
 
-      const totalHoursDecimal = totalMinutesLogged / 60;
-      const percent = Math.min(Math.round((totalHoursDecimal / monthlyGoalHours) * 100), 100);
+      const now = new Date();
+      const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const todayMinutes = dailyLogData[todayKey] ? dailyLogData[todayKey].totalMinutes : 0;
+      const todayHours = todayMinutes / 60;
+
+      const percent = Math.min(Math.round((todayHours / dailyGoalHours) * 100), 100);
       
       goalProgressBar.style.width = `${percent}%`;
       goalPercentText.textContent = `${percent}%`;
