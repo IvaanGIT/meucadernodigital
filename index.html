@@ -1398,12 +1398,6 @@
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       calendarGrid.innerHTML = '';
-      totalMinutesLogged = 0;
-      subjectTotals = {};
-      topicTotals = {};
-      dailyLogData = {};
-      uniqueTopicsList = [];
-      allLogs = [];
 
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
@@ -1440,7 +1434,15 @@
       const q = query(collection(db, "study_logs"), where("userId", "==", userId));
       
       unsubscribeLogs = onSnapshot(q, (snapshot) => {
+        totalMinutesLogged = 0;
+        subjectTotals = {};
+        topicTotals = {};
+        dailyLogData = {};
+        uniqueTopicsList = [];
+        allLogs = [];
+
         initCalendar();
+
         snapshot.forEach((docSnap) => {
           const log = docSnap.data();
           allLogs.push({ id: docSnap.id, ...log });
@@ -1503,7 +1505,7 @@
         tag.style.backgroundColor = tagBgColor;
         
         const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
-        const tagDisplay = notes ? notes : subject;
+        const tagDisplay = subject;
         tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
         
         tag.innerHTML = `
