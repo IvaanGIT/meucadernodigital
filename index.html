@@ -505,6 +505,71 @@
       color: var(--text-main);
     }
 
+    /* Difficulty Scale Styling */
+    .difficulty-scale {
+      display: flex;
+      gap: 4px;
+      margin-top: 0.4rem;
+    }
+
+    .difficulty-btn {
+      flex: 1;
+      padding: 0.4rem 0;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .difficulty-btn[data-level="1"],
+    .difficulty-btn[data-level="2"],
+    .difficulty-btn[data-level="3"],
+    .difficulty-btn[data-level="4"] {
+      color: #10b981;
+    }
+
+    .difficulty-btn[data-level="5"],
+    .difficulty-btn[data-level="6"],
+    .difficulty-btn[data-level="7"] {
+      color: #f59e0b;
+    }
+
+    .difficulty-btn[data-level="8"],
+    .difficulty-btn[data-level="9"],
+    .difficulty-btn[data-level="10"] {
+      color: #ef4444;
+    }
+
+    .difficulty-btn.selected[data-level="1"],
+    .difficulty-btn.selected[data-level="2"],
+    .difficulty-btn.selected[data-level="3"],
+    .difficulty-btn.selected[data-level="4"] {
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
+    }
+
+    .difficulty-btn.selected[data-level="5"],
+    .difficulty-btn.selected[data-level="6"],
+    .difficulty-btn.selected[data-level="7"] {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #ffffff;
+    }
+
+    .difficulty-btn.selected[data-level="8"],
+    .difficulty-btn.selected[data-level="9"],
+    .difficulty-btn.selected[data-level="10"] {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
     .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
     .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
     .btn-primary { background: var(--primary); color: white; }
@@ -838,18 +903,39 @@
       <form id="studyForm" autocomplete="off">
         <input type="hidden" id="selectedDate">
         <input type="hidden" id="editingDocId" value="">
+        <input type="hidden" id="difficulty" value="1">
+        
         <div class="form-group">
-          <label for="subject">Matéria / Disciplina</label>
-          <input type="text" id="subject" placeholder="Ex: Matemática, Direito..." required>
+          <label for="subject">Matéria</label>
+          <input type="text" id="subject" placeholder="Ex: Matemática, História..." required>
         </div>
+        
+        <div class="form-group">
+          <label for="notes">Assunto</label>
+          <input type="text" id="notes" placeholder="Ex: Equações do 2º Grau, Revolução Francesa..." required>
+        </div>
+
         <div class="form-group">
           <label for="duration">Tempo de Estudo (em minutos)</label>
           <input type="number" id="duration" min="1" placeholder="Ex: 60" required>
         </div>
+
         <div class="form-group">
-          <label for="notes">O que você estudou? (Assunto)</label>
-          <textarea id="notes" rows="3" placeholder="Resumo dos tópicos abordados..."></textarea>
+          <label>Nível de Dificuldade (1 a 10)</label>
+          <div class="difficulty-scale" id="difficultyScale">
+            <button type="button" class="difficulty-btn selected" data-level="1">1</button>
+            <button type="button" class="difficulty-btn" data-level="2">2</button>
+            <button type="button" class="difficulty-btn" data-level="3">3</button>
+            <button type="button" class="difficulty-btn" data-level="4">4</button>
+            <button type="button" class="difficulty-btn" data-level="5">5</button>
+            <button type="button" class="difficulty-btn" data-level="6">6</button>
+            <button type="button" class="difficulty-btn" data-level="7">7</button>
+            <button type="button" class="difficulty-btn" data-level="8">8</button>
+            <button type="button" class="difficulty-btn" data-level="9">9</button>
+            <button type="button" class="difficulty-btn" data-level="10">10</button>
+          </div>
         </div>
+
         <div class="btn-group">
           <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
           <button type="submit" class="btn btn-primary" id="btnSaveStudy">Salvar Registro</button>
@@ -984,6 +1070,8 @@
     const modalDateTitle = document.getElementById('modalDateTitle');
     const selectedDateInput = document.getElementById('selectedDate');
     const editingDocIdInput = document.getElementById('editingDocId');
+    const difficultyInput = document.getElementById('difficulty');
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
 
     const goalModal = document.getElementById('goalModal');
     const goalForm = document.getElementById('goalForm');
@@ -1014,6 +1102,23 @@
       activeSubjectFilter = e.target.value;
       renderIndividualPieChart();
     });
+
+    difficultyBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setDifficultyValue(parseInt(btn.getAttribute('data-level'), 10));
+      });
+    });
+
+    function setDifficultyValue(val) {
+      difficultyInput.value = val;
+      difficultyBtns.forEach(btn => {
+        if (parseInt(btn.getAttribute('data-level'), 10) === val) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
 
     btnMateriasCard.addEventListener('click', () => {
       detailsModalTitle.textContent = '📘 Matérias Estudadas (Clique para ver detalhes)';
@@ -1051,7 +1156,8 @@
         uniqueTopicsList.forEach(item => {
           const li = document.createElement('li');
           li.className = 'detail-item';
-          li.innerHTML = `<span><strong>${item.subject}:</strong> ${item.notes}</span> <span>${item.date}</span>`;
+          const diffBadge = item.difficulty ? ` <span style="font-size: 0.75rem; font-weight: bold; opacity: 0.8;">[Dif: ${item.difficulty}/10]</span>` : '';
+          li.innerHTML = `<span><strong>${item.subject}:</strong> ${item.notes}${diffBadge}</span> <span>${item.date}</span>`;
           detailsModalList.appendChild(li);
         });
       }
@@ -1152,6 +1258,7 @@
       studyModal.style.display = 'none';
       studyForm.reset();
       editingDocIdInput.value = '';
+      setDifficultyValue(1);
     }
 
     function closeGoalModal() {
@@ -1305,7 +1412,7 @@
         snapshot.forEach((docSnap) => {
           const log = docSnap.data();
           allLogs.push({ id: docSnap.id, ...log });
-          renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
+          renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes, log.difficulty);
           totalMinutesLogged += log.duration;
 
           const normSubject = log.subject.trim();
@@ -1315,7 +1422,8 @@
             uniqueTopicsList.push({
               subject: normSubject,
               notes: log.notes.trim(),
-              date: log.dateKey
+              date: log.dateKey,
+              difficulty: log.difficulty || 1
             });
           }
 
@@ -1351,12 +1459,13 @@
       });
     }
 
-    function renderTag(docId, dateKey, subject, duration, notes) {
+    function renderTag(docId, dateKey, subject, duration, notes, difficulty) {
       const logContainer = document.getElementById(`logs-${dateKey}`);
       if (logContainer) {
         const tag = document.createElement('div');
         tag.className = 'study-tag';
-        tag.title = `${subject} - ${duration}m (${notes || 'Sem anotações'})`;
+        const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
+        tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
         
         tag.innerHTML = `
           <span class="study-tag-text">${subject}</span>
@@ -1368,7 +1477,7 @@
 
         tag.querySelector('.btn-edit-tag').onclick = (e) => {
           e.stopPropagation();
-          openModalForEdit(docId, dateKey, subject, duration, notes);
+          openModalForEdit(docId, dateKey, subject, duration, notes, difficulty);
         };
 
         tag.querySelector('.btn-delete-tag').onclick = async (e) => {
@@ -1660,19 +1769,21 @@
       studyForm.reset();
       editingDocIdInput.value = '';
       selectedDateInput.value = dateKey;
+      setDifficultyValue(1);
       modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
       document.getElementById('btnSaveStudy').textContent = 'Salvar Registro';
       studyModal.style.display = 'flex';
     }
 
-    function openModalForEdit(docId, dateKey, subject, duration, notes) {
+    function openModalForEdit(docId, dateKey, subject, duration, notes, difficulty) {
       if (!currentUser) return;
 
       editingDocIdInput.value = docId;
       selectedDateInput.value = dateKey;
       document.getElementById('subject').value = subject;
-      document.getElementById('duration').value = duration;
       document.getElementById('notes').value = notes || '';
+      document.getElementById('duration').value = duration;
+      setDifficultyValue(difficulty || 1);
 
       const dateParts = dateKey.split('-');
       modalDateTitle.textContent = `Editar Estudo (${dateParts[2]}/${dateParts[1]})`;
@@ -1687,23 +1798,26 @@
       const docId = editingDocIdInput.value;
       const dateKey = selectedDateInput.value;
       const subject = document.getElementById('subject').value;
-      const duration = parseInt(document.getElementById('duration').value, 10);
       const notes = document.getElementById('notes').value;
+      const duration = parseInt(document.getElementById('duration').value, 10);
+      const difficulty = parseInt(difficultyInput.value, 10);
 
       try {
         if (docId) {
           await updateDoc(doc(db, "study_logs", docId), {
             subject,
+            notes,
             duration,
-            notes
+            difficulty
           });
         } else {
           await addDoc(collection(db, "study_logs"), {
             userId: currentUser.uid,
             dateKey,
             subject,
-            duration,
             notes,
+            duration,
+            difficulty,
             timestamp: new Date()
           });
         }
