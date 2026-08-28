@@ -443,7 +443,6 @@
     }
 
     .study-tag {
-      background: var(--primary);
       color: white;
       font-size: 0.65rem;
       padding: 1px 4px;
@@ -452,6 +451,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 2px;
+      transition: background-color 0.2s ease;
     }
 
     .study-tag-text {
@@ -1007,6 +1007,14 @@
       '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
     ];
 
+    function getDifficultyColor(level) {
+      const l = parseInt(level, 10);
+      if (l >= 1 && l <= 4) return '#10b981'; // Green (Easy)
+      if (l >= 5 && l <= 7) return '#f59e0b'; // Orange (Medium)
+      if (l >= 8 && l <= 10) return '#ef4444'; // Red (Difficult)
+      return '#10b981';
+    }
+
     const navItems = document.querySelectorAll('.nav-item');
     const tabContents = document.querySelectorAll('.tab-content');
     const pageTitle = document.getElementById('pageTitle');
@@ -1156,7 +1164,7 @@
         uniqueTopicsList.forEach(item => {
           const li = document.createElement('li');
           li.className = 'detail-item';
-          const diffBadge = item.difficulty ? ` <span style="font-size: 0.75rem; font-weight: bold; opacity: 0.8;">[Dif: ${item.difficulty}/10]</span>` : '';
+          const diffBadge = item.difficulty ? ` <span style="font-size: 0.75rem; font-weight: bold; color: ${getDifficultyColor(item.difficulty)};">[Dif: ${item.difficulty}/10]</span>` : '';
           li.innerHTML = `<span><strong>${item.subject}:</strong> ${item.notes}${diffBadge}</span> <span>${item.date}</span>`;
           detailsModalList.appendChild(li);
         });
@@ -1464,6 +1472,9 @@
       if (logContainer) {
         const tag = document.createElement('div');
         tag.className = 'study-tag';
+        const tagBgColor = getDifficultyColor(difficulty || 1);
+        tag.style.backgroundColor = tagBgColor;
+        
         const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
         tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
         
