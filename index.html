@@ -251,7 +251,7 @@
 
     .metrics-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
@@ -261,6 +261,17 @@
       padding: 1rem;
       border-radius: 12px;
       border: 1px solid var(--border-color);
+    }
+
+    .metric-card.btn-metric {
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .metric-card.btn-metric:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
     }
 
     .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
@@ -590,6 +601,26 @@
     .chart-text { fill: var(--text-sub); font-size: 11px; text-anchor: middle; }
     .chart-val-text { fill: var(--text-main); font-size: 10px; font-weight: bold; text-anchor: middle; }
     .chart-subj-text { fill: var(--accent-purple); font-size: 9px; text-anchor: middle; font-weight: 600; }
+
+    .detail-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .detail-item {
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      background: var(--bg-color);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -626,7 +657,6 @@
         </div>
       </header>
 
-      <!-- HOME TAB CONTENT -->
       <div id="tab-home" class="tab-content active">
         <div class="welcome-hero" id="welcomeHero">
           <button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
@@ -641,9 +671,13 @@
             <span>Tempo Total</span>
             <div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
           </div>
-          <div class="metric-card">
-            <span>Sessões</span>
-            <div class="value" id="totalSessions">0</div>
+          <div class="metric-card btn-metric" id="btnMateriasCard" title="Ver Matérias">
+            <span>Matérias 📘</span>
+            <div class="value" id="totalMaterias">0</div>
+          </div>
+          <div class="metric-card btn-metric" id="btnAssuntosCard" title="Ver Assuntos">
+            <span>Assuntos 📝</span>
+            <div class="value" id="totalAssuntos">0</div>
           </div>
           <div class="metric-card">
             <span>Meta Mensal <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
@@ -670,7 +704,6 @@
         </div>
       </div>
 
-      <!-- CRONOGRAMA TAB CONTENT -->
       <div id="tab-chronogram" class="tab-content">
         <div class="chronogram-container">
           <div class="panel">
@@ -700,7 +733,6 @@
         </div>
       </div>
 
-      <!-- STATS TAB CONTENT -->
       <div id="tab-stats" class="tab-content">
         <div class="panel">
           <h3>📊 Gráfico por Matéria</h3>
@@ -757,7 +789,7 @@
           <input type="number" id="duration" min="1" placeholder="Ex: 60" required>
         </div>
         <div class="form-group">
-          <label for="notes">O que você estudou?</label>
+          <label for="notes">O que você estudou? (Assunto)</label>
           <textarea id="notes" rows="3" placeholder="Resumo dos tópicos abordados..."></textarea>
         </div>
         <div class="btn-group">
@@ -781,6 +813,16 @@
           <button type="submit" class="btn btn-primary" id="btnSaveGoal">Salvar Meta</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="detailsModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 0.5rem;" id="detailsModalTitle">Detalhes</h3>
+      <ul class="detail-list" id="detailsModalList"></ul>
+      <div class="btn-group">
+        <button type="button" class="btn btn-secondary" id="btnCloseDetails">Fechar</button>
+      </div>
     </div>
   </div>
 
@@ -808,11 +850,11 @@
 
     let currentUser = null;
     let totalMinutesLogged = 0;
-    let sessionCount = 0;
     let monthlyGoalHours = 50;
     let unsubscribeLogs = null;
     let subjectTotals = {};
     let dailyLogData = {};
+    let uniqueTopicsList = [];
 
     const colorPalette = [
       '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', 
@@ -882,12 +924,61 @@
     const goalProgressBar = document.getElementById('goalProgressBar');
     const goalPercentText = document.getElementById('goalPercentText');
 
+    const detailsModal = document.getElementById('detailsModal');
+    const detailsModalTitle = document.getElementById('detailsModalTitle');
+    const detailsModalList = document.getElementById('detailsModalList');
+    const btnCloseDetails = document.getElementById('btnCloseDetails');
+
+    const btnMateriasCard = document.getElementById('btnMateriasCard');
+    const btnAssuntosCard = document.getElementById('btnAssuntosCard');
+
     const welcomeHero = document.getElementById('welcomeHero');
     const welcomeUserName = document.getElementById('welcomeUserName');
     const btnCloseWelcome = document.getElementById('btnCloseWelcome');
 
     const lineChartTimeframe = document.getElementById('lineChartTimeframe');
     lineChartTimeframe.addEventListener('change', renderLineChart);
+
+    btnMateriasCard.addEventListener('click', () => {
+      detailsModalTitle.textContent = '📘 Matérias Estudadas';
+      detailsModalList.innerHTML = '';
+      const subjects = Object.keys(subjectTotals);
+
+      if (subjects.length === 0) {
+        detailsModalList.innerHTML = '<li class="detail-item">Nenhuma matéria registrada ainda.</li>';
+      } else {
+        subjects.forEach(subj => {
+          const mins = subjectTotals[subj];
+          const hrs = (mins / 60).toFixed(1);
+          const li = document.createElement('li');
+          li.className = 'detail-item';
+          li.innerHTML = `<strong>${subj}</strong> <span>${hrs}h (${mins} min)</span>`;
+          detailsModalList.appendChild(li);
+        });
+      }
+      detailsModal.style.display = 'flex';
+    });
+
+    btnAssuntosCard.addEventListener('click', () => {
+      detailsModalTitle.textContent = '📝 Assuntos Registrados';
+      detailsModalList.innerHTML = '';
+
+      if (uniqueTopicsList.length === 0) {
+        detailsModalList.innerHTML = '<li class="detail-item">Nenhum assunto registrado ainda.</li>';
+      } else {
+        uniqueTopicsList.forEach(item => {
+          const li = document.createElement('li');
+          li.className = 'detail-item';
+          li.innerHTML = `<span><strong>${item.subject}:</strong> ${item.notes}</span> <span>${item.date}</span>`;
+          detailsModalList.appendChild(li);
+        });
+      }
+      detailsModal.style.display = 'flex';
+    });
+
+    btnCloseDetails.addEventListener('click', () => {
+      detailsModal.style.display = 'none';
+    });
 
     // Chronogram Generator Logic
     const chronogramForm = document.getElementById('chronogramForm');
@@ -960,7 +1051,7 @@
       welcomeHero.style.display = 'none';
     });
 
-    [studyModal, goalModal].forEach(modal => {
+    [studyModal, goalModal, detailsModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.style.display = 'none';
@@ -1018,6 +1109,7 @@
         monthlyGoalHours = 50;
         subjectTotals = {};
         dailyLogData = {};
+        uniqueTopicsList = [];
         initCalendar();
         renderPieChart();
         renderLineChart();
@@ -1072,9 +1164,9 @@
 
       calendarGrid.innerHTML = '';
       totalMinutesLogged = 0;
-      sessionCount = 0;
       subjectTotals = {};
       dailyLogData = {};
+      uniqueTopicsList = [];
 
       for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
@@ -1116,10 +1208,17 @@
           const log = docSnap.data();
           renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes);
           totalMinutesLogged += log.duration;
-          sessionCount++;
 
           const normSubject = log.subject.trim();
           subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
+
+          if (log.notes && log.notes.trim() !== '') {
+            uniqueTopicsList.push({
+              subject: normSubject,
+              notes: log.notes.trim(),
+              date: log.dateKey
+            });
+          }
 
           if (!dailyLogData[log.dateKey]) {
             dailyLogData[log.dateKey] = { totalMinutes: 0, subjects: new Set() };
@@ -1176,8 +1275,11 @@
       const hrs = Math.floor(totalMinutesLogged / 60);
       const mins = totalMinutesLogged % 60;
       document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
-      document.getElementById('totalSessions').textContent = sessionCount;
       
+      const uniqueSubjectsCount = Object.keys(subjectTotals).length;
+      document.getElementById('totalMaterias').textContent = uniqueSubjectsCount;
+      document.getElementById('totalAssuntos').textContent = uniqueTopicsList.length;
+
       monthlyGoalDisplay.textContent = `${monthlyGoalHours} hrs`;
 
       const totalHoursDecimal = totalMinutesLogged / 60;
