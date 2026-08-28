@@ -15,7 +15,7 @@
       --border-color: #e5e7eb;
       --accent-purple: #8b5cf6;
       --danger: #ef4444;
-      --auth-bg: #1e293b;
+      --danger-hover: #dc2626;
       --empty-day-bg: #f3f4f6;
       --today-bg: #ecfdf5;
       --input-bg: #ffffff;
@@ -32,7 +32,7 @@
       --border-color: #334155;
       --accent-purple: #a78bfa;
       --danger: #f87171;
-      --auth-bg: #0f172a;
+      --danger-hover: #ef4444;
       --empty-day-bg: #0f172a;
       --today-bg: #064e3b;
       --input-bg: #0f172a;
@@ -50,35 +50,6 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    #authBanner {
-      background: var(--auth-bg);
-      color: white;
-      padding: 0.75rem 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 0.85rem;
-      gap: 0.5rem;
-    }
-
-    .btn-google {
-      background: #ffffff;
-      color: #374151;
-      border: 1px solid #d1d5db;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-    }
-
-    .btn-google:hover { background: #f9fafb; }
-
     .dashboard-container { display: flex; flex: 1; flex-direction: column; }
 
     @media (min-width: 768px) {
@@ -94,6 +65,7 @@
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
     }
 
     @media (min-width: 768px) {
@@ -103,9 +75,16 @@
         border-bottom: none;
         padding: 1.5rem 1rem;
         flex-direction: column;
-        justify-content: flex-start;
-        gap: 1.5rem;
+        justify-content: space-between;
+        align-items: stretch;
       }
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
     }
 
     .brand-container {
@@ -169,6 +148,51 @@
     .nav-item.active button, .nav-item button:hover { 
       background: var(--today-bg); 
       color: var(--primary); 
+    }
+
+    .sidebar-footer {
+      width: 100%;
+      margin-top: auto;
+      padding-top: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .sidebar-footer {
+        border-top: 1px solid var(--border-color);
+      }
+    }
+
+    .btn-sidebar-auth {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    .btn-sidebar-auth.btn-logout {
+      background: rgba(239, 68, 68, 0.08);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-sidebar-auth.btn-logout:hover {
+      background: var(--danger);
+      color: #ffffff;
+      border-color: var(--danger);
+    }
+
+    .btn-sidebar-auth.btn-login:hover {
+      background: var(--border-color);
     }
 
     main { flex: 1; padding: 1rem; overflow-y: auto; }
@@ -510,7 +534,6 @@
       font-size: 0.85rem;
     }
 
-    /* Pie / Donut Chart Layout */
     .pie-chart-wrapper {
       display: flex;
       flex-direction: column;
@@ -579,7 +602,6 @@
       display: inline-block;
     }
 
-    /* Line Chart Styles */
     .line-chart-container {
       width: 100%;
       overflow-x: auto;
@@ -625,35 +647,36 @@
 </head>
 <body>
 
-  <div id="authBanner">
-    <div id="userInfo">Status: <strong>Desconectado</strong></div>
-    <button class="btn-google" id="btnGoogleLogin">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-      Entrar
-    </button>
-  </div>
-
   <div class="dashboard-container">
     <aside>
-      <div class="brand-container">
-        <div class="brand">📖 Caderno</div>
-        <button class="theme-toggle-btn" id="btnToggleTheme" title="Alternar Tema">
-          <span id="themeIcon">🌙</span>
+      <div class="sidebar-top">
+        <div class="brand-container">
+          <div class="brand">📖 Caderno</div>
+          <button class="theme-toggle-btn" id="btnToggleTheme" title="Alternar Tema">
+            <span id="themeIcon">🌙</span>
+          </button>
+        </div>
+        <ul class="nav-list">
+          <li class="nav-item active" data-tab="tab-home"><button>🏠 Home</button></li>
+          <li class="nav-item" data-tab="tab-chronogram"><button>🤖 Cronograma</button></li>
+          <li class="nav-item" data-tab="tab-stats"><button>📊 Stats</button></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-sidebar-auth btn-login" id="btnAuthAction">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          Entrar com Google
         </button>
       </div>
-      <ul class="nav-list">
-        <li class="nav-item active" data-tab="tab-home"><button>🏠 Home</button></li>
-        <li class="nav-item" data-tab="tab-chronogram"><button>🤖 Cronograma</button></li>
-        <li class="nav-item" data-tab="tab-stats"><button>📊 Stats</button></li>
-      </ul>
     </aside>
 
     <main>
       <header>
         <h2 id="pageTitle">Painel Principal</h2>
         <div class="user-profile">
-          <span id="displayUserName">Olá, Estudante</span>
-          <div class="avatar" id="avatarBox">E</div>
+          <span id="displayUserName">Desconectado</span>
+          <div class="avatar" id="avatarBox">?</div>
         </div>
       </header>
 
@@ -861,7 +884,6 @@
       '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
     ];
 
-    // --- Tab Navigation ---
     const navItems = document.querySelectorAll('.nav-item');
     const tabContents = document.querySelectorAll('.tab-content');
     const pageTitle = document.getElementById('pageTitle');
@@ -890,7 +912,6 @@
       });
     });
 
-    // Theme Switcher
     const btnToggleTheme = document.getElementById('btnToggleTheme');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -936,6 +957,8 @@
     const welcomeUserName = document.getElementById('welcomeUserName');
     const btnCloseWelcome = document.getElementById('btnCloseWelcome');
 
+    const btnAuthAction = document.getElementById('btnAuthAction');
+
     const lineChartTimeframe = document.getElementById('lineChartTimeframe');
     lineChartTimeframe.addEventListener('change', renderLineChart);
 
@@ -980,7 +1003,6 @@
       detailsModal.style.display = 'none';
     });
 
-    // Chronogram Generator Logic
     const chronogramForm = document.getElementById('chronogramForm');
     const chronogramOutput = document.getElementById('chronogramOutput');
     const chronoResultHeader = document.getElementById('chronoResultHeader');
@@ -1026,11 +1048,19 @@
       }
     });
 
-    document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (err) {
-        alert('Erro ao entrar com o Google: ' + err.message);
+    btnAuthAction.addEventListener('click', async () => {
+      if (currentUser) {
+        try {
+          await signOut(auth);
+        } catch (err) {
+          alert('Erro ao sair: ' + err.message);
+        }
+      } else {
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (err) {
+          alert('Erro ao entrar com o Google: ' + err.message);
+        }
       }
     });
 
@@ -1072,8 +1102,6 @@
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
-      const userInfo = document.getElementById('userInfo');
-      const googleBtn = document.getElementById('btnGoogleLogin');
 
       if (unsubscribeLogs) {
         unsubscribeLogs();
@@ -1083,9 +1111,11 @@
       if (user) {
         const firstName = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
         
-        userInfo.innerHTML = `<strong>${user.displayName || user.email}</strong> <button id="btnLogout" style="background:#ef4444; color:white; border:none; padding:3px 6px; border-radius:4px; margin-left:6px; cursor:pointer; font-size:0.75rem;">Sair</button>`;
-        document.getElementById('btnLogout').onclick = () => signOut(auth);
-        googleBtn.style.display = 'none';
+        btnAuthAction.className = "btn-sidebar-auth btn-logout";
+        btnAuthAction.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Sair
+        `;
 
         document.getElementById('displayUserName').textContent = user.displayName || user.email;
         if (user.photoURL) {
@@ -1101,10 +1131,14 @@
         initCalendar();
         loadUserStudyLogs(user.uid);
       } else {
-        userInfo.innerHTML = 'Status: <strong>Desconectado</strong>';
-        googleBtn.style.display = 'flex';
-        document.getElementById('displayUserName').textContent = 'Olá, Estudante';
-        document.getElementById('avatarBox').textContent = 'E';
+        btnAuthAction.className = "btn-sidebar-auth btn-login";
+        btnAuthAction.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          Entrar com Google
+        `;
+
+        document.getElementById('displayUserName').textContent = 'Desconectado';
+        document.getElementById('avatarBox').textContent = '?';
         welcomeHero.style.display = 'none';
         dailyGoalHours = 2;
         subjectTotals = {};
@@ -1396,7 +1430,6 @@
         </defs>
       `;
 
-      // Draw Grid Lines & Y Labels
       const gridCount = 4;
       for (let i = 0; i <= gridCount; i++) {
         const yVal = (maxHours / gridCount) * i;
