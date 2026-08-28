@@ -605,6 +605,7 @@
       align-items: center;
       gap: 2rem;
       margin-top: 1.5rem;
+      position: relative;
     }
 
     @media (min-width: 600px) {
@@ -623,6 +624,7 @@
       flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       transition: background 0.4s ease;
+      cursor: pointer;
     }
 
     .pie-chart::after {
@@ -636,6 +638,7 @@
       background: var(--card-bg);
       border-radius: 50%;
       transition: background-color 0.3s ease;
+      pointer-events: none;
     }
 
     .pie-legend-list {
@@ -651,6 +654,15 @@
       align-items: center;
       justify-content: space-between;
       font-size: 0.85rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .pie-legend-item:hover {
+      background: var(--today-bg);
+      transform: translateX(3px);
     }
 
     .legend-name {
@@ -668,24 +680,47 @@
     }
 
     .recommendation-box {
-      margin-top: 1rem;
-      padding: 0.85rem 1rem;
+      margin-top: 0;
+      padding: 1rem;
       background: var(--bg-color);
       border-left: 4px solid var(--primary);
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 0.85rem;
       line-height: 1.4;
+      flex: 1;
+    }
+
+    /* Side-by-side flex container for Line Chart + Recommendation Card */
+    .line-chart-side-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 992px) {
+      .line-chart-side-container {
+        flex-direction: row;
+        align-items: stretch;
+      }
+      .line-chart-wrapper-flex {
+        flex: 2;
+      }
+      .recommendation-wrapper-flex {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
     }
 
     .line-chart-container {
       width: 100%;
       overflow-x: auto;
-      margin-top: 1rem;
     }
 
     .line-chart-svg {
       width: 100%;
-      min-width: 600px;
+      min-width: 500px;
       height: 320px;
     }
 
@@ -730,9 +765,34 @@
       border-color: var(--primary);
       color: var(--primary);
     }
+
+    /* Tooltip styling for pie chart */
+    .pie-tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.9);
+      color: #ffffff;
+      padding: 0.5rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      white-space: nowrap;
+    }
+
+    .pie-tooltip.active {
+      opacity: 1;
+      transform: scale(1);
+    }
   </style>
 </head>
 <body>
+
+  <div id="pieChartTooltip" class="pie-tooltip"></div>
 
   <div class="dashboard-container">
     <aside>
@@ -900,22 +960,32 @@
               <p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>
             </div>
           </div>
-          
-          <div id="topicRecommendationContainer"></div>
         </div>
 
         <div class="panel">
-          <h3>📈 Progresso do Assunto por Dia</h3>
-          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Evolução contínua do tempo e dificuldade por dia de estudo do assunto selecionado.</p>
-          <div class="line-chart-container">
-            <svg id="topicLineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
-              <defs>
-                <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.5"/>
-                  <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-            </svg>
+          <h3>📈 Progresso do Assunto por Dia & Recomendação</h3>
+          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Evolução contínua do tempo e dificuldade por dia de estudo juntamente com a recomendação pedagógica.</p>
+          
+          <div class="line-chart-side-container">
+            <div class="line-chart-wrapper-flex">
+              <div class="line-chart-container">
+                <svg id="topicLineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
+                  <defs>
+                    <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.5"/>
+                      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+            <div class="recommendation-wrapper-flex" id="topicRecommendationContainer">
+              <div class="recommendation-box">
+                <p><strong>Dificuldade Média:</strong> --</p>
+                <p style="margin-top: 0.4rem; color: var(--text-sub);">Selecione um assunto para visualizar a recomendação técnica de estudo.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1037,9 +1107,9 @@
 
     function getDifficultyColor(level) {
       const l = parseInt(level, 10);
-      if (l >= 1 && l <= 4) return '#10b981'; // Green (Easy)
-      if (l >= 5 && l <= 7) return '#f59e0b'; // Orange (Medium)
-      if (l >= 8 && l <= 10) return '#ef4444'; // Red (Difficult)
+      if (l >= 1 && l <= 4) return '#10b981';
+      if (l >= 5 && l <= 7) return '#f59e0b';
+      if (l >= 8 && l <= 10) return '#ef4444';
       return '#10b981';
     }
 
@@ -1138,6 +1208,8 @@
     const assuntosModalList = document.getElementById('assuntosModalList');
     const btnCloseAssuntosModal = document.getElementById('btnCloseAssuntosModal');
     const cardAssuntos = document.getElementById('cardAssuntos');
+
+    const pieChartTooltip = document.getElementById('pieChartTooltip');
 
     cardAssuntos.addEventListener('click', () => {
       openAssuntosModal();
@@ -1446,13 +1518,17 @@
         snapshot.forEach((docSnap) => {
           const log = docSnap.data();
           allLogs.push({ id: docSnap.id, ...log });
+          
+          // Render tags in calendar showing Matéria (subject) as requested
           renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes, log.difficulty);
           totalMinutesLogged += log.duration;
 
-          const normSubject = log.subject.trim();
+          const normSubject = log.subject ? log.subject.trim() : 'Geral';
           const normTopic = (log.notes && log.notes.trim()) ? log.notes.trim() : 'Geral / Sem Assunto';
 
           subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
+          
+          // Accumulate logs properly under Assuntos (notes)
           topicTotals[normTopic] = (topicTotals[normTopic] || 0) + log.duration;
 
           if (log.notes && log.notes.trim() !== '') {
@@ -1505,6 +1581,7 @@
         tag.style.backgroundColor = tagBgColor;
         
         const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
+        // Displays Matéria (subject) inside calendar block
         const tagDisplay = subject;
         tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
         
@@ -1612,6 +1689,12 @@
       if (!activeTopicFilter) {
         pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
         pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>';
+        recContainer.innerHTML = `
+          <div class="recommendation-box">
+            <p><strong>Dificuldade Média:</strong> --</p>
+            <p style="margin-top: 0.4rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a recomendação pedagógica de estudo.</p>
+          </div>
+        `;
         renderTopicLineChart([]);
         return;
       }
@@ -1624,6 +1707,12 @@
       if (filteredLogs.length === 0) {
         pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
         pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeTopicFilter}.</p>`;
+        recContainer.innerHTML = `
+          <div class="recommendation-box">
+            <p><strong>Dificuldade Média:</strong> --</p>
+            <p style="margin-top: 0.4rem; color: var(--text-sub);">Sem dados suficientes para este assunto.</p>
+          </div>
+        `;
         renderTopicLineChart([]);
         return;
       }
@@ -1646,6 +1735,7 @@
 
       let cumulativePercent = 0;
       const gradientStops = [];
+      const slicesInfo = [];
 
       entries.forEach(([diffLevel, mins]) => {
         const color = getDifficultyColor(diffLevel);
@@ -1657,6 +1747,16 @@
         cumulativePercent += percent;
         gradientStops.push(`${color} ${startPercent}% ${cumulativePercent}%`);
 
+        slicesInfo.push({
+          diffLevel,
+          mins,
+          hrs,
+          percent: formattedPercent,
+          startAngle: (startPercent / 100) * 360,
+          endAngle: (cumulativePercent / 100) * 360,
+          color
+        });
+
         const legendItem = document.createElement('div');
         legendItem.className = 'pie-legend-item';
         legendItem.innerHTML = `
@@ -1666,20 +1766,69 @@
           </span>
           <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
         `;
+
+        legendItem.addEventListener('mouseenter', (e) => {
+          showTooltip(e, `Dificuldade ${diffLevel}/10: ${hrs}h (${formattedPercent}%)`);
+        });
+        legendItem.addEventListener('mousemove', updateTooltipPos);
+        legendItem.addEventListener('mouseleave', hideTooltip);
+
         pieLegendList.appendChild(legendItem);
       });
 
       pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
 
+      // Mousemove logic to calculate active pie segment hover smooth tooltip
+      pieChart.onmousemove = (e) => {
+        const rect = pieChart.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = e.clientX - cx;
+        const dy = e.clientY - cy;
+
+        let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+        if (angle < 0) angle += 360;
+
+        const activeSlice = slicesInfo.find(s => angle >= s.startAngle && angle <= s.endAngle);
+
+        if (activeSlice) {
+          showTooltip(e, `Dificuldade ${activeSlice.diffLevel}/10: ${activeSlice.hrs}h (${activeSlice.percent}%)`);
+        } else {
+          hideTooltip();
+        }
+      };
+
+      pieChart.onmouseleave = hideTooltip;
+
+      // Recommendation box rendered beside line chart
       const recText = getRecommendationText(avgDifficulty);
       recContainer.innerHTML = `
         <div class="recommendation-box" style="border-left-color: ${getDifficultyColor(avgDifficulty)};">
-          <p><strong>Dificuldade Média do Assunto:</strong> ${avgDifficulty}/10</p>
-          <p style="margin-top: 0.3rem;">${recText}</p>
+          <p style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">
+            📊 Dificuldade Média: <span style="color: ${getDifficultyColor(avgDifficulty)};">${avgDifficulty}/10</span>
+          </p>
+          <div style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">
+            ${recText}
+          </div>
         </div>
       `;
 
       renderTopicLineChart(filteredLogs);
+    }
+
+    function showTooltip(e, text) {
+      pieChartTooltip.textContent = text;
+      pieChartTooltip.classList.add('active');
+      updateTooltipPos(e);
+    }
+
+    function updateTooltipPos(e) {
+      pieChartTooltip.style.left = `${e.clientX + 12}px`;
+      pieChartTooltip.style.top = `${e.clientY + 12}px`;
+    }
+
+    function hideTooltip() {
+      pieChartTooltip.classList.remove('active');
     }
 
     function renderTopicLineChart(logs) {
@@ -1694,7 +1843,6 @@
         return;
       }
 
-      // Group logs by dateKey so multiple entries on the same day are combined on the chart timeline
       const dailyMap = {};
       logs.forEach(log => {
         const dKey = log.dateKey;
