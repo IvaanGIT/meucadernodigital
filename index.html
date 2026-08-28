@@ -289,17 +289,6 @@
       border: 1px solid var(--border-color);
     }
 
-    .metric-card.btn-metric {
-      cursor: pointer;
-      text-align: left;
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-
-    .metric-card.btn-metric:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary);
-    }
-
     .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
     .metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
 
@@ -669,6 +658,16 @@
       display: inline-block;
     }
 
+    .recommendation-box {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--bg-color);
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
     .line-chart-container {
       width: 100%;
       overflow-x: auto;
@@ -690,37 +689,6 @@
     .chart-text { fill: var(--text-sub); font-size: 11px; text-anchor: middle; }
     .chart-val-text { fill: var(--text-main); font-size: 10px; font-weight: bold; text-anchor: middle; }
     .chart-subj-text { fill: var(--accent-purple); font-size: 9px; text-anchor: middle; font-weight: 600; }
-
-    .detail-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 1rem;
-      max-height: 250px;
-      overflow-y: auto;
-    }
-
-    .detail-item {
-      padding: 0.5rem 0.75rem;
-      border-radius: 6px;
-      background: var(--bg-color);
-      font-size: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .detail-item-clickable {
-      cursor: pointer;
-      transition: background-color 0.2s, border-color 0.2s;
-      border: 1px solid transparent;
-    }
-
-    .detail-item-clickable:hover {
-      background-color: var(--today-bg);
-      border-color: var(--primary);
-    }
   </style>
 </head>
 <body>
@@ -738,7 +706,7 @@
           <li class="nav-item active" data-tab="tab-home"><button>🏠 Home</button></li>
           <li class="nav-item" data-tab="tab-chronogram"><button>🤖 Cronograma</button></li>
           <li class="nav-item" data-tab="tab-stats"><button>📊 Stats</button></li>
-          <li class="nav-item" data-tab="tab-individual-stats"><button>🎯 Gráfico Individual</button></li>
+          <li class="nav-item" data-tab="tab-individual-stats"><button>🎯 Gráfico por Assunto</button></li>
         </ul>
       </div>
 
@@ -773,11 +741,11 @@
             <span>Tempo Total</span>
             <div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
           </div>
-          <div class="metric-card btn-metric" id="btnMateriasCard" title="Ver Matérias">
+          <div class="metric-card">
             <span>Matérias 📘</span>
             <div class="value" id="totalMaterias">0</div>
           </div>
-          <div class="metric-card btn-metric" id="btnAssuntosCard" title="Ver Assuntos">
+          <div class="metric-card">
             <span>Assuntos 📝</span>
             <div class="value" id="totalAssuntos">0</div>
           </div>
@@ -837,8 +805,8 @@
 
       <div id="tab-stats" class="tab-content">
         <div class="panel">
-          <h3>📊 Gráfico por Matéria</h3>
-          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Distribuição percentual do seu tempo total de estudo.</p>
+          <h3>📊 Gráfico Geral por Assunto</h3>
+          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Distribuição percentual de todos os assuntos estudados.</p>
           
           <div class="pie-chart-wrapper">
             <div class="pie-chart" id="pieChart"></div>
@@ -877,20 +845,22 @@
         <div class="panel">
           <div class="panel-header">
             <div>
-              <h3>🎯 Gráfico Individual por Matéria</h3>
-              <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Distribuição de tempo dos assuntos/tópicos para a matéria selecionada.</p>
+              <h3>🎯 Gráfico Específico por Assunto</h3>
+              <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Análise de tempo, dificuldade e recomendação de estudo para o assunto selecionado.</p>
             </div>
-            <select id="individualSubjectSelect" class="select-dropdown">
-              <option value="">Selecione uma Matéria...</option>
+            <select id="individualTopicSelect" class="select-dropdown">
+              <option value="">Selecione um Assunto...</option>
             </select>
           </div>
           
           <div class="pie-chart-wrapper">
             <div class="pie-chart" id="individualPieChart"></div>
             <div class="pie-legend-list" id="individualPieLegendList">
-              <p style="font-size: 0.85rem; color: var(--text-sub);">Selecione uma matéria acima para visualizar o gráfico individual.</p>
+              <p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>
             </div>
           </div>
+          
+          <div id="topicRecommendationContainer"></div>
         </div>
       </div>
 
@@ -960,16 +930,6 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="detailsModal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 0.5rem;" id="detailsModalTitle">Detalhes</h3>
-      <ul class="detail-list" id="detailsModalList"></ul>
-      <div class="btn-group">
-        <button type="button" class="btn btn-secondary" id="btnCloseDetails">Fechar</button>
-      </div>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
@@ -997,10 +957,11 @@
     let dailyGoalHours = 2;
     let unsubscribeLogs = null;
     let subjectTotals = {};
+    let topicTotals = {};
     let dailyLogData = {};
     let uniqueTopicsList = [];
     let allLogs = [];
-    let activeSubjectFilter = "";
+    let activeTopicFilter = "";
 
     const colorPalette = [
       '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', 
@@ -1015,6 +976,18 @@
       return '#10b981';
     }
 
+    function getRecommendationText(difficulty) {
+      const level = parseInt(difficulty, 10);
+      if (level >= 1 && level <= 4) {
+        return "💡 <strong>Recomendação:</strong> Método de revisão somente por questões.";
+      } else if (level >= 5 && level <= 7) {
+        return "💡 <strong>Recomendação:</strong> Ler os resumos do assunto e responder as questões.";
+      } else if (level >= 8 && level <= 10) {
+        return "💡 <strong>Recomendação:</strong> Estudar o assunto inteiro de novo e resolver questões.";
+      }
+      return "";
+    }
+
     const navItems = document.querySelectorAll('.nav-item');
     const tabContents = document.querySelectorAll('.tab-content');
     const pageTitle = document.getElementById('pageTitle');
@@ -1023,7 +996,7 @@
       'tab-home': 'Painel Principal',
       'tab-chronogram': 'Cronograma Inteligente',
       'tab-stats': 'Estatísticas',
-      'tab-individual-stats': 'Gráfico Individual'
+      'tab-individual-stats': 'Gráfico por Assunto'
     };
 
     function switchTab(targetTab) {
@@ -1088,14 +1061,6 @@
     const goalProgressBar = document.getElementById('goalProgressBar');
     const goalPercentText = document.getElementById('goalPercentText');
 
-    const detailsModal = document.getElementById('detailsModal');
-    const detailsModalTitle = document.getElementById('detailsModalTitle');
-    const detailsModalList = document.getElementById('detailsModalList');
-    const btnCloseDetails = document.getElementById('btnCloseDetails');
-
-    const btnMateriasCard = document.getElementById('btnMateriasCard');
-    const btnAssuntosCard = document.getElementById('btnAssuntosCard');
-
     const welcomeHero = document.getElementById('welcomeHero');
     const welcomeUserName = document.getElementById('welcomeUserName');
     const btnCloseWelcome = document.getElementById('btnCloseWelcome');
@@ -1105,9 +1070,9 @@
     const lineChartTimeframe = document.getElementById('lineChartTimeframe');
     lineChartTimeframe.addEventListener('change', renderLineChart);
 
-    const individualSubjectSelect = document.getElementById('individualSubjectSelect');
-    individualSubjectSelect.addEventListener('change', (e) => {
-      activeSubjectFilter = e.target.value;
+    const individualTopicSelect = document.getElementById('individualTopicSelect');
+    individualTopicSelect.addEventListener('change', (e) => {
+      activeTopicFilter = e.target.value;
       renderIndividualPieChart();
     });
 
@@ -1127,54 +1092,6 @@
         }
       });
     }
-
-    btnMateriasCard.addEventListener('click', () => {
-      detailsModalTitle.textContent = '📘 Matérias Estudadas (Clique para ver detalhes)';
-      detailsModalList.innerHTML = '';
-      const subjects = Object.keys(subjectTotals);
-
-      if (subjects.length === 0) {
-        detailsModalList.innerHTML = '<li class="detail-item">Nenhuma matéria registrada ainda.</li>';
-      } else {
-        subjects.forEach(subj => {
-          const mins = subjectTotals[subj];
-          const hrs = (mins / 60).toFixed(1);
-          const li = document.createElement('li');
-          li.className = 'detail-item detail-item-clickable';
-          li.innerHTML = `<strong>${subj}</strong> <span>${hrs}h (${mins} min) ➔</span>`;
-          li.addEventListener('click', () => {
-            detailsModal.style.display = 'none';
-            activeSubjectFilter = subj;
-            individualSubjectSelect.value = subj;
-            switchTab('tab-individual-stats');
-          });
-          detailsModalList.appendChild(li);
-        });
-      }
-      detailsModal.style.display = 'flex';
-    });
-
-    btnAssuntosCard.addEventListener('click', () => {
-      detailsModalTitle.textContent = '📝 Assuntos Registrados';
-      detailsModalList.innerHTML = '';
-
-      if (uniqueTopicsList.length === 0) {
-        detailsModalList.innerHTML = '<li class="detail-item">Nenhum assunto registrado ainda.</li>';
-      } else {
-        uniqueTopicsList.forEach(item => {
-          const li = document.createElement('li');
-          li.className = 'detail-item';
-          const diffBadge = item.difficulty ? ` <span style="font-size: 0.75rem; font-weight: bold; color: ${getDifficultyColor(item.difficulty)};">[Dif: ${item.difficulty}/10]</span>` : '';
-          li.innerHTML = `<span><strong>${item.subject}:</strong> ${item.notes}${diffBadge}</span> <span>${item.date}</span>`;
-          detailsModalList.appendChild(li);
-        });
-      }
-      detailsModal.style.display = 'flex';
-    });
-
-    btnCloseDetails.addEventListener('click', () => {
-      detailsModal.style.display = 'none';
-    });
 
     const chronogramForm = document.getElementById('chronogramForm');
     const chronogramOutput = document.getElementById('chronogramOutput');
@@ -1254,7 +1171,7 @@
       welcomeHero.style.display = 'none';
     });
 
-    [studyModal, goalModal, detailsModal].forEach(modal => {
+    [studyModal, goalModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.style.display = 'none';
@@ -1316,11 +1233,12 @@
         welcomeHero.style.display = 'none';
         dailyGoalHours = 2;
         subjectTotals = {};
+        topicTotals = {};
         dailyLogData = {};
         uniqueTopicsList = [];
         allLogs = [];
-        activeSubjectFilter = "";
-        updateSubjectDropdown();
+        activeTopicFilter = "";
+        updateTopicDropdown();
         initCalendar();
         renderPieChart();
         renderLineChart();
@@ -1377,6 +1295,7 @@
       calendarGrid.innerHTML = '';
       totalMinutesLogged = 0;
       subjectTotals = {};
+      topicTotals = {};
       dailyLogData = {};
       uniqueTopicsList = [];
       allLogs = [];
@@ -1424,7 +1343,10 @@
           totalMinutesLogged += log.duration;
 
           const normSubject = log.subject.trim();
+          const normTopic = (log.notes && log.notes.trim()) ? log.notes.trim() : 'Geral / Sem Assunto';
+
           subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
+          topicTotals[normTopic] = (topicTotals[normTopic] || 0) + log.duration;
 
           if (log.notes && log.notes.trim() !== '') {
             uniqueTopicsList.push({
@@ -1442,7 +1364,7 @@
           dailyLogData[log.dateKey].subjects.add(normSubject);
         });
 
-        updateSubjectDropdown();
+        updateTopicDropdown();
         updateStats();
         renderPieChart();
         renderLineChart();
@@ -1453,17 +1375,17 @@
       });
     }
 
-    function updateSubjectDropdown() {
-      const subjects = Object.keys(subjectTotals);
-      individualSubjectSelect.innerHTML = '<option value="">Selecione uma Matéria...</option>';
-      subjects.forEach(subj => {
+    function updateTopicDropdown() {
+      const topics = Object.keys(topicTotals);
+      individualTopicSelect.innerHTML = '<option value="">Selecione um Assunto...</option>';
+      topics.forEach(top => {
         const option = document.createElement('option');
-        option.value = subj;
-        option.textContent = subj;
-        if (subj === activeSubjectFilter) {
+        option.value = top;
+        option.textContent = top;
+        if (top === activeTopicFilter) {
           option.selected = true;
         }
-        individualSubjectSelect.appendChild(option);
+        individualTopicSelect.appendChild(option);
       });
     }
 
@@ -1476,10 +1398,11 @@
         tag.style.backgroundColor = tagBgColor;
         
         const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
+        const tagDisplay = notes ? notes : subject;
         tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
         
         tag.innerHTML = `
-          <span class="study-tag-text">${subject}</span>
+          <span class="study-tag-text">${tagDisplay}</span>
           <div class="tag-actions">
             <button class="btn-action-tag btn-edit-tag" title="Editar">✏️</button>
             <button class="btn-action-tag btn-delete-tag" title="Excluir">✕</button>
@@ -1493,7 +1416,7 @@
 
         tag.querySelector('.btn-delete-tag').onclick = async (e) => {
           e.stopPropagation();
-          if (confirm(`Excluir "${subject}"?`)) {
+          if (confirm(`Excluir "${tagDisplay}"?`)) {
             try {
               await deleteDoc(doc(db, "study_logs", docId));
             } catch (err) {
@@ -1513,7 +1436,7 @@
       
       const uniqueSubjectsCount = Object.keys(subjectTotals).length;
       document.getElementById('totalMaterias').textContent = uniqueSubjectsCount;
-      document.getElementById('totalAssuntos').textContent = uniqueTopicsList.length;
+      document.getElementById('totalAssuntos').textContent = Object.keys(topicTotals).length;
 
       dailyGoalDisplay.textContent = `${dailyGoalHours} hrs`;
 
@@ -1533,7 +1456,7 @@
       const pieLegendList = document.getElementById('pieLegendList');
 
       pieLegendList.innerHTML = '';
-      const entries = Object.entries(subjectTotals);
+      const entries = Object.entries(topicTotals);
 
       if (entries.length === 0 || totalMinutesLogged === 0) {
         pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
@@ -1546,68 +1469,9 @@
       let cumulativePercent = 0;
       const gradientStops = [];
 
-      entries.forEach(([subject, mins], index) => {
-        const color = colorPalette[index % colorPalette.length];
-        const percent = (mins / totalMinutesLogged) * 100;
-        const formattedPercent = percent.toFixed(1);
-        const hrs = (mins / 60).toFixed(1);
-
-        const startPercent = cumulativePercent;
-        cumulativePercent += percent;
-        gradientStops.push(`${color} ${startPercent}% ${cumulativePercent}%`);
-
-        const legendItem = document.createElement('div');
-        legendItem.className = 'pie-legend-item';
-        legendItem.innerHTML = `
-          <span class="legend-name">
-            <span class="color-dot" style="background-color: ${color};"></span>
-            ${subject}
-          </span>
-          <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
-        `;
-        pieLegendList.appendChild(legendItem);
-      });
-
-      pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
-    }
-
-    function renderIndividualPieChart() {
-      const pieChart = document.getElementById('individualPieChart');
-      const pieLegendList = document.getElementById('individualPieLegendList');
-
-      pieLegendList.innerHTML = '';
-
-      if (!activeSubjectFilter) {
-        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
-        pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione uma matéria acima para visualizar o gráfico individual.</p>';
-        return;
-      }
-
-      const filteredLogs = allLogs.filter(l => l.subject.trim() === activeSubjectFilter);
-      if (filteredLogs.length === 0) {
-        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
-        pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeSubjectFilter}.</p>`;
-        return;
-      }
-
-      const topicTotals = {};
-      let totalSubjectMins = 0;
-
-      filteredLogs.forEach(log => {
-        const topicName = (log.notes && log.notes.trim()) ? log.notes.trim() : 'Geral / Sem Assunto';
-        topicTotals[topicName] = (topicTotals[topicName] || 0) + log.duration;
-        totalSubjectMins += log.duration;
-      });
-
-      const entries = Object.entries(topicTotals);
-      entries.sort((a, b) => b[1] - a[1]);
-
-      let cumulativePercent = 0;
-      const gradientStops = [];
-
       entries.forEach(([topic, mins], index) => {
         const color = colorPalette[index % colorPalette.length];
-        const percent = (mins / totalSubjectMins) * 100;
+        const percent = (mins / totalMinutesLogged) * 100;
         const formattedPercent = percent.toFixed(1);
         const hrs = (mins / 60).toFixed(1);
 
@@ -1628,6 +1492,83 @@
       });
 
       pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+    }
+
+    function renderIndividualPieChart() {
+      const pieChart = document.getElementById('individualPieChart');
+      const pieLegendList = document.getElementById('individualPieLegendList');
+      const recContainer = document.getElementById('topicRecommendationContainer');
+
+      pieLegendList.innerHTML = '';
+      recContainer.innerHTML = '';
+
+      if (!activeTopicFilter) {
+        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
+        pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>';
+        return;
+      }
+
+      const filteredLogs = allLogs.filter(l => {
+        const top = (l.notes && l.notes.trim()) ? l.notes.trim() : 'Geral / Sem Assunto';
+        return top === activeTopicFilter;
+      });
+
+      if (filteredLogs.length === 0) {
+        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
+        pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeTopicFilter}.</p>`;
+        return;
+      }
+
+      const difficultyCounts = {};
+      let totalTopicMins = 0;
+      let sumDifficulty = 0;
+
+      filteredLogs.forEach(log => {
+        const diff = log.difficulty || 1;
+        difficultyCounts[diff] = (difficultyCounts[diff] || 0) + log.duration;
+        totalTopicMins += log.duration;
+        sumDifficulty += diff * log.duration;
+      });
+
+      const avgDifficulty = Math.round(sumDifficulty / totalTopicMins);
+
+      const entries = Object.entries(difficultyCounts);
+      entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+
+      let cumulativePercent = 0;
+      const gradientStops = [];
+
+      entries.forEach(([diffLevel, mins]) => {
+        const color = getDifficultyColor(diffLevel);
+        const percent = (mins / totalTopicMins) * 100;
+        const formattedPercent = percent.toFixed(1);
+        const hrs = (mins / 60).toFixed(1);
+
+        const startPercent = cumulativePercent;
+        cumulativePercent += percent;
+        gradientStops.push(`${color} ${startPercent}% ${cumulativePercent}%`);
+
+        const legendItem = document.createElement('div');
+        legendItem.className = 'pie-legend-item';
+        legendItem.innerHTML = `
+          <span class="legend-name">
+            <span class="color-dot" style="background-color: ${color};"></span>
+            Dificuldade ${diffLevel}/10
+          </span>
+          <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
+        `;
+        pieLegendList.appendChild(legendItem);
+      });
+
+      pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+
+      const recText = getRecommendationText(avgDifficulty);
+      recContainer.innerHTML = `
+        <div class="recommendation-box" style="border-left-color: ${getDifficultyColor(avgDifficulty)};">
+          <p><strong>Dificuldade Média do Assunto:</strong> ${avgDifficulty}/10</p>
+          <p style="margin-top: 0.3rem;">${recText}</p>
+        </div>
+      `;
     }
 
     function renderLineChart() {
