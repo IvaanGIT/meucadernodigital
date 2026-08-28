@@ -1808,7 +1808,8 @@
       const radius = 80;
       let currentAngle = 0;
 
-      const slicesElements = [];
+      // Check if chart has only 1 slice/option
+      const isSingleOption = validCategories.length === 1;
 
       validCategories.forEach((cat) => {
         const catAvgDiff = (cat.sumDiffMins / cat.totalMins).toFixed(1);
@@ -1822,7 +1823,7 @@
         const midAngle = startAngle + (sliceAngle / 2);
         currentAngle = endAngle;
 
-        // Vector for dynamic slice-out pop effect (translate outward by 10px)
+        // Vector for dynamic slice-out pop effect
         const rad = (midAngle - 90) * Math.PI / 180.0;
         const shiftX = Math.round(Math.cos(rad) * 12);
         const shiftY = Math.round(Math.sin(rad) * 12);
@@ -1846,19 +1847,11 @@
           <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
         `;
 
-        const sliceObj = {
-          path,
-          legendItem,
-          shiftX,
-          shiftY,
-          catLabel: cat.label,
-          catAvgDiff,
-          hrs,
-          percent: formattedPercent
-        };
-
         const activateSlice = (e) => {
-          path.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+          // If multiple categories exist, perform the cut-open animation; if only 1 option, skip translation animation
+          if (!isSingleOption) {
+            path.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+          }
           path.classList.add('active-slice');
           legendItem.classList.add('active-legend');
           showTooltip(
@@ -1885,7 +1878,6 @@
 
         svg.appendChild(path);
         pieLegendList.appendChild(legendItem);
-        slicesElements.push(sliceObj);
       });
 
       // Add center donut circle
