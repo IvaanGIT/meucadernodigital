@@ -615,14 +615,15 @@
       }
     }
 
+    /* Standard Pie Chart */
     .pie-chart {
-      width: 180px;
-      height: 180px;
+      width: 190px;
+      height: 190px;
       border-radius: 50%;
       background: conic-gradient(var(--border-color) 0% 100%);
       position: relative;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       transition: background 0.4s ease;
       cursor: pointer;
     }
@@ -641,6 +642,33 @@
       pointer-events: none;
     }
 
+    /* SVG Animated Pie Container for Individual Topic */
+    .animated-pie-container {
+      width: 220px;
+      height: 220px;
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .animated-pie-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .pie-slice-path {
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+      transform-origin: 100px 100px;
+    }
+
+    .pie-slice-path:hover, .pie-slice-path.active-slice {
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+    }
+
     .pie-legend-list {
       display: flex;
       flex-direction: column;
@@ -654,15 +682,15 @@
       align-items: center;
       justify-content: space-between;
       font-size: 0.85rem;
-      padding: 0.3rem 0.5rem;
-      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
       transition: background-color 0.2s ease, transform 0.2s ease;
       cursor: pointer;
     }
 
-    .pie-legend-item:hover {
+    .pie-legend-item:hover, .pie-legend-item.active-legend {
       background: var(--today-bg);
-      transform: translateX(3px);
+      transform: translateX(4px);
     }
 
     .legend-name {
@@ -690,7 +718,6 @@
       flex: 1;
     }
 
-    /* Side-by-side flex container for Line Chart + Recommendation Card */
     .line-chart-side-container {
       display: flex;
       flex-direction: column;
@@ -734,7 +761,6 @@
     .chart-val-text { fill: var(--text-main); font-size: 10px; font-weight: bold; text-anchor: middle; }
     .chart-subj-text { fill: var(--accent-purple); font-size: 9px; text-anchor: middle; font-weight: 600; }
 
-    /* Assuntos List Pop-up Styling */
     .assuntos-list {
       display: flex;
       flex-direction: column;
@@ -766,27 +792,46 @@
       color: var(--primary);
     }
 
-    /* Tooltip styling for pie chart */
+    /* Animated Glassmorphism Tooltip */
     .pie-tooltip {
       position: fixed;
       pointer-events: none;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       color: #ffffff;
-      padding: 0.5rem 0.8rem;
-      border-radius: 8px;
-      font-size: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
       font-weight: 600;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
       opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.85) translateY(10px);
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 1000;
       white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .pie-tooltip.active {
       opacity: 1;
-      transform: scale(1);
+      transform: scale(1) translateY(0);
+    }
+
+    .pie-tooltip .tooltip-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .pie-tooltip .tooltip-sub {
+      color: #cbd5e1;
+      font-size: 0.72rem;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -947,7 +992,7 @@
           <div class="panel-header">
             <div>
               <h3>🎯 Gráfico Específico por Assunto</h3>
-              <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Análise de tempo, dificuldade e recomendação de estudo para o assunto selecionado.</p>
+              <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Média calculada de dificuldade e distribuição proporcional do tempo por categoria.</p>
             </div>
             <select id="individualTopicSelect" class="select-dropdown">
               <option value="">Selecione um Assunto...</option>
@@ -955,7 +1000,9 @@
           </div>
           
           <div class="pie-chart-wrapper">
-            <div class="pie-chart" id="individualPieChart"></div>
+            <div class="animated-pie-container" id="individualPieWrapper">
+              <svg id="individualPieSvg" class="animated-pie-svg" viewBox="0 0 200 200"></svg>
+            </div>
             <div class="pie-legend-list" id="individualPieLegendList">
               <p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>
             </div>
@@ -1106,15 +1153,15 @@
     ];
 
     function getDifficultyColor(level) {
-      const l = parseInt(level, 10);
-      if (l >= 1 && l <= 4) return '#10b981';
-      if (l >= 5 && l <= 7) return '#f59e0b';
+      const l = typeof level === 'number' ? level : parseFloat(level);
+      if (l >= 1 && l < 5) return '#10b981';
+      if (l >= 5 && l < 8) return '#f59e0b';
       if (l >= 8 && l <= 10) return '#ef4444';
       return '#10b981';
     }
 
     function getRecommendationText(difficulty) {
-      const level = parseInt(difficulty, 10);
+      const level = Math.round(difficulty);
       if (level >= 1 && level <= 4) {
         return "💡 <strong>Recomendação:</strong> Método de revisão somente por questões.";
       } else if (level >= 5 && level <= 7) {
@@ -1519,7 +1566,6 @@
           const log = docSnap.data();
           allLogs.push({ id: docSnap.id, ...log });
           
-          // Render tags in calendar showing Matéria (subject) as requested
           renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes, log.difficulty);
           totalMinutesLogged += log.duration;
 
@@ -1527,8 +1573,6 @@
           const normTopic = (log.notes && log.notes.trim()) ? log.notes.trim() : 'Geral / Sem Assunto';
 
           subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
-          
-          // Accumulate logs properly under Assuntos (notes)
           topicTotals[normTopic] = (topicTotals[normTopic] || 0) + log.duration;
 
           if (log.notes && log.notes.trim() !== '') {
@@ -1581,7 +1625,6 @@
         tag.style.backgroundColor = tagBgColor;
         
         const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
-        // Displays Matéria (subject) inside calendar block
         const tagDisplay = subject;
         tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
         
@@ -1678,16 +1721,36 @@
       pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
     }
 
+    // Helper to build SVG Arc path for pie slice animation & cutout
+    function describeArc(cx, cy, radius, startAngle, endAngle) {
+      const startRad = (startAngle - 90) * Math.PI / 180.0;
+      const endRad = (endAngle - 90) * Math.PI / 180.0;
+      
+      const x1 = cx + radius * Math.cos(startRad);
+      const y1 = cy + radius * Math.sin(startRad);
+      const x2 = cx + radius * Math.cos(endRad);
+      const y2 = cy + radius * Math.sin(endRad);
+
+      const largeArcFlag = (endAngle - startAngle) <= 180 ? "0" : "1";
+
+      return [
+        "M", cx, cy,
+        "L", x1, y1,
+        "A", radius, radius, 0, largeArcFlag, 1, x2, y2,
+        "Z"
+      ].join(" ");
+    }
+
     function renderIndividualPieChart() {
-      const pieChart = document.getElementById('individualPieChart');
+      const svg = document.getElementById('individualPieSvg');
       const pieLegendList = document.getElementById('individualPieLegendList');
       const recContainer = document.getElementById('topicRecommendationContainer');
 
+      svg.innerHTML = '';
       pieLegendList.innerHTML = '';
       recContainer.innerHTML = '';
 
       if (!activeTopicFilter) {
-        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
         pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>';
         recContainer.innerHTML = `
           <div class="recommendation-box">
@@ -1705,7 +1768,6 @@
       });
 
       if (filteredLogs.length === 0) {
-        pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
         pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeTopicFilter}.</p>`;
         recContainer.innerHTML = `
           <div class="recommendation-box">
@@ -1717,95 +1779,153 @@
         return;
       }
 
-      const difficultyCounts = {};
+      // Group into 3 Consolidated Categories: Easy (1-4), Medium (5-7), Hard (8-10)
+      const categories = [
+        { key: 'easy', label: 'Fácil (1-4)', min: 1, max: 4, color: '#10b981', totalMins: 0, sumDiffMins: 0 },
+        { key: 'medium', label: 'Médio (5-7)', min: 5, max: 7, color: '#f59e0b', totalMins: 0, sumDiffMins: 0 },
+        { key: 'hard', label: 'Difícil (8-10)', min: 8, max: 10, color: '#ef4444', totalMins: 0, sumDiffMins: 0 }
+      ];
+
       let totalTopicMins = 0;
-      let sumDifficulty = 0;
+      let overallSumDiff = 0;
 
       filteredLogs.forEach(log => {
         const diff = log.difficulty || 1;
-        difficultyCounts[diff] = (difficultyCounts[diff] || 0) + log.duration;
-        totalTopicMins += log.duration;
-        sumDifficulty += diff * log.duration;
+        const dur = log.duration || 0;
+        totalTopicMins += dur;
+        overallSumDiff += (diff * dur);
+
+        const cat = categories.find(c => diff >= c.min && diff <= c.max) || categories[0];
+        cat.totalMins += dur;
+        cat.sumDiffMins += (diff * dur);
       });
 
-      const avgDifficulty = Math.round(sumDifficulty / totalTopicMins);
+      const overallAvgDifficulty = (overallSumDiff / totalTopicMins).toFixed(1);
+      const validCategories = categories.filter(c => c.totalMins > 0);
 
-      const entries = Object.entries(difficultyCounts);
-      entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+      const cx = 100;
+      const cy = 100;
+      const radius = 80;
+      let currentAngle = 0;
 
-      let cumulativePercent = 0;
-      const gradientStops = [];
-      const slicesInfo = [];
+      const slicesElements = [];
 
-      entries.forEach(([diffLevel, mins]) => {
-        const color = getDifficultyColor(diffLevel);
-        const percent = (mins / totalTopicMins) * 100;
+      validCategories.forEach((cat) => {
+        const catAvgDiff = (cat.sumDiffMins / cat.totalMins).toFixed(1);
+        const percent = (cat.totalMins / totalTopicMins) * 100;
         const formattedPercent = percent.toFixed(1);
-        const hrs = (mins / 60).toFixed(1);
+        const hrs = (cat.totalMins / 60).toFixed(1);
 
-        const startPercent = cumulativePercent;
-        cumulativePercent += percent;
-        gradientStops.push(`${color} ${startPercent}% ${cumulativePercent}%`);
+        const sliceAngle = (percent / 100) * 360;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + sliceAngle;
+        const midAngle = startAngle + (sliceAngle / 2);
+        currentAngle = endAngle;
 
-        slicesInfo.push({
-          diffLevel,
-          mins,
-          hrs,
-          percent: formattedPercent,
-          startAngle: (startPercent / 100) * 360,
-          endAngle: (cumulativePercent / 100) * 360,
-          color
-        });
+        // Vector for dynamic slice-out pop effect (translate outward by 10px)
+        const rad = (midAngle - 90) * Math.PI / 180.0;
+        const shiftX = Math.round(Math.cos(rad) * 12);
+        const shiftY = Math.round(Math.sin(rad) * 12);
 
+        // SVG path creation (handling 360 full pie)
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const d = sliceAngle >= 359.9 ? describeArc(cx, cy, radius, 0, 359.99) : describeArc(cx, cy, radius, startAngle, endAngle);
+        
+        path.setAttribute('d', d);
+        path.setAttribute('fill', cat.color);
+        path.setAttribute('class', 'pie-slice-path');
+
+        // Legend row
         const legendItem = document.createElement('div');
         legendItem.className = 'pie-legend-item';
         legendItem.innerHTML = `
           <span class="legend-name">
-            <span class="color-dot" style="background-color: ${color};"></span>
-            Dificuldade ${diffLevel}/10
+            <span class="color-dot" style="background-color: ${cat.color};"></span>
+            ${cat.label}
           </span>
           <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
         `;
 
-        legendItem.addEventListener('mouseenter', (e) => {
-          showTooltip(e, `Dificuldade ${diffLevel}/10: ${hrs}h (${formattedPercent}%)`);
-        });
-        legendItem.addEventListener('mousemove', updateTooltipPos);
-        legendItem.addEventListener('mouseleave', hideTooltip);
+        const sliceObj = {
+          path,
+          legendItem,
+          shiftX,
+          shiftY,
+          catLabel: cat.label,
+          catAvgDiff,
+          hrs,
+          percent: formattedPercent
+        };
 
+        const activateSlice = (e) => {
+          path.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+          path.classList.add('active-slice');
+          legendItem.classList.add('active-legend');
+          showTooltip(
+            e,
+            cat.label,
+            `Tempo: ${hrs}h (${formattedPercent}%) • Dificuldade Média: ${catAvgDiff}/10`
+          );
+        };
+
+        const deactivateSlice = () => {
+          path.style.transform = 'translate(0px, 0px)';
+          path.classList.remove('active-slice');
+          legendItem.classList.remove('active-legend');
+          hideTooltip();
+        };
+
+        path.addEventListener('mouseenter', activateSlice);
+        path.addEventListener('mousemove', updateTooltipPos);
+        path.addEventListener('mouseleave', deactivateSlice);
+
+        legendItem.addEventListener('mouseenter', activateSlice);
+        legendItem.addEventListener('mousemove', updateTooltipPos);
+        legendItem.addEventListener('mouseleave', deactivateSlice);
+
+        svg.appendChild(path);
         pieLegendList.appendChild(legendItem);
+        slicesElements.push(sliceObj);
       });
 
-      pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+      // Add center donut circle
+      const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      innerCircle.setAttribute('cx', cx);
+      innerCircle.setAttribute('cy', cy);
+      innerCircle.setAttribute('r', 48);
+      innerCircle.setAttribute('fill', 'var(--card-bg)');
+      innerCircle.style.pointerEvents = 'none';
+      svg.appendChild(innerCircle);
 
-      // Mousemove logic to calculate active pie segment hover smooth tooltip
-      pieChart.onmousemove = (e) => {
-        const rect = pieChart.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dx = e.clientX - cx;
-        const dy = e.clientY - cy;
+      // Add central text showing overall weighted difficulty average
+      const centerTextVal = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      centerTextVal.setAttribute('x', cx);
+      centerTextVal.setAttribute('y', cy - 2);
+      centerTextVal.setAttribute('text-anchor', 'middle');
+      centerTextVal.setAttribute('font-size', '16');
+      centerTextVal.setAttribute('font-weight', '800');
+      centerTextVal.setAttribute('fill', getDifficultyColor(parseFloat(overallAvgDifficulty)));
+      centerTextVal.textContent = `${overallAvgDifficulty}/10`;
+      centerTextVal.style.pointerEvents = 'none';
+      svg.appendChild(centerTextVal);
 
-        let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-        if (angle < 0) angle += 360;
+      const centerTextSub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      centerTextSub.setAttribute('x', cx);
+      centerTextSub.setAttribute('y', cy + 14);
+      centerTextSub.setAttribute('text-anchor', 'middle');
+      centerTextSub.setAttribute('font-size', '9');
+      centerTextSub.setAttribute('font-weight', '600');
+      centerTextSub.setAttribute('fill', 'var(--text-sub)');
+      centerTextSub.textContent = 'Média Geral';
+      centerTextSub.style.pointerEvents = 'none';
+      svg.appendChild(centerTextSub);
 
-        const activeSlice = slicesInfo.find(s => angle >= s.startAngle && angle <= s.endAngle);
-
-        if (activeSlice) {
-          showTooltip(e, `Dificuldade ${activeSlice.diffLevel}/10: ${activeSlice.hrs}h (${activeSlice.percent}%)`);
-        } else {
-          hideTooltip();
-        }
-      };
-
-      pieChart.onmouseleave = hideTooltip;
-
-      // Recommendation box rendered beside line chart
-      const recText = getRecommendationText(avgDifficulty);
+      // Render updated Recommendation Box next to line chart
+      const recText = getRecommendationText(overallAvgDifficulty);
       recContainer.innerHTML = `
-        <div class="recommendation-box" style="border-left-color: ${getDifficultyColor(avgDifficulty)};">
+        <div class="recommendation-box" style="border-left-color: ${getDifficultyColor(overallAvgDifficulty)};">
           <p style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">
-            📊 Dificuldade Média: <span style="color: ${getDifficultyColor(avgDifficulty)};">${avgDifficulty}/10</span>
+            📊 Dificuldade Média do Assunto: <span style="color: ${getDifficultyColor(overallAvgDifficulty)};">${overallAvgDifficulty}/10</span>
           </p>
           <div style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">
             ${recText}
@@ -1816,15 +1936,18 @@
       renderTopicLineChart(filteredLogs);
     }
 
-    function showTooltip(e, text) {
-      pieChartTooltip.textContent = text;
+    function showTooltip(e, title, subtitle) {
+      pieChartTooltip.innerHTML = `
+        <div class="tooltip-header">📌 ${title}</div>
+        <div class="tooltip-sub">${subtitle}</div>
+      `;
       pieChartTooltip.classList.add('active');
       updateTooltipPos(e);
     }
 
     function updateTooltipPos(e) {
-      pieChartTooltip.style.left = `${e.clientX + 12}px`;
-      pieChartTooltip.style.top = `${e.clientY + 12}px`;
+      pieChartTooltip.style.left = `${e.clientX + 14}px`;
+      pieChartTooltip.style.top = `${e.clientY + 14}px`;
     }
 
     function hideTooltip() {
