@@ -289,6 +289,16 @@
       border: 1px solid var(--border-color);
     }
 
+    .metric-card.clickable {
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .metric-card.clickable:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
     .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
     .metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
 
@@ -494,7 +504,6 @@
       color: var(--text-main);
     }
 
-    /* Difficulty Scale Styling */
     .difficulty-scale {
       display: flex;
       gap: 4px;
@@ -689,6 +698,38 @@
     .chart-text { fill: var(--text-sub); font-size: 11px; text-anchor: middle; }
     .chart-val-text { fill: var(--text-main); font-size: 10px; font-weight: bold; text-anchor: middle; }
     .chart-subj-text { fill: var(--accent-purple); font-size: 9px; text-anchor: middle; font-weight: 600; }
+
+    /* Assuntos List Pop-up Styling */
+    .assuntos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 0.5rem;
+    }
+
+    .assunto-item-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .assunto-item-btn:hover {
+      background: var(--today-bg);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -745,7 +786,7 @@
             <span>Matérias 📘</span>
             <div class="value" id="totalMaterias">0</div>
           </div>
-          <div class="metric-card">
+          <div class="metric-card clickable" id="cardAssuntos" title="Clique para ver os Assuntos">
             <span>Assuntos 📝</span>
             <div class="value" id="totalAssuntos">0</div>
           </div>
@@ -862,9 +903,35 @@
           
           <div id="topicRecommendationContainer"></div>
         </div>
+
+        <div class="panel">
+          <h3>📈 Progresso do Assunto</h3>
+          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Histórico completo de registros deste assunto com data e nível de dificuldade.</p>
+          <div class="line-chart-container">
+            <svg id="topicLineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
+              <defs>
+                <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
       </div>
 
     </main>
+  </div>
+
+  <div class="modal-overlay" id="assuntosModal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 0.5rem;">Selecione um Assunto</h3>
+      <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 1rem;">Clique em qualquer assunto para visualizar o gráfico específico correspondente.</p>
+      <div class="assuntos-list" id="assuntosModalList"></div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-secondary" id="btnCloseAssuntosModal">Fechar</button>
+      </div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="studyModal">
@@ -1067,6 +1134,44 @@
 
     const btnAuthAction = document.getElementById('btnAuthAction');
 
+    const assuntosModal = document.getElementById('assuntosModal');
+    const assuntosModalList = document.getElementById('assuntosModalList');
+    const btnCloseAssuntosModal = document.getElementById('btnCloseAssuntosModal');
+    const cardAssuntos = document.getElementById('cardAssuntos');
+
+    cardAssuntos.addEventListener('click', () => {
+      openAssuntosModal();
+    });
+
+    btnCloseAssuntosModal.addEventListener('click', () => {
+      assuntosModal.style.display = 'none';
+    });
+
+    function openAssuntosModal() {
+      assuntosModalList.innerHTML = '';
+      const topics = Object.keys(topicTotals);
+
+      if (topics.length === 0) {
+        assuntosModalList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum assunto registrado ainda.</p>';
+      } else {
+        topics.forEach(top => {
+          const btn = document.createElement('button');
+          btn.className = 'assunto-item-btn';
+          const hrs = (topicTotals[top] / 60).toFixed(1);
+          btn.innerHTML = `<span>${top}</span> <span style="font-size: 0.75rem; color: var(--text-sub);">${hrs}h</span>`;
+          btn.onclick = () => {
+            activeTopicFilter = top;
+            individualTopicSelect.value = top;
+            assuntosModal.style.display = 'none';
+            switchTab('tab-individual-stats');
+          };
+          assuntosModalList.appendChild(btn);
+        });
+      }
+
+      assuntosModal.style.display = 'flex';
+    }
+
     const lineChartTimeframe = document.getElementById('lineChartTimeframe');
     lineChartTimeframe.addEventListener('change', renderLineChart);
 
@@ -1171,7 +1276,7 @@
       welcomeHero.style.display = 'none';
     });
 
-    [studyModal, goalModal].forEach(modal => {
+    [studyModal, goalModal, assuntosModal].forEach(modal => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           modal.style.display = 'none';
@@ -1505,6 +1610,7 @@
       if (!activeTopicFilter) {
         pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
         pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>';
+        renderTopicLineChart([]);
         return;
       }
 
@@ -1516,6 +1622,7 @@
       if (filteredLogs.length === 0) {
         pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
         pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeTopicFilter}.</p>`;
+        renderTopicLineChart([]);
         return;
       }
 
@@ -1569,6 +1676,144 @@
           <p style="margin-top: 0.3rem;">${recText}</p>
         </div>
       `;
+
+      renderTopicLineChart(filteredLogs);
+    }
+
+    function renderTopicLineChart(logs) {
+      const svg = document.getElementById('topicLineChartSvg');
+
+      if (!logs || logs.length === 0) {
+        svg.innerHTML = `
+          <text x="50%" y="50%" fill="var(--text-sub)" font-size="14" text-anchor="middle">
+            Selecione um assunto com registros de estudo para visualizar o gráfico.
+          </text>
+        `;
+        return;
+      }
+
+      // Sort logs chronologically by dateKey
+      const sortedLogs = [...logs].sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+
+      const width = 700;
+      const height = 320;
+      const paddingLeft = 45;
+      const paddingRight = 25;
+      const paddingTop = 35;
+      const paddingBottom = 45;
+
+      const chartWidth = width - paddingLeft - paddingRight;
+      const chartHeight = height - paddingTop - paddingBottom;
+
+      const maxHours = Math.max(...sortedLogs.map(l => l.duration / 60), 2);
+      const stepX = sortedLogs.length > 1 ? chartWidth / (sortedLogs.length - 1) : chartWidth / 2;
+
+      const coords = sortedLogs.map((log, idx) => {
+        const x = sortedLogs.length === 1 ? paddingLeft + (chartWidth / 2) : paddingLeft + (idx * stepX);
+        const hours = log.duration / 60;
+        const y = paddingTop + chartHeight - ((hours / maxHours) * chartHeight);
+
+        const dateParts = log.dateKey.split('-');
+        const formattedDate = `${dateParts[2]}/${dateParts[1]}`;
+
+        return {
+          x,
+          y,
+          hours,
+          dateLabel: formattedDate,
+          difficulty: log.difficulty || 1,
+          topic: activeTopicFilter
+        };
+      });
+
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      `;
+
+      const gridCount = 4;
+      for (let i = 0; i <= gridCount; i++) {
+        const yVal = (maxHours / gridCount) * i;
+        const yPos = paddingTop + chartHeight - ((yVal / maxHours) * chartHeight);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', paddingLeft);
+        line.setAttribute('y1', yPos);
+        line.setAttribute('x2', width - paddingRight);
+        line.setAttribute('y2', yPos);
+        line.setAttribute('class', i === 0 ? 'chart-axis-line' : 'chart-grid-line');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', paddingLeft - 8);
+        text.setAttribute('y', yPos + 4);
+        text.setAttribute('class', 'chart-text');
+        text.setAttribute('text-anchor', 'end');
+        text.textContent = `${yVal.toFixed(1)}h`;
+        svg.appendChild(text);
+      }
+
+      let pathD = `M ${coords[0].x} ${coords[0].y}`;
+      let areaD = `M ${coords[0].x} ${paddingTop + chartHeight} L ${coords[0].x} ${coords[0].y}`;
+
+      for (let i = 1; i < coords.length; i++) {
+        pathD += ` L ${coords[i].x} ${coords[i].y}`;
+        areaD += ` L ${coords[i].x} ${coords[i].y}`;
+      }
+
+      areaD += ` L ${coords[coords.length - 1].x} ${paddingTop + chartHeight} Z`;
+
+      const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      areaPath.setAttribute('d', areaD);
+      areaPath.setAttribute('class', 'chart-area');
+      areaPath.setAttribute('fill', 'url(#topic-line-gradient)');
+      svg.appendChild(areaPath);
+
+      const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      linePath.setAttribute('d', pathD);
+      linePath.setAttribute('class', 'chart-path');
+      linePath.setAttribute('stroke', '#8b5cf6');
+      svg.appendChild(linePath);
+
+      coords.forEach((c) => {
+        const xText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xText.setAttribute('x', c.x);
+        xText.setAttribute('y', paddingTop + chartHeight + 18);
+        xText.setAttribute('class', 'chart-text');
+        xText.textContent = c.dateLabel;
+        svg.appendChild(xText);
+
+        const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valText.setAttribute('x', c.x);
+        valText.setAttribute('y', c.y - 10);
+        valText.setAttribute('class', 'chart-val-text');
+        valText.textContent = `${c.hours.toFixed(1)}h`;
+        svg.appendChild(valText);
+
+        const diffText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        diffText.setAttribute('x', c.x);
+        diffText.setAttribute('y', c.y - 22);
+        diffText.setAttribute('class', 'chart-subj-text');
+        diffText.setAttribute('fill', getDifficultyColor(c.difficulty));
+        diffText.textContent = `Dif: ${c.difficulty}/10`;
+        svg.appendChild(diffText);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', c.x);
+        circle.setAttribute('cy', c.y);
+        circle.setAttribute('class', 'chart-point');
+        circle.setAttribute('fill', getDifficultyColor(c.difficulty));
+        
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = `Assunto: ${c.topic}\nData: ${c.dateLabel}\nTempo: ${c.hours.toFixed(1)}h\nDificuldade: ${c.difficulty}/10`;
+        circle.appendChild(title);
+
+        svg.appendChild(circle);
+      });
     }
 
     function renderLineChart() {
