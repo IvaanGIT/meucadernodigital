@@ -905,8 +905,8 @@
         </div>
 
         <div class="panel">
-          <h3>📈 Progresso do Assunto</h3>
-          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Histórico completo de registros deste assunto com data e nível de dificuldade.</p>
+          <h3>📈 Progresso do Assunto por Dia</h3>
+          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Evolução contínua do tempo e dificuldade por dia de estudo do assunto selecionado.</p>
           <div class="line-chart-container">
             <svg id="topicLineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
               <defs>
@@ -1692,8 +1692,20 @@
         return;
       }
 
-      // Sort logs chronologically by dateKey
-      const sortedLogs = [...logs].sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+      // Group logs by dateKey so multiple entries on the same day are combined on the chart timeline
+      const dailyMap = {};
+      logs.forEach(log => {
+        const dKey = log.dateKey;
+        if (!dailyMap[dKey]) {
+          dailyMap[dKey] = { totalMins: 0, sumDiffMins: 0, dateKey: dKey };
+        }
+        const duration = log.duration || 0;
+        const diff = log.difficulty || 1;
+        dailyMap[dKey].totalMins += duration;
+        dailyMap[dKey].sumDiffMins += (diff * duration);
+      });
+
+      const aggregatedDays = Object.values(dailyMap).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
 
       const width = 700;
       const height = 320;
@@ -1705,23 +1717,24 @@
       const chartWidth = width - paddingLeft - paddingRight;
       const chartHeight = height - paddingTop - paddingBottom;
 
-      const maxHours = Math.max(...sortedLogs.map(l => l.duration / 60), 2);
-      const stepX = sortedLogs.length > 1 ? chartWidth / (sortedLogs.length - 1) : chartWidth / 2;
+      const maxHours = Math.max(...aggregatedDays.map(d => d.totalMins / 60), 2);
+      const stepX = aggregatedDays.length > 1 ? chartWidth / (aggregatedDays.length - 1) : chartWidth / 2;
 
-      const coords = sortedLogs.map((log, idx) => {
-        const x = sortedLogs.length === 1 ? paddingLeft + (chartWidth / 2) : paddingLeft + (idx * stepX);
-        const hours = log.duration / 60;
+      const coords = aggregatedDays.map((d, idx) => {
+        const x = aggregatedDays.length === 1 ? paddingLeft + (chartWidth / 2) : paddingLeft + (idx * stepX);
+        const hours = d.totalMins / 60;
         const y = paddingTop + chartHeight - ((hours / maxHours) * chartHeight);
 
-        const dateParts = log.dateKey.split('-');
+        const dateParts = d.dateKey.split('-');
         const formattedDate = `${dateParts[2]}/${dateParts[1]}`;
+        const avgDiff = Math.round(d.sumDiffMins / d.totalMins);
 
         return {
           x,
           y,
           hours,
           dateLabel: formattedDate,
-          difficulty: log.difficulty || 1,
+          difficulty: avgDiff,
           topic: activeTopicFilter
         };
       });
@@ -1809,7 +1822,7 @@
         circle.setAttribute('fill', getDifficultyColor(c.difficulty));
         
         const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-        title.textContent = `Assunto: ${c.topic}\nData: ${c.dateLabel}\nTempo: ${c.hours.toFixed(1)}h\nDificuldade: ${c.difficulty}/10`;
+        title.textContent = `Assunto: ${c.topic}\nData: ${c.dateLabel}\nTempo total: ${c.hours.toFixed(1)}h\nDificuldade média: ${c.difficulty}/10`;
         circle.appendChild(title);
 
         svg.appendChild(circle);
