@@ -1,724 +1,752 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Caderno Digital - Dashboard</title>
-  <style>
-    :root {
-      --bg-color: #f3f4f6;
-      --card-bg: #ffffff;
-      --primary: #10b981;
-      --primary-hover: #059669;
-      --text-main: #1f2937;
-      --text-sub: #6b7280;
-      --border-color: #e5e7eb;
-      --accent-purple: #8b5cf6;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Caderno Digital - Dashboard</title>
+<style>
+:root {
+--bg-color: #f3f4f6;
+--card-bg: #ffffff;
+--primary: #10b981;
+--primary-hover: #059669;
+--text-main: #1f2937;
+--text-sub: #6b7280;
+--border-color: #e5e7eb;
+--accent-purple: #8b5cf6;
       --accent-purple-glow: rgba(139, 92, 246, 0.35);
-      --danger: #ef4444;
-      --danger-hover: #dc2626;
-      --empty-day-bg: #f3f4f6;
-      --today-bg: #ecfdf5;
-      --input-bg: #ffffff;
-      --modal-overlay-bg: rgba(0, 0, 0, 0.5);
-    }
+--danger: #ef4444;
+--danger-hover: #dc2626;
+--empty-day-bg: #f3f4f6;
+--today-bg: #ecfdf5;
+--input-bg: #ffffff;
+--modal-overlay-bg: rgba(0, 0, 0, 0.5);
+}
 
-    [data-theme="dark"] {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --primary: #10b981;
-      --primary-hover: #34d399;
-      --text-main: #f3f4f6;
-      --text-sub: #9ca3af;
-      --border-color: #334155;
-      --accent-purple: #a78bfa;
+[data-theme="dark"] {
+--bg-color: #0f172a;
+--card-bg: #1e293b;
+--primary: #10b981;
+--primary-hover: #34d399;
+--text-main: #f3f4f6;
+--text-sub: #9ca3af;
+--border-color: #334155;
+--accent-purple: #a78bfa;
       --accent-purple-glow: rgba(167, 139, 250, 0.35);
-      --danger: #f87171;
-      --danger-hover: #ef4444;
-      --empty-day-bg: #0f172a;
-      --today-bg: #064e3b;
-      --input-bg: #0f172a;
-      --modal-overlay-bg: rgba(0, 0, 0, 0.75);
-    }
+--danger: #f87171;
+--danger-hover: #ef4444;
+--empty-day-bg: #0f172a;
+--today-bg: #064e3b;
+--input-bg: #0f172a;
+--modal-overlay-bg: rgba(0, 0, 0, 0.75);
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
+body {
+background-color: var(--bg-color);
+color: var(--text-main);
+display: flex;
+flex-direction: column;
+min-height: 100vh;
+transition: background-color 0.3s ease, color 0.3s ease;
+}
 
-    .dashboard-container { display: flex; flex: 1; flex-direction: column; }
+.dashboard-container { display: flex; flex: 1; flex-direction: column; }
 
-    @media (min-width: 768px) {
-      .dashboard-container { flex-direction: row; }
-    }
+@media (min-width: 768px) {
+.dashboard-container { flex-direction: row; }
+}
 
-    aside {
-      width: 100%;
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      padding: 1rem;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-    }
+aside {
+width: 100%;
+background: var(--card-bg);
+border-bottom: 1px solid var(--border-color);
+padding: 1rem;
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+gap: 1rem;
+}
 
-    @media (min-width: 768px) {
-      aside {
-        width: 240px;
-        border-right: 1px solid var(--border-color);
-        border-bottom: none;
-        padding: 1.5rem 1rem;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: stretch;
-      }
-    }
+@media (min-width: 768px) {
+aside {
+width: 240px;
+border-right: 1px solid var(--border-color);
+border-bottom: none;
+padding: 1.5rem 1rem;
+flex-direction: column;
+justify-content: space-between;
+align-items: stretch;
+}
+}
 
-    .sidebar-top {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      width: 100%;
-    }
+.sidebar-top {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+width: 100%;
+}
 
-    .brand-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
+.brand-container {
+display: flex;
+align-items: center;
+justify-content: space-between;
+width: 100%;
+}
 
-    .brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-    
-    .theme-toggle-btn {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 0.3rem 0.6rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: background-color 0.2s;
-    }
+.brand { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
 
-    .theme-toggle-btn:hover { background: var(--border-color); }
+.theme-toggle-btn {
+background: transparent;
+border: 1px solid var(--border-color);
+color: var(--text-main);
+padding: 0.3rem 0.6rem;
+border-radius: 8px;
+cursor: pointer;
+font-size: 0.9rem;
+display: flex;
+align-items: center;
+gap: 0.4rem;
+transition: background-color 0.2s;
+}
 
-    .nav-list { 
-      list-style: none; 
-      display: flex; 
-      flex-direction: row; 
-      gap: 0.5rem; 
-      overflow-x: auto;
-    }
+.theme-toggle-btn:hover { background: var(--border-color); }
 
-    @media (min-width: 768px) {
-      .nav-list { flex-direction: column; width: 100%; overflow-x: visible; }
-    }
-    
-    .nav-item button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      color: var(--text-sub);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      background: none;
-      border: none;
-      width: 100%;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
+.nav-list { 
+list-style: none; 
+display: flex; 
+flex-direction: row; 
+gap: 0.5rem; 
+overflow-x: auto;
+}
 
-    @media (min-width: 768px) {
-      .nav-item button { padding: 0.75rem 1rem; font-size: 0.9rem; white-space: normal; }
-    }
+@media (min-width: 768px) {
+.nav-list { flex-direction: column; width: 100%; overflow-x: visible; }
+}
 
-    .nav-item.active button, .nav-item button:hover { 
-      background: var(--today-bg); 
-      color: var(--primary); 
-    }
+.nav-item button {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+padding: 0.5rem 0.75rem;
+border-radius: 8px;
+color: var(--text-sub);
+text-decoration: none;
+font-size: 0.85rem;
+font-weight: 500;
+background: none;
+border: none;
+width: 100%;
+cursor: pointer;
+text-align: left;
+transition: all 0.2s;
+white-space: nowrap;
+}
 
-    .sidebar-footer {
-      width: 100%;
-      margin-top: auto;
-      padding-top: 1rem;
-    }
+@media (min-width: 768px) {
+.nav-item button { padding: 0.75rem 1rem; font-size: 0.9rem; white-space: normal; }
+}
 
-    @media (min-width: 768px) {
-      .sidebar-footer {
-        border-top: 1px solid var(--border-color);
-      }
-    }
+.nav-item.active button, .nav-item button:hover { 
+background: var(--today-bg); 
+color: var(--primary); 
+}
 
-    .btn-sidebar-auth {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      width: 100%;
-      padding: 0.65rem 1rem;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid var(--border-color);
-      background: var(--card-bg);
-      color: var(--text-main);
-    }
+.sidebar-footer {
+width: 100%;
+margin-top: auto;
+padding-top: 1rem;
+}
 
-    .btn-sidebar-auth.btn-logout {
-      background: rgba(239, 68, 68, 0.08);
-      color: var(--danger);
-      border-color: rgba(239, 68, 68, 0.2);
-    }
+@media (min-width: 768px) {
+.sidebar-footer {
+border-top: 1px solid var(--border-color);
+}
+}
 
-    .btn-sidebar-auth.btn-logout:hover {
-      background: var(--danger);
-      color: #ffffff;
-      border-color: var(--danger);
-    }
+.btn-sidebar-auth {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 0.6rem;
+width: 100%;
+padding: 0.65rem 1rem;
+border-radius: 8px;
+font-size: 0.875rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+border: 1px solid var(--border-color);
+background: var(--card-bg);
+color: var(--text-main);
+}
 
-    .btn-sidebar-auth.btn-login:hover {
-      background: var(--border-color);
-    }
+.btn-sidebar-auth.btn-logout {
+background: rgba(239, 68, 68, 0.08);
+color: var(--danger);
+border-color: rgba(239, 68, 68, 0.2);
+}
 
-    main { flex: 1; padding: 1rem; overflow-y: auto; }
+.btn-sidebar-auth.btn-logout:hover {
+background: var(--danger);
+color: #ffffff;
+border-color: var(--danger);
+}
 
-    @media (min-width: 768px) {
-      main { padding: 1.5rem 2rem; }
-    }
+.btn-sidebar-auth.btn-login:hover {
+background: var(--border-color);
+}
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+main { flex: 1; padding: 1rem; overflow-y: auto; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .user-profile { display: flex; align-items: center; gap: 0.75rem; }
+@media (min-width: 768px) {
+main { padding: 1.5rem 2rem; }
+}
 
-    .avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.user-profile { display: flex; align-items: center; gap: 0.75rem; }
 
-    .welcome-hero {
-      display: none;
-      position: relative;
-      background: linear-gradient(135deg, #059669 0%, #10b981 50%, #8b5cf6 100%);
-      color: white;
-      padding: 1.25rem 1.5rem;
-      border-radius: 16px;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
-      overflow: hidden;
-      animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+.avatar {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+background: var(--primary);
+color: white;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+overflow: hidden;
+flex-shrink: 0;
+}
 
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    .welcome-hero-content h3 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin-bottom: 0.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+.welcome-hero {
+display: none;
+position: relative;
+background: linear-gradient(135deg, #059669 0%, #10b981 50%, #8b5cf6 100%);
+color: white;
+padding: 1.25rem 1.5rem;
+border-radius: 16px;
+margin-bottom: 1.5rem;
+box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
+overflow: hidden;
+animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-    .welcome-hero-content p {
-      font-size: 0.875rem;
-      opacity: 0.95;
-      line-height: 1.4;
-    }
+@keyframes slideDown {
+from { opacity: 0; transform: translateY(-12px); }
+to { opacity: 1; transform: translateY(0); }
+}
 
-    .btn-close-welcome {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-    }
+.welcome-hero-content h3 {
+font-size: 1.25rem;
+font-weight: 800;
+margin-bottom: 0.25rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
 
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
+.welcome-hero-content p {
+font-size: 0.875rem;
+opacity: 0.95;
+line-height: 1.4;
+}
 
-    .metric-card {
-      background: var(--card-bg);
+.btn-close-welcome {
+position: absolute;
+top: 1rem;
+right: 1rem;
+background: rgba(255, 255, 255, 0.2);
+border: none;
+color: white;
+width: 24px;
+height: 24px;
+border-radius: 50%;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 0.85rem;
+}
+
+.metrics-row {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+gap: 0.75rem;
+margin-bottom: 1rem;
+}
+
+.metric-card {
+background: var(--card-bg);
+padding: 1rem;
+border-radius: 12px;
+border: 1px solid var(--border-color);
+}
+
+.metric-card.clickable {
+cursor: pointer;
+transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.metric-card.clickable:hover {
+transform: translateY(-2px);
+border-color: var(--primary);
+}
+
+.metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
+.metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+
+.btn-edit-goal {
+background: none;
+border: none;
+color: var(--text-sub);
+cursor: pointer;
+font-size: 0.8rem;
+margin-left: 0.3rem;
+}
+
+.goal-progress-panel {
+background: var(--card-bg);
+padding: 1rem;
+border-radius: 12px;
+border: 1px solid var(--border-color);
+margin-bottom: 1.5rem;
+}
+
+.goal-progress-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 0.85rem;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
+
+.progress-bar-bg {
+width: 100%;
+height: 10px;
+background: var(--border-color);
+border-radius: 5px;
+overflow: hidden;
+}
+
+.progress-bar-fill {
+height: 100%;
+width: 0%;
+background: linear-gradient(90deg, var(--primary), var(--accent-purple));
+border-radius: 5px;
+transition: width 0.4s ease;
+}
+
+.panel {
+background: var(--card-bg);
       padding: 1rem;
       border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-
-    .metric-card.clickable {
-      cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .metric-card.clickable:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary);
-    }
-
-    .metric-card span { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
-    .metric-card .value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
-
-    .btn-edit-goal {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      cursor: pointer;
-      font-size: 0.8rem;
-      margin-left: 0.3rem;
-    }
-
-    .goal-progress-panel {
-      background: var(--card-bg);
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 1.5rem;
-    }
-
-    .goal-progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .progress-bar-bg {
-      width: 100%;
-      height: 10px;
-      background: var(--border-color);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--primary), var(--accent-purple));
-      border-radius: 5px;
-      transition: width 0.4s ease;
-    }
-
-    .panel {
-      background: var(--card-bg);
       padding: 1.25rem;
       border-radius: 16px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 1.5rem;
+border: 1px solid var(--border-color);
+margin-bottom: 1.5rem;
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
-    }
+}
 
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
+.panel-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1rem;
+}
 
-    .select-dropdown {
-      background: var(--input-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      padding: 0.4rem 0.8rem;
+.select-dropdown {
+background: var(--input-bg);
+color: var(--text-main);
+border: 1px solid var(--border-color);
+padding: 0.4rem 0.8rem;
+border-radius: 8px;
+font-size: 0.85rem;
+outline: none;
+cursor: pointer;
+}
+
+.calendar-weekdays {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+text-align: center;
+font-weight: 600;
+color: var(--text-sub);
+font-size: 0.75rem;
+padding-bottom: 0.5rem;
+border-bottom: 1px solid var(--border-color);
+}
+
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 1px;
+background: var(--border-color);
+margin-top: 0.5rem;
+border-radius: 8px;
+overflow: hidden;
+}
+
+.calendar-day {
+background: var(--card-bg);
+min-height: 70px;
+padding: 0.25rem;
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+@media (min-width: 768px) {
+.calendar-day { min-height: 110px; padding: 0.5rem; gap: 4px; }
+}
+
+.calendar-day-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.calendar-day.empty { background: var(--empty-day-bg); }
+.day-number { font-size: 0.75rem; font-weight: 600; }
+.today { background: var(--today-bg); }
+.today .day-number { color: var(--primary); font-weight: 800; }
+
+.btn-add-mini {
+background: var(--primary);
+color: white;
+border: none;
+border-radius: 50%;
+width: 18px;
+height: 18px;
+font-size: 0.75rem;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.log-container {
+display: flex;
+flex-direction: column;
+gap: 2px;
+overflow-y: auto;
+max-height: 50px;
+}
+
+@media (min-width: 768px) {
+.log-container { max-height: 75px; gap: 4px; }
+}
+
+.study-tag {
+color: white;
+font-size: 0.65rem;
+padding: 1px 4px;
+border-radius: 4px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 2px;
+transition: background-color 0.2s ease;
+}
+
+.study-tag-text {
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+flex: 1;
+}
+
+.tag-actions { display: flex; align-items: center; gap: 2px; }
+
+.btn-action-tag {
+background: transparent;
+border: none;
+color: white;
+cursor: pointer;
+font-size: 0.65rem;
+opacity: 0.8;
+padding: 0 1px;
+}
+
+.modal-overlay {
+display: none;
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100%;
+background: var(--modal-overlay-bg);
+justify-content: center;
+align-items: center;
+z-index: 100;
+padding: 1rem;
+}
+
+.modal-content {
+background: var(--card-bg);
+color: var(--text-main);
+padding: 1.5rem;
+border-radius: 12px;
+width: 100%;
+max-width: 420px;
+border: 1px solid var(--border-color);
+}
+
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+.form-group input, .form-group textarea { 
+width: 100%; 
+padding: 0.6rem; 
+border: 1px solid var(--border-color); 
+border-radius: 6px; 
+background-color: var(--input-bg);
+color: var(--text-main);
+}
+
+.difficulty-scale {
+display: flex;
+gap: 4px;
+margin-top: 0.4rem;
+}
+
+.difficulty-btn {
+flex: 1;
+padding: 0.4rem 0;
+border: 1px solid var(--border-color);
+border-radius: 6px;
+background: var(--input-bg);
+color: var(--text-main);
+font-size: 0.8rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s ease;
+text-align: center;
+}
+
+.difficulty-btn[data-level="1"],
+.difficulty-btn[data-level="2"],
+.difficulty-btn[data-level="3"],
+.difficulty-btn[data-level="4"] {
+color: #10b981;
+}
+
+.difficulty-btn[data-level="5"],
+.difficulty-btn[data-level="6"],
+.difficulty-btn[data-level="7"] {
+color: #f59e0b;
+}
+
+.difficulty-btn[data-level="8"],
+.difficulty-btn[data-level="9"],
+.difficulty-btn[data-level="10"] {
+color: #ef4444;
+}
+
+.difficulty-btn.selected[data-level="1"],
+.difficulty-btn.selected[data-level="2"],
+.difficulty-btn.selected[data-level="3"],
+.difficulty-btn.selected[data-level="4"] {
+background: #10b981;
+border-color: #10b981;
+color: #ffffff;
+}
+
+.difficulty-btn.selected[data-level="5"],
+.difficulty-btn.selected[data-level="6"],
+.difficulty-btn.selected[data-level="7"] {
+background: #f59e0b;
+border-color: #f59e0b;
+color: #ffffff;
+}
+
+.difficulty-btn.selected[data-level="8"],
+.difficulty-btn.selected[data-level="9"],
+.difficulty-btn.selected[data-level="10"] {
+background: #ef4444;
+border-color: #ef4444;
+color: #ffffff;
+}
+
+.btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-secondary { background: var(--border-color); color: var(--text-main); }
+
+.chronogram-container {
+display: grid;
+grid-template-columns: 1fr;
+gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+.chronogram-container { grid-template-columns: 350px 1fr; }
+}
+
+.chronogram-results {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+gap: 0.75rem;
+margin-top: 1rem;
+}
+
+.chrono-day-card {
+background: var(--card-bg);
+padding: 1rem;
+border-radius: 10px;
+border: 1px solid var(--border-color);
+border-left: 4px solid var(--accent-purple);
+font-size: 0.85rem;
+}
+
+.pie-chart-wrapper {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 2rem;
+margin-top: 1.5rem;
+position: relative;
+}
+
+@media (min-width: 600px) {
+.pie-chart-wrapper {
+flex-direction: row;
+justify-content: space-around;
+}
+}
+
+/* Standard Pie Chart */
+.pie-chart {
+width: 190px;
+height: 190px;
+border-radius: 50%;
+background: conic-gradient(var(--border-color) 0% 100%);
+position: relative;
+flex-shrink: 0;
+box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+transition: background 0.4s ease;
+cursor: pointer;
+}
+
+.pie-chart::after {
+content: "";
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 100px;
+height: 100px;
+background: var(--card-bg);
+border-radius: 50%;
+transition: background-color 0.3s ease;
+pointer-events: none;
+}
+
+/* SVG Animated Pie Container for Individual Topic */
+.animated-pie-container {
+width: 220px;
+height: 220px;
+position: relative;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.animated-pie-svg {
+width: 100%;
+height: 100%;
+overflow: visible;
+}
+
+.pie-slice-path {
+cursor: pointer;
+transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+transform-origin: 100px 100px;
+}
+
+.pie-slice-path:hover, .pie-slice-path.active-slice {
+filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+}
+
+.pie-legend-list {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+width: 100%;
+max-width: 280px;
+}
+
+.pie-legend-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+font-size: 0.85rem;
+padding: 0.4rem 0.6rem;
+border-radius: 8px;
+transition: background-color 0.2s ease, transform 0.2s ease;
+cursor: pointer;
+}
+
+.pie-legend-item:hover, .pie-legend-item.active-legend {
+background: var(--today-bg);
+transform: translateX(4px);
+}
+
+.legend-name {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+font-weight: 600;
+}
+
+.color-dot {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+display: inline-block;
+}
+
+    .recommendation-box {
+      margin-top: 0;
+      padding: 1rem;
+      background: var(--bg-color);
+      border-left: 4px solid var(--primary);
       border-radius: 8px;
       font-size: 0.85rem;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .calendar-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      font-weight: 600;
-      color: var(--text-sub);
-      font-size: 0.75rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 1px;
-      background: var(--border-color);
-      margin-top: 0.5rem;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .calendar-day {
-      background: var(--card-bg);
-      min-height: 70px;
-      padding: 0.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    @media (min-width: 768px) {
-      .calendar-day { min-height: 110px; padding: 0.5rem; gap: 4px; }
-    }
-
-    .calendar-day-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .calendar-day.empty { background: var(--empty-day-bg); }
-    .day-number { font-size: 0.75rem; font-weight: 600; }
-    .today { background: var(--today-bg); }
-    .today .day-number { color: var(--primary); font-weight: 800; }
-
-    .btn-add-mini {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .log-container {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      overflow-y: auto;
-      max-height: 50px;
-    }
-
-    @media (min-width: 768px) {
-      .log-container { max-height: 75px; gap: 4px; }
-    }
-
-    .study-tag {
-      color: white;
-      font-size: 0.65rem;
-      padding: 1px 4px;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 2px;
-      transition: background-color 0.2s ease;
-    }
-
-    .study-tag-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      line-height: 1.4;
       flex: 1;
-    }
-
-    .tag-actions { display: flex; align-items: center; gap: 2px; }
-
-    .btn-action-tag {
-      background: transparent;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 0.65rem;
-      opacity: 0.8;
-      padding: 0 1px;
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--modal-overlay-bg);
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      padding: 1rem;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      color: var(--text-main);
-      padding: 1.5rem;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 420px;
-      border: 1px solid var(--border-color);
-    }
-
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
-    .form-group input, .form-group textarea { 
-      width: 100%; 
-      padding: 0.6rem; 
-      border: 1px solid var(--border-color); 
-      border-radius: 6px; 
-      background-color: var(--input-bg);
-      color: var(--text-main);
-    }
-
-    .difficulty-scale {
-      display: flex;
-      gap: 4px;
-      margin-top: 0.4rem;
-    }
-
-    .difficulty-btn {
-      flex: 1;
-      padding: 0.4rem 0;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      background: var(--input-bg);
-      color: var(--text-main);
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-    }
-
-    .difficulty-btn[data-level="1"],
-    .difficulty-btn[data-level="2"],
-    .difficulty-btn[data-level="3"],
-    .difficulty-btn[data-level="4"] {
-      color: #10b981;
-    }
-
-    .difficulty-btn[data-level="5"],
-    .difficulty-btn[data-level="6"],
-    .difficulty-btn[data-level="7"] {
-      color: #f59e0b;
-    }
-
-    .difficulty-btn[data-level="8"],
-    .difficulty-btn[data-level="9"],
-    .difficulty-btn[data-level="10"] {
-      color: #ef4444;
-    }
-
-    .difficulty-btn.selected[data-level="1"],
-    .difficulty-btn.selected[data-level="2"],
-    .difficulty-btn.selected[data-level="3"],
-    .difficulty-btn.selected[data-level="4"] {
-      background: #10b981;
-      border-color: #10b981;
-      color: #ffffff;
-    }
-
-    .difficulty-btn.selected[data-level="5"],
-    .difficulty-btn.selected[data-level="6"],
-    .difficulty-btn.selected[data-level="7"] {
-      background: #f59e0b;
-      border-color: #f59e0b;
-      color: #ffffff;
-    }
-
-    .difficulty-btn.selected[data-level="8"],
-    .difficulty-btn.selected[data-level="9"],
-    .difficulty-btn.selected[data-level="10"] {
-      background: #ef4444;
-      border-color: #ef4444;
-      color: #ffffff;
-    }
-
-    .btn-group { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; }
-    .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: var(--border-color); color: var(--text-main); }
-
-    .chronogram-container {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-
-    @media (min-width: 992px) {
-      .chronogram-container { grid-template-columns: 350px 1fr; }
-    }
-
-    .chronogram-results {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-
-    .chrono-day-card {
-      background: var(--card-bg);
-      padding: 1rem;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-purple);
-      font-size: 0.85rem;
-    }
-
-    .pie-chart-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-      margin-top: 1.5rem;
-      position: relative;
-    }
-
-    @media (min-width: 600px) {
-      .pie-chart-wrapper {
-        flex-direction: row;
-        justify-content: space-around;
-      }
-    }
-
-    /* SVG Animated Pie Container for Individual Topic & General Stats */
-    .animated-pie-container {
-      width: 240px;
-      height: 240px;
-      position: relative;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, rgba(139, 92, 246, 0.03) 0%, rgba(0, 0, 0, 0) 100%);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 10px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 25px -5px rgba(0,0,0,0.03);
-    }
-
-    .animated-pie-svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-
-    .pie-slice-path {
-      cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease, opacity 0.3s;
-      transform-origin: 100px 100px;
-      animation: popInSlice 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes popInSlice {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .pie-slice-path:hover, .pie-slice-path.active-slice {
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
-    }
-
-    .pie-legend-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      width: 100%;
-      max-width: 320px;
-    }
-
-    .pie-legend-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-      cursor: pointer;
-    }
-
-    .pie-legend-item:hover, .pie-legend-item.active-legend {
-      background: var(--today-bg);
-      border-color: var(--primary);
-      transform: translateX(4px);
-    }
-
-    .legend-name {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-weight: 600;
-    }
-
-    .color-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
     /* Chic Side-by-Side Topic Progress & Recommendation Styling */
-    .line-chart-side-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+.line-chart-side-container {
+display: flex;
+flex-direction: column;
+gap: 1.5rem;
+      margin-top: 1rem;
       margin-top: 1.2rem;
-    }
+}
 
-    @media (min-width: 992px) {
-      .line-chart-side-container {
-        flex-direction: row;
-        align-items: stretch;
-      }
-      .line-chart-wrapper-flex {
+@media (min-width: 992px) {
+.line-chart-side-container {
+flex-direction: row;
+align-items: stretch;
+}
+.line-chart-wrapper-flex {
+        flex: 2;
         flex: 2.2;
-      }
-      .recommendation-wrapper-flex {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-    }
+}
+.recommendation-wrapper-flex {
+flex: 1;
+display: flex;
+flex-direction: column;
+}
+}
 
     /* Chic SVG Chart Box Styling */
     .chic-chart-card {
@@ -731,16 +759,17 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
-    .line-chart-container {
-      width: 100%;
-      overflow-x: auto;
+.line-chart-container {
+width: 100%;
+overflow-x: auto;
       scrollbar-width: thin;
-    }
+}
 
-    .line-chart-svg {
-      width: 100%;
+.line-chart-svg {
+width: 100%;
+      min-width: 500px;
       min-width: 520px;
-      height: 320px;
+height: 320px;
       overflow: visible;
     }
 
@@ -778,8 +807,17 @@
 
     @keyframes drawLinePath {
       to { stroke-dashoffset: 0; }
-    }
+}
 
+    .chart-axis-line { stroke: var(--border-color); stroke-width: 1; }
+    .chart-grid-line { stroke: var(--border-color); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.5; }
+    .chart-path { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-area { fill: url(#line-gradient); opacity: 0.25; }
+    .chart-point { fill: var(--primary); stroke: var(--card-bg); stroke-width: 2; r: 5; transition: r 0.2s; }
+    .chart-point:hover { r: 8; cursor: pointer; }
+    .chart-text { fill: var(--text-sub); font-size: 11px; text-anchor: middle; }
+    .chart-val-text { fill: var(--text-main); font-size: 10px; font-weight: bold; text-anchor: middle; }
+    .chart-subj-text { fill: var(--accent-purple); font-size: 9px; text-anchor: middle; font-weight: 600; }
     @keyframes fadeInArea {
       to { opacity: 0.45; }
     }
@@ -915,262 +953,269 @@
       backdrop-filter: blur(4px);
     }
 
-    .assuntos-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 300px;
-      overflow-y: auto;
-      margin-top: 0.5rem;
-    }
+.assuntos-list {
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
+max-height: 300px;
+overflow-y: auto;
+margin-top: 0.5rem;
+}
 
-    .assunto-item-btn {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: var(--text-main);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: left;
-      transition: background-color 0.2s, border-color 0.2s;
-    }
+.assunto-item-btn {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0.75rem 1rem;
+background: var(--bg-color);
+border: 1px solid var(--border-color);
+border-radius: 8px;
+color: var(--text-main);
+font-size: 0.9rem;
+font-weight: 600;
+cursor: pointer;
+text-align: left;
+transition: background-color 0.2s, border-color 0.2s;
+}
 
-    .assunto-item-btn:hover {
-      background: var(--today-bg);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
+.assunto-item-btn:hover {
+background: var(--today-bg);
+border-color: var(--primary);
+color: var(--primary);
+}
 
-    /* Animated Glassmorphism Tooltip */
-    .pie-tooltip {
-      position: fixed;
-      pointer-events: none;
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: #ffffff;
-      padding: 0.6rem 0.9rem;
-      border-radius: 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-      opacity: 0;
-      transform: scale(0.85) translateY(10px);
-      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 1000;
-      white-space: nowrap;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+/* Animated Glassmorphism Tooltip */
+.pie-tooltip {
+position: fixed;
+pointer-events: none;
+background: rgba(15, 23, 42, 0.88);
+backdrop-filter: blur(8px);
+-webkit-backdrop-filter: blur(8px);
+color: #ffffff;
+padding: 0.6rem 0.9rem;
+border-radius: 10px;
+font-size: 0.78rem;
+font-weight: 600;
+box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+opacity: 0;
+transform: scale(0.85) translateY(10px);
+transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+z-index: 1000;
+white-space: nowrap;
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
 
-    .pie-tooltip.active {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
+.pie-tooltip.active {
+opacity: 1;
+transform: scale(1) translateY(0);
+}
 
-    .pie-tooltip .tooltip-header {
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
+.pie-tooltip .tooltip-header {
+font-size: 0.85rem;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 0.4rem;
+}
 
-    .pie-tooltip .tooltip-sub {
-      color: #cbd5e1;
-      font-size: 0.72rem;
-      font-weight: 500;
-    }
-  </style>
+.pie-tooltip .tooltip-sub {
+color: #cbd5e1;
+font-size: 0.72rem;
+font-weight: 500;
+}
+</style>
 </head>
 <body>
 
-  <div id="pieChartTooltip" class="pie-tooltip"></div>
+<div id="pieChartTooltip" class="pie-tooltip"></div>
 
-  <div class="dashboard-container">
-    <aside>
-      <div class="sidebar-top">
-        <div class="brand-container">
-          <div class="brand">📖 Caderno</div>
-          <button class="theme-toggle-btn" id="btnToggleTheme" title="Alternar Tema">
-            <span id="themeIcon">🌙</span>
-          </button>
-        </div>
-        <ul class="nav-list">
-          <li class="nav-item active" data-tab="tab-home"><button>🏠 Home</button></li>
-          <li class="nav-item" data-tab="tab-chronogram"><button>🤖 Cronograma</button></li>
-          <li class="nav-item" data-tab="tab-stats"><button>📊 Stats</button></li>
-          <li class="nav-item" data-tab="tab-individual-stats"><button>🎯 Gráfico por Assunto</button></li>
-        </ul>
-      </div>
+<div class="dashboard-container">
+<aside>
+<div class="sidebar-top">
+<div class="brand-container">
+<div class="brand">📖 Caderno</div>
+<button class="theme-toggle-btn" id="btnToggleTheme" title="Alternar Tema">
+<span id="themeIcon">🌙</span>
+</button>
+</div>
+<ul class="nav-list">
+<li class="nav-item active" data-tab="tab-home"><button>🏠 Home</button></li>
+<li class="nav-item" data-tab="tab-chronogram"><button>🤖 Cronograma</button></li>
+<li class="nav-item" data-tab="tab-stats"><button>📊 Stats</button></li>
+<li class="nav-item" data-tab="tab-individual-stats"><button>🎯 Gráfico por Assunto</button></li>
+</ul>
+</div>
 
-      <div class="sidebar-footer">
-        <button class="btn-sidebar-auth btn-login" id="btnAuthAction">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          Entrar com Google
-        </button>
-      </div>
-    </aside>
+<div class="sidebar-footer">
+<button class="btn-sidebar-auth btn-login" id="btnAuthAction">
+<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+Entrar com Google
+</button>
+</div>
+</aside>
 
-    <main>
-      <header>
-        <h2 id="pageTitle">Painel Principal</h2>
-        <div class="user-profile">
-          <span id="displayUserName">Desconectado</span>
-          <div class="avatar" id="avatarBox">?</div>
-        </div>
-      </header>
+<main>
+<header>
+<h2 id="pageTitle">Painel Principal</h2>
+<div class="user-profile">
+<span id="displayUserName">Desconectado</span>
+<div class="avatar" id="avatarBox">?</div>
+</div>
+</header>
 
-      <div id="tab-home" class="tab-content active">
-        <div class="welcome-hero" id="welcomeHero">
-          <button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
-          <div class="welcome-hero-content">
-            <h3>🚀 <span id="welcomeUserName">Bem-vindo(a)!</span></h3>
-            <p>Seus dados estão sincronizados em tempo real. Pronto para conquistar suas metas de estudo hoje?</p>
-          </div>
-        </div>
+<div id="tab-home" class="tab-content active">
+<div class="welcome-hero" id="welcomeHero">
+<button class="btn-close-welcome" id="btnCloseWelcome" title="Fechar">✕</button>
+<div class="welcome-hero-content">
+<h3>🚀 <span id="welcomeUserName">Bem-vindo(a)!</span></h3>
+<p>Seus dados estão sincronizados em tempo real. Pronto para conquistar suas metas de estudo hoje?</p>
+</div>
+</div>
 
-        <div class="metrics-row">
-          <div class="metric-card">
-            <span>Tempo Total</span>
-            <div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
-          </div>
-          <div class="metric-card">
-            <span>Matérias 📘</span>
-            <div class="value" id="totalMaterias">0</div>
-          </div>
-          <div class="metric-card clickable" id="cardAssuntos" title="Clique para ver os Assuntos">
-            <span>Assuntos 📝</span>
-            <div class="value" id="totalAssuntos">0</div>
-          </div>
-          <div class="metric-card">
-            <span>Meta Diária <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
-            <div class="value" id="dailyGoalDisplay" style="color: var(--accent-purple);">2 hrs</div>
-          </div>
-        </div>
+<div class="metrics-row">
+<div class="metric-card">
+<span>Tempo Total</span>
+<div class="value" id="totalHours" style="color: var(--primary);">0h 0m</div>
+</div>
+<div class="metric-card">
+<span>Matérias 📘</span>
+<div class="value" id="totalMaterias">0</div>
+</div>
+<div class="metric-card clickable" id="cardAssuntos" title="Clique para ver os Assuntos">
+<span>Assuntos 📝</span>
+<div class="value" id="totalAssuntos">0</div>
+</div>
+<div class="metric-card">
+<span>Meta Diária <button class="btn-edit-goal" id="btnEditGoal" title="Alterar Meta">✏️</button></span>
+<div class="value" id="dailyGoalDisplay" style="color: var(--accent-purple);">2 hrs</div>
+</div>
+</div>
 
-        <div class="goal-progress-panel">
-          <div class="goal-progress-header">
-            <span>Progresso Hoje</span>
-            <span id="goalPercentText">0%</span>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="goalProgressBar"></div>
-          </div>
-        </div>
+<div class="goal-progress-panel">
+<div class="goal-progress-header">
+<span>Progresso Hoje</span>
+<span id="goalPercentText">0%</span>
+</div>
+<div class="progress-bar-bg">
+<div class="progress-bar-fill" id="goalProgressBar"></div>
+</div>
+</div>
 
-        <div class="panel">
-          <h3 id="calendarMonth" style="margin-bottom: 1rem; font-size: 1.1rem;">Calendário de Estudos</h3>
-          <div class="calendar-weekdays">
-            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-          </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
-        </div>
-      </div>
+<div class="panel">
+<h3 id="calendarMonth" style="margin-bottom: 1rem; font-size: 1.1rem;">Calendário de Estudos</h3>
+<div class="calendar-weekdays">
+<div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+</div>
+<div class="calendar-grid" id="calendarGrid"></div>
+</div>
+</div>
 
-      <div id="tab-chronogram" class="tab-content">
-        <div class="chronogram-container">
-          <div class="panel">
-            <h3 style="margin-bottom: 1rem;">🤖 Gerador de Cronograma IA</h3>
-            <form id="chronogramForm" autocomplete="off">
-              <div class="form-group">
-                <label for="examDate">Data da Prova / Exame</label>
-                <input type="date" id="examDate" required>
-              </div>
-              <div class="form-group">
-                <label for="topicsInput">Tópicos para estudar (separados por vírgula)</label>
-                <textarea id="topicsInput" rows="4" placeholder="Ex: Álgebra, Geometria, História do Brasil, Física Quântica..." required></textarea>
-              </div>
-              <div class="form-group">
-                <label for="dailyHours">Horas disponíveis por dia</label>
-                <input type="number" id="dailyHours" min="1" max="16" value="2" required>
-              </div>
-              <button type="submit" class="btn btn-primary" style="width: 100%;">Gerar Cronograma</button>
-            </form>
-          </div>
+<div id="tab-chronogram" class="tab-content">
+<div class="chronogram-container">
+<div class="panel">
+<h3 style="margin-bottom: 1rem;">🤖 Gerador de Cronograma IA</h3>
+<form id="chronogramForm" autocomplete="off">
+<div class="form-group">
+<label for="examDate">Data da Prova / Exame</label>
+<input type="date" id="examDate" required>
+</div>
+<div class="form-group">
+<label for="topicsInput">Tópicos para estudar (separados por vírgula)</label>
+<textarea id="topicsInput" rows="4" placeholder="Ex: Álgebra, Geometria, História do Brasil, Física Quântica..." required></textarea>
+</div>
+<div class="form-group">
+<label for="dailyHours">Horas disponíveis por dia</label>
+<input type="number" id="dailyHours" min="1" max="16" value="2" required>
+</div>
+<button type="submit" class="btn btn-primary" style="width: 100%;">Gerar Cronograma</button>
+</form>
+</div>
 
-          <div class="panel">
-            <h3 style="margin-bottom: 0.5rem;" id="chronoResultHeader">Seu Plano de Estudos</h3>
-            <p style="font-size: 0.85rem; color: var(--text-sub);" id="chronoSubtext">Preencha o formulário para gerar uma rotina personalizada.</p>
-            <div id="chronogramOutput" class="chronogram-results"></div>
-          </div>
-        </div>
-      </div>
+<div class="panel">
+<h3 style="margin-bottom: 0.5rem;" id="chronoResultHeader">Seu Plano de Estudos</h3>
+<p style="font-size: 0.85rem; color: var(--text-sub);" id="chronoSubtext">Preencha o formulário para gerar uma rotina personalizada.</p>
+<div id="chronogramOutput" class="chronogram-results"></div>
+</div>
+</div>
+</div>
 
-      <div id="tab-stats" class="tab-content">
-        <div class="panel">
-          <h3>📊 Gráfico Geral por Assunto</h3>
-          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Distribuição percentual e tempo de todos os assuntos estudados.</p>
-          
-          <div class="pie-chart-wrapper">
-            <div class="animated-pie-container">
-              <svg id="generalPieSvg" class="animated-pie-svg" viewBox="0 0 200 200"></svg>
-            </div>
-            <div class="pie-legend-list" id="pieLegendList">
-              <p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>
-            </div>
-          </div>
-        </div>
+<div id="tab-stats" class="tab-content">
+<div class="panel">
+<h3>📊 Gráfico Geral por Assunto</h3>
+<p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Distribuição percentual de todos os assuntos estudados.</p>
 
-        <div class="panel">
-          <div class="panel-header">
-            <div>
-              <h3>📈 Progresso Diário de Estudos</h3>
-              <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Horas diárias dedicadas e matérias estudadas.</p>
-            </div>
-            <select id="lineChartTimeframe" class="select-dropdown">
-              <option value="weekly">Semanal (Últimos 7 dias)</option>
-              <option value="monthly">Mensal (Este Mês)</option>
-            </select>
-          </div>
+<div class="pie-chart-wrapper">
+<div class="pie-chart" id="pieChart"></div>
+<div class="pie-legend-list" id="pieLegendList">
+<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>
+</div>
+</div>
+</div>
 
-          <div class="line-chart-container">
-            <svg id="lineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
-              <defs>
-                <linearGradient id="line-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.5"/>
-                  <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        </div>
-      </div>
+<div class="panel">
+<div class="panel-header">
+<div>
+<h3>📈 Progresso Diário de Estudos</h3>
+<p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Horas diárias dedicadas e matérias estudadas.</p>
+</div>
+<select id="lineChartTimeframe" class="select-dropdown">
+<option value="weekly">Semanal (Últimos 7 dias)</option>
+<option value="monthly">Mensal (Este Mês)</option>
+</select>
+</div>
 
-      <div id="tab-individual-stats" class="tab-content">
-        <div class="panel">
-          <div class="panel-header">
-            <div>
-              <h3>🎯 Gráfico Específico por Assunto</h3>
-              <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Média calculada de dificuldade e distribuição proporcional do tempo por categoria.</p>
-            </div>
-            <select id="individualTopicSelect" class="select-dropdown">
-              <option value="">Selecione um Assunto...</option>
-            </select>
-          </div>
-          
-          <div class="pie-chart-wrapper">
-            <div class="animated-pie-container" id="individualPieWrapper">
-              <svg id="individualPieSvg" class="animated-pie-svg" viewBox="0 0 200 200"></svg>
-            </div>
-            <div class="pie-legend-list" id="individualPieLegendList">
-              <p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>
-            </div>
-          </div>
-        </div>
+<div class="line-chart-container">
+<svg id="lineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
+<defs>
+<linearGradient id="line-gradient" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#10b981" stop-opacity="0.5"/>
+<stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
 
-        <div class="panel">
-          <h3>📈 Progresso do Assunto por Dia & Recomendação</h3>
-          <p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Evolução contínua do tempo e dificuldade por dia de estudo juntamente com a recomendação pedagógica.</p>
-          
-          <div class="line-chart-side-container">
-            <div class="line-chart-wrapper-flex">
+<div id="tab-individual-stats" class="tab-content">
+<div class="panel">
+<div class="panel-header">
+<div>
+<h3>🎯 Gráfico Específico por Assunto</h3>
+<p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Média calculada de dificuldade e distribuição proporcional do tempo por categoria.</p>
+</div>
+<select id="individualTopicSelect" class="select-dropdown">
+<option value="">Selecione um Assunto...</option>
+</select>
+</div>
+
+<div class="pie-chart-wrapper">
+<div class="animated-pie-container" id="individualPieWrapper">
+<svg id="individualPieSvg" class="animated-pie-svg" viewBox="0 0 200 200"></svg>
+</div>
+<div class="pie-legend-list" id="individualPieLegendList">
+<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>
+</div>
+</div>
+</div>
+
+<div class="panel">
+<h3>📈 Progresso do Assunto por Dia & Recomendação</h3>
+<p style="margin-top: 0.25rem; color: var(--text-sub); font-size: 0.85rem;">Evolução contínua do tempo e dificuldade por dia de estudo juntamente com a recomendação pedagógica.</p>
+
+<div class="line-chart-side-container">
+<div class="line-chart-wrapper-flex">
+              <div class="line-chart-container">
+                <svg id="topicLineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
+                  <defs>
+                    <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.5"/>
+                      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
               <div class="chic-chart-card">
                 <div class="line-chart-container">
                   <svg id="topicLineChartSvg" class="line-chart-svg" viewBox="0 0 700 320">
@@ -1187,10 +1232,13 @@
                     </defs>
                   </svg>
                 </div>
-              </div>
-            </div>
+</div>
+</div>
 
-            <div class="recommendation-wrapper-flex" id="topicRecommendationContainer">
+<div class="recommendation-wrapper-flex" id="topicRecommendationContainer">
+              <div class="recommendation-box">
+                <p><strong>Dificuldade Média:</strong> --</p>
+                <p style="margin-top: 0.4rem; color: var(--text-sub);">Selecione um assunto para visualizar a recomendação técnica de estudo.</p>
               <div class="chic-recommendation-card">
                 <div>
                   <div class="rec-badge-pill" style="background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);">
@@ -1204,812 +1252,734 @@
                 <div class="rec-content-body">
                   Selecione um assunto acima para visualizar a recomendação técnica de estudo.
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-    </main>
-  </div>
+</main>
+</div>
 
-  <div class="modal-overlay" id="assuntosModal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 0.5rem;">Selecione um Assunto</h3>
-      <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 1rem;">Clique em qualquer assunto para visualizar o gráfico específico correspondente.</p>
-      <div class="assuntos-list" id="assuntosModalList"></div>
-      <div class="btn-group">
-        <button type="button" class="btn btn-secondary" id="btnCloseAssuntosModal">Fechar</button>
-      </div>
-    </div>
-  </div>
+<div class="modal-overlay" id="assuntosModal">
+<div class="modal-content">
+<h3 style="margin-bottom: 0.5rem;">Selecione um Assunto</h3>
+<p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 1rem;">Clique em qualquer assunto para visualizar o gráfico específico correspondente.</p>
+<div class="assuntos-list" id="assuntosModalList"></div>
+<div class="btn-group">
+<button type="button" class="btn btn-secondary" id="btnCloseAssuntosModal">Fechar</button>
+</div>
+</div>
+</div>
 
-  <div class="modal-overlay" id="studyModal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
-      <form id="studyForm" autocomplete="off">
-        <input type="hidden" id="selectedDate">
-        <input type="hidden" id="editingDocId" value="">
-        <input type="hidden" id="difficulty" value="1">
-        
-        <div class="form-group">
-          <label for="subject">Matéria</label>
-          <input type="text" id="subject" placeholder="Ex: Matemática, História..." required>
-        </div>
-        
-        <div class="form-group">
-          <label for="notes">Assunto</label>
-          <input type="text" id="notes" placeholder="Ex: Equações do 2º Grau, Revolução Francesa..." required>
-        </div>
+<div class="modal-overlay" id="studyModal">
+<div class="modal-content">
+<h3 style="margin-bottom: 1rem;" id="modalDateTitle">Registrar Estudo</h3>
+<form id="studyForm" autocomplete="off">
+<input type="hidden" id="selectedDate">
+<input type="hidden" id="editingDocId" value="">
+<input type="hidden" id="difficulty" value="1">
 
-        <div class="form-group">
-          <label for="duration">Tempo de Estudo (em minutos)</label>
-          <input type="number" id="duration" min="1" placeholder="Ex: 60" required>
-        </div>
+<div class="form-group">
+<label for="subject">Matéria</label>
+<input type="text" id="subject" placeholder="Ex: Matemática, História..." required>
+</div>
 
-        <div class="form-group">
-          <label>Nível de Dificuldade (1 a 10)</label>
-          <div class="difficulty-scale" id="difficultyScale">
-            <button type="button" class="difficulty-btn selected" data-level="1">1</button>
-            <button type="button" class="difficulty-btn" data-level="2">2</button>
-            <button type="button" class="difficulty-btn" data-level="3">3</button>
-            <button type="button" class="difficulty-btn" data-level="4">4</button>
-            <button type="button" class="difficulty-btn" data-level="5">5</button>
-            <button type="button" class="difficulty-btn" data-level="6">6</button>
-            <button type="button" class="difficulty-btn" data-level="7">7</button>
-            <button type="button" class="difficulty-btn" data-level="8">8</button>
-            <button type="button" class="difficulty-btn" data-level="9">9</button>
-            <button type="button" class="difficulty-btn" data-level="10">10</button>
-          </div>
-        </div>
+<div class="form-group">
+<label for="notes">Assunto</label>
+<input type="text" id="notes" placeholder="Ex: Equações do 2º Grau, Revolução Francesa..." required>
+</div>
 
-        <div class="btn-group">
-          <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveStudy">Salvar Registro</button>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="form-group">
+<label for="duration">Tempo de Estudo (em minutos)</label>
+<input type="number" id="duration" min="1" placeholder="Ex: 60" required>
+</div>
 
-  <div class="modal-overlay" id="goalModal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">Definir Meta Diária</h3>
-      <form id="goalForm" autocomplete="off">
-        <div class="form-group">
-          <label for="goalInput">Nova Meta (horas por dia)</label>
-          <input type="number" id="goalInput" min="0.5" max="24" step="0.5" placeholder="Ex: 2" required>
-        </div>
-        <div class="btn-group">
-          <button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="btnSaveGoal">Salvar Meta</button>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="form-group">
+<label>Nível de Dificuldade (1 a 10)</label>
+<div class="difficulty-scale" id="difficultyScale">
+<button type="button" class="difficulty-btn selected" data-level="1">1</button>
+<button type="button" class="difficulty-btn" data-level="2">2</button>
+<button type="button" class="difficulty-btn" data-level="3">3</button>
+<button type="button" class="difficulty-btn" data-level="4">4</button>
+<button type="button" class="difficulty-btn" data-level="5">5</button>
+<button type="button" class="difficulty-btn" data-level="6">6</button>
+<button type="button" class="difficulty-btn" data-level="7">7</button>
+<button type="button" class="difficulty-btn" data-level="8">8</button>
+<button type="button" class="difficulty-btn" data-level="9">9</button>
+<button type="button" class="difficulty-btn" data-level="10">10</button>
+</div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
-      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, where, onSnapshot } 
-      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<div class="btn-group">
+<button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
+<button type="submit" class="btn btn-primary" id="btnSaveStudy">Salvar Registro</button>
+</div>
+</form>
+</div>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBr47B_Eg7UGD5UxjpGaQm5wvozpwL7Q2w",
-      authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
-      projectId: "meu-caderno-digital-6374d",
-      storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
-      messagingSenderId: "711415733825",
-      appId: "1:711415733825:web:6c0841b71d58b6ac2670c0",
-      measurementId: "G-S8TXGZ6RPL"
-    };
+<div class="modal-overlay" id="goalModal">
+<div class="modal-content">
+<h3 style="margin-bottom: 1rem;">Definir Meta Diária</h3>
+<form id="goalForm" autocomplete="off">
+<div class="form-group">
+<label for="goalInput">Nova Meta (horas por dia)</label>
+<input type="number" id="goalInput" min="0.5" max="24" step="0.5" placeholder="Ex: 2" required>
+</div>
+<div class="btn-group">
+<button type="button" class="btn btn-secondary" id="btnCancelGoal">Cancelar</button>
+<button type="submit" class="btn btn-primary" id="btnSaveGoal">Salvar Meta</button>
+</div>
+</form>
+</div>
+</div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } 
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, query, where, onSnapshot } 
+from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    let currentUser = null;
-    let totalMinutesLogged = 0;
-    let dailyGoalHours = 2;
-    let unsubscribeLogs = null;
-    let subjectTotals = {};
-    let topicTotals = {};
-    let dailyLogData = {};
-    let uniqueTopicsList = [];
-    let allLogs = [];
-    let activeTopicFilter = "";
+const firebaseConfig = {
+apiKey: "AIzaSyBr47B_Eg7UGD5UxjpGaQm5wvozpwL7Q2w",
+authDomain: "meu-caderno-digital-6374d.firebaseapp.com",
+projectId: "meu-caderno-digital-6374d",
+storageBucket: "meu-caderno-digital-6374d.firebasestorage.app",
+messagingSenderId: "711415733825",
+appId: "1:711415733825:web:6c0841b71d58b6ac2670c0",
+measurementId: "G-S8TXGZ6RPL"
+};
 
-    const colorPalette = [
-      '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', 
-      '#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
-    ];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-    function getDifficultyColor(level) {
-      const l = typeof level === 'number' ? level : parseFloat(level);
-      if (l >= 1 && l < 5) return '#10b981';
-      if (l >= 5 && l < 8) return '#f59e0b';
-      if (l >= 8 && l <= 10) return '#ef4444';
-      return '#10b981';
-    }
+let currentUser = null;
+let totalMinutesLogged = 0;
+let dailyGoalHours = 2;
+let unsubscribeLogs = null;
+let subjectTotals = {};
+let topicTotals = {};
+let dailyLogData = {};
+let uniqueTopicsList = [];
+let allLogs = [];
+let activeTopicFilter = "";
 
-    function getRecommendationText(difficulty) {
-      const level = Math.round(difficulty);
-      if (level >= 1 && level <= 4) {
+const colorPalette = [
+'#10b981', '#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', 
+'#14b8a6', '#f97316', '#6366f1', '#84cc16', '#06b6d4'
+];
+
+function getDifficultyColor(level) {
+const l = typeof level === 'number' ? level : parseFloat(level);
+if (l >= 1 && l < 5) return '#10b981';
+if (l >= 5 && l < 8) return '#f59e0b';
+if (l >= 8 && l <= 10) return '#ef4444';
+return '#10b981';
+}
+
+function getRecommendationText(difficulty) {
+const level = Math.round(difficulty);
+if (level >= 1 && level <= 4) {
+        return "💡 <strong>Recomendação:</strong> Método de revisão somente por questões.";
         return "💡 <strong>Recomendação Pedagógica:</strong> Seu domínio neste assunto é elevado! Foque a rotina de estudos prioritariamente em <strong>resolução de questões de fixação</strong> e simulação de provas.";
-      } else if (level >= 5 && level <= 7) {
+} else if (level >= 5 && level <= 7) {
+        return "💡 <strong>Recomendação:</strong> Ler os resumos do assunto e responder as questões.";
         return "💡 <strong>Recomendação Pedagógica:</strong> Desempenho intermediário. Realize a <strong>leitura de resumos sintéticos</strong> combinada imediatamente com a resolução de questões práticas para consolidar as lacunas.";
-      } else if (level >= 8 && level <= 10) {
+} else if (level >= 8 && level <= 10) {
+        return "💡 <strong>Recomendação:</strong> Estudar o assunto inteiro de novo e resolver questões.";
         return "💡 <strong>Recomendação Pedagógica:</strong> Nível de complexidade alto. Recomenda-se <strong>rever o conteúdo teórico completo</strong> deste assunto, fazer anotações detalhadas e depois praticar com exercícios guiados.";
-      }
-      return "";
-    }
-
-    const navItems = document.querySelectorAll('.nav-item');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const pageTitle = document.getElementById('pageTitle');
-
-    const tabTitles = {
-      'tab-home': 'Painel Principal',
-      'tab-chronogram': 'Cronograma Inteligente',
-      'tab-stats': 'Estatísticas',
-      'tab-individual-stats': 'Gráfico por Assunto'
-    };
-
-    function switchTab(targetTab) {
-      navItems.forEach(i => i.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-
-      const navItemToActivate = document.querySelector(`.nav-item[data-tab="${targetTab}"]`);
-      if (navItemToActivate) navItemToActivate.classList.add('active');
-
-      const tabContentToActivate = document.getElementById(targetTab);
-      if (tabContentToActivate) tabContentToActivate.classList.add('active');
-
-      pageTitle.textContent = tabTitles[targetTab] || 'Painel';
-
-      if (targetTab === 'tab-stats') {
-        renderPieChart();
-        renderLineChart();
-      } else if (targetTab === 'tab-individual-stats') {
-        renderIndividualPieChart();
-      }
-    }
-
-    navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const targetTab = item.getAttribute('data-tab');
-        switchTab(targetTab);
-      });
-    });
-
-    const btnToggleTheme = document.getElementById('btnToggleTheme');
-    const themeIcon = document.getElementById('themeIcon');
-
-    function initTheme() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-    }
-
-    btnToggleTheme.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-    });
-
-    initTheme();
-
-    const calendarGrid = document.getElementById('calendarGrid');
-    const studyModal = document.getElementById('studyModal');
-    const studyForm = document.getElementById('studyForm');
-    const modalDateTitle = document.getElementById('modalDateTitle');
-    const selectedDateInput = document.getElementById('selectedDate');
-    const editingDocIdInput = document.getElementById('editingDocId');
-    const difficultyInput = document.getElementById('difficulty');
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-
-    const goalModal = document.getElementById('goalModal');
-    const goalForm = document.getElementById('goalForm');
-    const goalInput = document.getElementById('goalInput');
-    const dailyGoalDisplay = document.getElementById('dailyGoalDisplay');
-    const goalProgressBar = document.getElementById('goalProgressBar');
-    const goalPercentText = document.getElementById('goalPercentText');
-
-    const welcomeHero = document.getElementById('welcomeHero');
-    const welcomeUserName = document.getElementById('welcomeUserName');
-    const btnCloseWelcome = document.getElementById('btnCloseWelcome');
-
-    const btnAuthAction = document.getElementById('btnAuthAction');
-
-    const assuntosModal = document.getElementById('assuntosModal');
-    const assuntosModalList = document.getElementById('assuntosModalList');
-    const btnCloseAssuntosModal = document.getElementById('btnCloseAssuntosModal');
-    const cardAssuntos = document.getElementById('cardAssuntos');
-
-    const pieChartTooltip = document.getElementById('pieChartTooltip');
-
-    cardAssuntos.addEventListener('click', () => {
-      openAssuntosModal();
-    });
-
-    btnCloseAssuntosModal.addEventListener('click', () => {
-      assuntosModal.style.display = 'none';
-    });
-
-    function openAssuntosModal() {
-      assuntosModalList.innerHTML = '';
-      const topics = Object.keys(topicTotals);
-
-      if (topics.length === 0) {
-        assuntosModalList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum assunto registrado ainda.</p>';
-      } else {
-        topics.forEach(top => {
-          const btn = document.createElement('button');
-          btn.className = 'assunto-item-btn';
-          const hrs = (topicTotals[top] / 60).toFixed(1);
-          btn.innerHTML = `<span>${top}</span> <span style="font-size: 0.75rem; color: var(--text-sub);">${hrs}h</span>`;
-          btn.onclick = () => {
-            activeTopicFilter = top;
-            individualTopicSelect.value = top;
-            assuntosModal.style.display = 'none';
-            switchTab('tab-individual-stats');
-          };
-          assuntosModalList.appendChild(btn);
-        });
-      }
-
-      assuntosModal.style.display = 'flex';
-    }
-
-    const lineChartTimeframe = document.getElementById('lineChartTimeframe');
-    lineChartTimeframe.addEventListener('change', renderLineChart);
-
-    const individualTopicSelect = document.getElementById('individualTopicSelect');
-    individualTopicSelect.addEventListener('change', (e) => {
-      activeTopicFilter = e.target.value;
-      renderIndividualPieChart();
-    });
-
-    difficultyBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        setDifficultyValue(parseInt(btn.getAttribute('data-level'), 10));
-      });
-    });
-
-    function setDifficultyValue(val) {
-      difficultyInput.value = val;
-      difficultyBtns.forEach(btn => {
-        if (parseInt(btn.getAttribute('data-level'), 10) === val) {
-          btn.classList.add('selected');
-        } else {
-          btn.classList.remove('selected');
-        }
-      });
-    }
-
-    const chronogramForm = document.getElementById('chronogramForm');
-    const chronogramOutput = document.getElementById('chronogramOutput');
-    const chronoResultHeader = document.getElementById('chronoResultHeader');
-    const chronoSubtext = document.getElementById('chronoSubtext');
-
-    chronogramForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const examDateValue = document.getElementById('examDate').value;
-      const topics = document.getElementById('topicsInput').value.split(',').map(t => t.trim()).filter(Boolean);
-      const dailyHours = document.getElementById('dailyHours').value;
-
-      if (!examDateValue || topics.length === 0) return;
-
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const examDate = new Date(examDateValue);
-      const diffTime = examDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 0) {
-        alert('A data da prova deve ser futura!');
-        return;
-      }
-
-      chronoResultHeader.textContent = `🗓️ Plano de Estudo (${diffDays} dias até a prova)`;
-      chronoSubtext.textContent = `Meta: ${dailyHours} hora(s) diária(s) distribuídas entre ${topics.length} matérias.`;
-      chronogramOutput.innerHTML = '';
-
-      let currentTopicIdx = 0;
-      for (let day = 1; day <= diffDays; day++) {
-        const topic = topics[currentTopicIdx % topics.length];
-        const isRevisionDay = day % 4 === 0;
-
-        const card = document.createElement('div');
-        card.className = 'chrono-day-card';
-        card.innerHTML = `
-          <strong>Dia ${day} ${isRevisionDay ? '🔄 (Revisão)' : ''}</strong>
-          ${isRevisionDay ? `Revisar conteúdos anteriores + Exercícios (${dailyHours}h)` : `Estudar: ${topic} (${dailyHours}h)`}
-        `;
-        chronogramOutput.appendChild(card);
-
-        if (!isRevisionDay) currentTopicIdx++;
-      }
-    });
-
-    btnAuthAction.addEventListener('click', async () => {
-      if (currentUser) {
-        try {
-          await signOut(auth);
-        } catch (err) {
-          alert('Erro ao sair: ' + err.message);
-        }
-      } else {
-        try {
-          await signInWithPopup(auth, provider);
-        } catch (err) {
-          alert('Erro ao entrar com o Google: ' + err.message);
-        }
-      }
-    });
-
-    document.getElementById('btnCancel').addEventListener('click', closeStudyModal);
-
-    document.getElementById('btnEditGoal').addEventListener('click', () => {
-      if (!currentUser) {
-        alert('Faça login com o Google para alterar sua meta.');
-        return;
-      }
-      goalInput.value = dailyGoalHours;
-      goalModal.style.display = 'flex';
-    });
-
-    document.getElementById('btnCancelGoal').addEventListener('click', closeGoalModal);
-
-    btnCloseWelcome.addEventListener('click', () => {
-      welcomeHero.style.display = 'none';
-    });
-
-    [studyModal, goalModal, assuntosModal].forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.style.display = 'none';
-        }
-      });
-    });
-
-    function closeStudyModal() {
-      studyModal.style.display = 'none';
-      studyForm.reset();
-      editingDocIdInput.value = '';
-      setDifficultyValue(1);
-    }
-
-    function closeGoalModal() {
-      goalModal.style.display = 'none';
-      goalForm.reset();
-    }
-
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-
-      if (unsubscribeLogs) {
-        unsubscribeLogs();
-        unsubscribeLogs = null;
-      }
-
-      if (user) {
-        const firstName = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
-        
-        btnAuthAction.className = "btn-sidebar-auth btn-logout";
-        btnAuthAction.innerHTML = `
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          Sair
-        `;
-
-        document.getElementById('displayUserName').textContent = user.displayName || user.email;
-        if (user.photoURL) {
-          document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
-        } else {
-          document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
-        }
-
-        welcomeUserName.textContent = `Que bom te ver de novo, ${firstName}!`;
-        welcomeHero.style.display = 'block';
-
-        await loadUserGoal(user.uid);
-        initCalendar();
-        loadUserStudyLogs(user.uid);
-      } else {
-        btnAuthAction.className = "btn-sidebar-auth btn-login";
-        btnAuthAction.innerHTML = `
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          Entrar com Google
-        `;
-
-        document.getElementById('displayUserName').textContent = 'Desconectado';
-        document.getElementById('avatarBox').textContent = '?';
-        welcomeHero.style.display = 'none';
-        dailyGoalHours = 2;
-        subjectTotals = {};
-        topicTotals = {};
-        dailyLogData = {};
-        uniqueTopicsList = [];
-        allLogs = [];
-        activeTopicFilter = "";
-        updateTopicDropdown();
-        initCalendar();
-        renderPieChart();
-        renderLineChart();
-        renderIndividualPieChart();
-      }
-    });
-
-    async function loadUserGoal(userId) {
-      try {
-        const goalDocRef = doc(db, "user_settings", userId);
-        const goalSnap = await getDoc(goalDocRef);
-        if (goalSnap.exists() && goalSnap.data().dailyGoal) {
-          dailyGoalHours = goalSnap.data().dailyGoal;
-        } else {
-          dailyGoalHours = 2;
-        }
-      } catch (err) {
-        console.error("Erro ao carregar meta: ", err);
-      }
-      updateStats();
-    }
-
-    goalForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const newGoal = parseFloat(goalInput.value);
-      if (isNaN(newGoal) || newGoal <= 0) return;
-
-      dailyGoalHours = newGoal;
-      updateStats();
-      closeGoalModal();
-
-      try {
-        await setDoc(doc(db, "user_settings", currentUser.uid), {
-          dailyGoal: newGoal
-        }, { merge: true });
-      } catch (err) {
-        console.error('Erro ao salvar meta no Firestore: ', err);
-        alert('Meta atualizada localmente, mas ocorreu um erro no servidor: ' + err.message);
-      }
-    });
-
-    function initCalendar() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      document.getElementById('calendarMonth').textContent = `Estudos - ${monthNames[month]} ${year}`;
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      calendarGrid.innerHTML = '';
-
-      for (let i = 0; i < firstDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day empty';
-        calendarGrid.appendChild(emptyCell);
-      }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'calendar-day';
-        const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        if (day === now.getDate()) dayCell.classList.add('today');
-
-        dayCell.innerHTML = `
-          <div class="calendar-day-header">
-            <span class="day-number">${day}</span>
-            <button class="btn-add-mini" title="Adicionar Estudo">+</button>
-          </div>
-          <div class="log-container" id="logs-${dateKey}"></div>
-        `;
-
-        dayCell.querySelector('.btn-add-mini').onclick = (e) => {
-          e.stopPropagation();
-          openModalForCreate(dateKey, day, monthNames[month]);
-        };
-
-        calendarGrid.appendChild(dayCell);
-      }
-      updateStats();
-    }
-
-    function loadUserStudyLogs(userId) {
-      const q = query(collection(db, "study_logs"), where("userId", "==", userId));
-      
-      unsubscribeLogs = onSnapshot(q, (snapshot) => {
-        totalMinutesLogged = 0;
-        subjectTotals = {};
-        topicTotals = {};
-        dailyLogData = {};
-        uniqueTopicsList = [];
-        allLogs = [];
-
-        initCalendar();
-
-        snapshot.forEach((docSnap) => {
-          const log = docSnap.data();
-          allLogs.push({ id: docSnap.id, ...log });
-          
-          renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes, log.difficulty);
-          totalMinutesLogged += log.duration;
-
-          const normSubject = log.subject ? log.subject.trim() : 'Geral';
-          const normTopic = (log.notes && log.notes.trim()) ? log.notes.trim() : 'Geral / Sem Assunto';
-
-          subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
-          topicTotals[normTopic] = (topicTotals[normTopic] || 0) + log.duration;
-
-          if (log.notes && log.notes.trim() !== '') {
-            uniqueTopicsList.push({
-              subject: normSubject,
-              notes: log.notes.trim(),
-              date: log.dateKey,
-              difficulty: log.difficulty || 1
-            });
-          }
-
-          if (!dailyLogData[log.dateKey]) {
-            dailyLogData[log.dateKey] = { totalMinutes: 0, subjects: new Set() };
-          }
-          dailyLogData[log.dateKey].totalMinutes += log.duration;
-          dailyLogData[log.dateKey].subjects.add(normSubject);
-        });
-
-        updateTopicDropdown();
-        updateStats();
-        renderPieChart();
-        renderLineChart();
-        renderIndividualPieChart();
-      }, (err) => {
-        console.error("Erro ao escutar dados do Firestore:", err);
-        alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
-      });
-    }
-
-    function updateTopicDropdown() {
-      const topics = Object.keys(topicTotals);
-      individualTopicSelect.innerHTML = '<option value="">Selecione um Assunto...</option>';
-      topics.forEach(top => {
-        const option = document.createElement('option');
-        option.value = top;
-        option.textContent = top;
-        if (top === activeTopicFilter) {
-          option.selected = true;
-        }
-        individualTopicSelect.appendChild(option);
-      });
-    }
-
-    function renderTag(docId, dateKey, subject, duration, notes, difficulty) {
-      const logContainer = document.getElementById(`logs-${dateKey}`);
-      if (logContainer) {
-        const tag = document.createElement('div');
-        tag.className = 'study-tag';
-        const tagBgColor = getDifficultyColor(difficulty || 1);
-        tag.style.backgroundColor = tagBgColor;
-        
-        const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
-        const tagDisplay = subject;
-        tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
-        
-        tag.innerHTML = `
-          <span class="study-tag-text">${tagDisplay}</span>
-          <div class="tag-actions">
-            <button class="btn-action-tag btn-edit-tag" title="Editar">✏️</button>
-            <button class="btn-action-tag btn-delete-tag" title="Excluir">✕</button>
-          </div>
-        `;
-
-        tag.querySelector('.btn-edit-tag').onclick = (e) => {
-          e.stopPropagation();
-          openModalForEdit(docId, dateKey, subject, duration, notes, difficulty);
-        };
-
-        tag.querySelector('.btn-delete-tag').onclick = async (e) => {
-          e.stopPropagation();
-          if (confirm(`Excluir "${tagDisplay}"?`)) {
-            try {
-              await deleteDoc(doc(db, "study_logs", docId));
-            } catch (err) {
-              alert("Erro ao excluir: " + err.message);
-            }
-          }
-        };
-
-        logContainer.appendChild(tag);
-      }
-    }
-
-    function updateStats() {
-      const hrs = Math.floor(totalMinutesLogged / 60);
-      const mins = totalMinutesLogged % 60;
-      document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
-      
-      const uniqueSubjectsCount = Object.keys(subjectTotals).length;
-      document.getElementById('totalMaterias').textContent = uniqueSubjectsCount;
-      document.getElementById('totalAssuntos').textContent = Object.keys(topicTotals).length;
-
-      dailyGoalDisplay.textContent = `${dailyGoalHours} hrs`;
-
-      const now = new Date();
-      const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      const todayMinutes = dailyLogData[todayKey] ? dailyLogData[todayKey].totalMinutes : 0;
-      const todayHours = todayMinutes / 60;
-
-      const percent = Math.min(Math.round((todayHours / dailyGoalHours) * 100), 100);
-      
-      goalProgressBar.style.width = `${percent}%`;
-      goalPercentText.textContent = `${percent}%`;
-    }
-
-    // Helper to build SVG Arc path for pie slice animation & cutout
-    function describeArc(cx, cy, radius, startAngle, endAngle) {
-      const startRad = (startAngle - 90) * Math.PI / 180.0;
-      const endRad = (endAngle - 90) * Math.PI / 180.0;
-      
-      const x1 = cx + radius * Math.cos(startRad);
-      const y1 = cy + radius * Math.sin(startRad);
-      const x2 = cx + radius * Math.cos(endRad);
-      const y2 = cy + radius * Math.sin(endRad);
-
-      const largeArcFlag = (endAngle - startAngle) <= 180 ? "0" : "1";
-
-      return [
-        "M", cx, cy,
-        "L", x1, y1,
-        "A", radius, radius, 0, largeArcFlag, 1, x2, y2,
-        "Z"
-      ].join(" ");
-    }
-
-    /* -------------------------------------------------------------
-       UPGRADED CHIC ANIMATED GENERAL PIE CHART (SVG BASED)
-    ------------------------------------------------------------- */
-    function renderPieChart() {
-      const svg = document.getElementById('generalPieSvg');
-      const pieLegendList = document.getElementById('pieLegendList');
-
-      svg.innerHTML = '';
-      pieLegendList.innerHTML = '';
-
-      const entries = Object.entries(topicTotals);
-
-      if (entries.length === 0 || totalMinutesLogged === 0) {
-        pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>';
-        return;
-      }
-
-      entries.sort((a, b) => b[1] - a[1]);
-
-      const cx = 100;
-      const cy = 100;
-      const radius = 80;
-      let currentAngle = 0;
-      const isSingleOption = entries.length === 1;
-
-      entries.forEach(([topic, mins], index) => {
-        const color = colorPalette[index % colorPalette.length];
-        const percent = (mins / totalMinutesLogged) * 100;
-        const formattedPercent = percent.toFixed(1);
-        const hrs = (mins / 60).toFixed(1);
-
-        const sliceAngle = (percent / 100) * 360;
-        const startAngle = currentAngle;
-        const endAngle = currentAngle + sliceAngle;
-        const midAngle = startAngle + (sliceAngle / 2);
-        currentAngle = endAngle;
-
-        // Radial outward shift vector for smooth hover animation
-        const rad = (midAngle - 90) * Math.PI / 180.0;
-        const shiftX = Math.round(Math.cos(rad) * 12);
-        const shiftY = Math.round(Math.sin(rad) * 12);
-
-        // Path rendering
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        const d = sliceAngle >= 359.9 ? describeArc(cx, cy, radius, 0, 359.99) : describeArc(cx, cy, radius, startAngle, endAngle);
-        
-        path.setAttribute('d', d);
-        path.setAttribute('fill', color);
-        path.setAttribute('class', 'pie-slice-path');
-
-        // Interactive Legend Item
-        const legendItem = document.createElement('div');
-        legendItem.className = 'pie-legend-item';
-        legendItem.innerHTML = `
-          <span class="legend-name">
-            <span class="color-dot" style="background-color: ${color};"></span>
-            ${topic}
-          </span>
-          <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
-        `;
-
-        const activateSlice = (e) => {
-          if (!isSingleOption) {
-            path.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
-          }
-          path.classList.add('active-slice');
-          legendItem.classList.add('active-legend');
-          showTooltip(
-            e,
-            topic,
-            `Tempo Dedicado: ${hrs}h • Proporção Total: ${formattedPercent}%`
-          );
-        };
-
-        const deactivateSlice = () => {
-          path.style.transform = 'translate(0px, 0px)';
-          path.classList.remove('active-slice');
-          legendItem.classList.remove('active-legend');
-          hideTooltip();
-        };
-
-        path.addEventListener('mouseenter', activateSlice);
-        path.addEventListener('mousemove', updateTooltipPos);
-        path.addEventListener('mouseleave', deactivateSlice);
-
-        legendItem.addEventListener('mouseenter', activateSlice);
-        legendItem.addEventListener('mousemove', updateTooltipPos);
-        legendItem.addEventListener('mouseleave', deactivateSlice);
-
-        svg.appendChild(path);
-        pieLegendList.appendChild(legendItem);
-      });
-
-      // Center Donut Hole
-      const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      innerCircle.setAttribute('cx', cx);
-      innerCircle.setAttribute('cy', cy);
-      innerCircle.setAttribute('r', 48);
-      innerCircle.setAttribute('fill', 'var(--card-bg)');
-      innerCircle.style.pointerEvents = 'none';
-      svg.appendChild(innerCircle);
-
-      // Central Summary Info
-      const totalHrsFormatted = (totalMinutesLogged / 60).toFixed(1);
-      const centerTextVal = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      centerTextVal.setAttribute('x', cx);
-      centerTextVal.setAttribute('y', cy - 2);
-      centerTextVal.setAttribute('text-anchor', 'middle');
-      centerTextVal.setAttribute('font-size', '15');
-      centerTextVal.setAttribute('font-weight', '800');
-      centerTextVal.setAttribute('fill', 'var(--text-main)');
-      centerTextVal.textContent = `${totalHrsFormatted}h`;
-      centerTextVal.style.pointerEvents = 'none';
-      svg.appendChild(centerTextVal);
-
-      const centerTextSub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      centerTextSub.setAttribute('x', cx);
-      centerTextSub.setAttribute('y', cy + 14);
-      centerTextSub.setAttribute('text-anchor', 'middle');
-      centerTextSub.setAttribute('font-size', '9');
-      centerTextSub.setAttribute('font-weight', '600');
-      centerTextSub.setAttribute('fill', 'var(--text-sub)');
-      centerTextSub.textContent = 'Total Geral';
-      centerTextSub.style.pointerEvents = 'none';
-      svg.appendChild(centerTextSub);
-    }
-
-    function renderIndividualPieChart() {
-      const svg = document.getElementById('individualPieSvg');
-      const pieLegendList = document.getElementById('individualPieLegendList');
-      const recContainer = document.getElementById('topicRecommendationContainer');
-
-      svg.innerHTML = '';
-      pieLegendList.innerHTML = '';
-      recContainer.innerHTML = '';
-
-      if (!activeTopicFilter) {
-        pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>';
-        recContainer.innerHTML = `
+}
+return "";
+}
+
+const navItems = document.querySelectorAll('.nav-item');
+const tabContents = document.querySelectorAll('.tab-content');
+const pageTitle = document.getElementById('pageTitle');
+
+const tabTitles = {
+'tab-home': 'Painel Principal',
+'tab-chronogram': 'Cronograma Inteligente',
+'tab-stats': 'Estatísticas',
+'tab-individual-stats': 'Gráfico por Assunto'
+};
+
+function switchTab(targetTab) {
+navItems.forEach(i => i.classList.remove('active'));
+tabContents.forEach(c => c.classList.remove('active'));
+
+const navItemToActivate = document.querySelector(`.nav-item[data-tab="${targetTab}"]`);
+if (navItemToActivate) navItemToActivate.classList.add('active');
+
+const tabContentToActivate = document.getElementById(targetTab);
+if (tabContentToActivate) tabContentToActivate.classList.add('active');
+
+pageTitle.textContent = tabTitles[targetTab] || 'Painel';
+
+if (targetTab === 'tab-stats') {
+renderPieChart();
+renderLineChart();
+} else if (targetTab === 'tab-individual-stats') {
+renderIndividualPieChart();
+}
+}
+
+navItems.forEach(item => {
+item.addEventListener('click', () => {
+const targetTab = item.getAttribute('data-tab');
+switchTab(targetTab);
+});
+});
+
+const btnToggleTheme = document.getElementById('btnToggleTheme');
+const themeIcon = document.getElementById('themeIcon');
+
+function initTheme() {
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+
+btnToggleTheme.addEventListener('click', () => {
+const currentTheme = document.documentElement.getAttribute('data-theme');
+const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+document.documentElement.setAttribute('data-theme', newTheme);
+localStorage.setItem('theme', newTheme);
+themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+});
+
+initTheme();
+
+const calendarGrid = document.getElementById('calendarGrid');
+const studyModal = document.getElementById('studyModal');
+const studyForm = document.getElementById('studyForm');
+const modalDateTitle = document.getElementById('modalDateTitle');
+const selectedDateInput = document.getElementById('selectedDate');
+const editingDocIdInput = document.getElementById('editingDocId');
+const difficultyInput = document.getElementById('difficulty');
+const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+
+const goalModal = document.getElementById('goalModal');
+const goalForm = document.getElementById('goalForm');
+const goalInput = document.getElementById('goalInput');
+const dailyGoalDisplay = document.getElementById('dailyGoalDisplay');
+const goalProgressBar = document.getElementById('goalProgressBar');
+const goalPercentText = document.getElementById('goalPercentText');
+
+const welcomeHero = document.getElementById('welcomeHero');
+const welcomeUserName = document.getElementById('welcomeUserName');
+const btnCloseWelcome = document.getElementById('btnCloseWelcome');
+
+const btnAuthAction = document.getElementById('btnAuthAction');
+
+const assuntosModal = document.getElementById('assuntosModal');
+const assuntosModalList = document.getElementById('assuntosModalList');
+const btnCloseAssuntosModal = document.getElementById('btnCloseAssuntosModal');
+const cardAssuntos = document.getElementById('cardAssuntos');
+
+const pieChartTooltip = document.getElementById('pieChartTooltip');
+
+cardAssuntos.addEventListener('click', () => {
+openAssuntosModal();
+});
+
+btnCloseAssuntosModal.addEventListener('click', () => {
+assuntosModal.style.display = 'none';
+});
+
+function openAssuntosModal() {
+assuntosModalList.innerHTML = '';
+const topics = Object.keys(topicTotals);
+
+if (topics.length === 0) {
+assuntosModalList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum assunto registrado ainda.</p>';
+} else {
+topics.forEach(top => {
+const btn = document.createElement('button');
+btn.className = 'assunto-item-btn';
+const hrs = (topicTotals[top] / 60).toFixed(1);
+btn.innerHTML = `<span>${top}</span> <span style="font-size: 0.75rem; color: var(--text-sub);">${hrs}h</span>`;
+btn.onclick = () => {
+activeTopicFilter = top;
+individualTopicSelect.value = top;
+assuntosModal.style.display = 'none';
+switchTab('tab-individual-stats');
+};
+assuntosModalList.appendChild(btn);
+});
+}
+
+assuntosModal.style.display = 'flex';
+}
+
+const lineChartTimeframe = document.getElementById('lineChartTimeframe');
+lineChartTimeframe.addEventListener('change', renderLineChart);
+
+const individualTopicSelect = document.getElementById('individualTopicSelect');
+individualTopicSelect.addEventListener('change', (e) => {
+activeTopicFilter = e.target.value;
+renderIndividualPieChart();
+});
+
+difficultyBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+setDifficultyValue(parseInt(btn.getAttribute('data-level'), 10));
+});
+});
+
+function setDifficultyValue(val) {
+difficultyInput.value = val;
+difficultyBtns.forEach(btn => {
+if (parseInt(btn.getAttribute('data-level'), 10) === val) {
+btn.classList.add('selected');
+} else {
+btn.classList.remove('selected');
+}
+});
+}
+
+const chronogramForm = document.getElementById('chronogramForm');
+const chronogramOutput = document.getElementById('chronogramOutput');
+const chronoResultHeader = document.getElementById('chronoResultHeader');
+const chronoSubtext = document.getElementById('chronoSubtext');
+
+chronogramForm.addEventListener('submit', (e) => {
+e.preventDefault();
+const examDateValue = document.getElementById('examDate').value;
+const topics = document.getElementById('topicsInput').value.split(',').map(t => t.trim()).filter(Boolean);
+const dailyHours = document.getElementById('dailyHours').value;
+
+if (!examDateValue || topics.length === 0) return;
+
+const today = new Date();
+today.setHours(0,0,0,0);
+const examDate = new Date(examDateValue);
+const diffTime = examDate - today;
+const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+if (diffDays <= 0) {
+alert('A data da prova deve ser futura!');
+return;
+}
+
+chronoResultHeader.textContent = `🗓️ Plano de Estudo (${diffDays} dias até a prova)`;
+chronoSubtext.textContent = `Meta: ${dailyHours} hora(s) diária(s) distribuídas entre ${topics.length} matérias.`;
+chronogramOutput.innerHTML = '';
+
+let currentTopicIdx = 0;
+for (let day = 1; day <= diffDays; day++) {
+const topic = topics[currentTopicIdx % topics.length];
+const isRevisionDay = day % 4 === 0;
+
+const card = document.createElement('div');
+card.className = 'chrono-day-card';
+card.innerHTML = `
+         <strong>Dia ${day} ${isRevisionDay ? '🔄 (Revisão)' : ''}</strong>
+         ${isRevisionDay ? `Revisar conteúdos anteriores + Exercícios (${dailyHours}h)` : `Estudar: ${topic} (${dailyHours}h)`}
+       `;
+chronogramOutput.appendChild(card);
+
+if (!isRevisionDay) currentTopicIdx++;
+}
+});
+
+btnAuthAction.addEventListener('click', async () => {
+if (currentUser) {
+try {
+await signOut(auth);
+} catch (err) {
+alert('Erro ao sair: ' + err.message);
+}
+} else {
+try {
+await signInWithPopup(auth, provider);
+} catch (err) {
+alert('Erro ao entrar com o Google: ' + err.message);
+}
+}
+});
+
+document.getElementById('btnCancel').addEventListener('click', closeStudyModal);
+
+document.getElementById('btnEditGoal').addEventListener('click', () => {
+if (!currentUser) {
+alert('Faça login com o Google para alterar sua meta.');
+return;
+}
+goalInput.value = dailyGoalHours;
+goalModal.style.display = 'flex';
+});
+
+document.getElementById('btnCancelGoal').addEventListener('click', closeGoalModal);
+
+btnCloseWelcome.addEventListener('click', () => {
+welcomeHero.style.display = 'none';
+});
+
+[studyModal, goalModal, assuntosModal].forEach(modal => {
+modal.addEventListener('click', (e) => {
+if (e.target === modal) {
+modal.style.display = 'none';
+}
+});
+});
+
+function closeStudyModal() {
+studyModal.style.display = 'none';
+studyForm.reset();
+editingDocIdInput.value = '';
+setDifficultyValue(1);
+}
+
+function closeGoalModal() {
+goalModal.style.display = 'none';
+goalForm.reset();
+}
+
+onAuthStateChanged(auth, async (user) => {
+currentUser = user;
+
+if (unsubscribeLogs) {
+unsubscribeLogs();
+unsubscribeLogs = null;
+}
+
+if (user) {
+const firstName = user.displayName ? user.displayName.split(' ')[0] : 'Estudante';
+
+btnAuthAction.className = "btn-sidebar-auth btn-logout";
+btnAuthAction.innerHTML = `
+         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+         Sair
+       `;
+
+document.getElementById('displayUserName').textContent = user.displayName || user.email;
+if (user.photoURL) {
+document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
+} else {
+document.getElementById('avatarBox').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
+}
+
+welcomeUserName.textContent = `Que bom te ver de novo, ${firstName}!`;
+welcomeHero.style.display = 'block';
+
+await loadUserGoal(user.uid);
+initCalendar();
+loadUserStudyLogs(user.uid);
+} else {
+btnAuthAction.className = "btn-sidebar-auth btn-login";
+btnAuthAction.innerHTML = `
+         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+         Entrar com Google
+       `;
+
+document.getElementById('displayUserName').textContent = 'Desconectado';
+document.getElementById('avatarBox').textContent = '?';
+welcomeHero.style.display = 'none';
+dailyGoalHours = 2;
+subjectTotals = {};
+topicTotals = {};
+dailyLogData = {};
+uniqueTopicsList = [];
+allLogs = [];
+activeTopicFilter = "";
+updateTopicDropdown();
+initCalendar();
+renderPieChart();
+renderLineChart();
+renderIndividualPieChart();
+}
+});
+
+async function loadUserGoal(userId) {
+try {
+const goalDocRef = doc(db, "user_settings", userId);
+const goalSnap = await getDoc(goalDocRef);
+if (goalSnap.exists() && goalSnap.data().dailyGoal) {
+dailyGoalHours = goalSnap.data().dailyGoal;
+} else {
+dailyGoalHours = 2;
+}
+} catch (err) {
+console.error("Erro ao carregar meta: ", err);
+}
+updateStats();
+}
+
+goalForm.addEventListener('submit', async function(e) {
+e.preventDefault();
+if (!currentUser) return;
+
+const newGoal = parseFloat(goalInput.value);
+if (isNaN(newGoal) || newGoal <= 0) return;
+
+dailyGoalHours = newGoal;
+updateStats();
+closeGoalModal();
+
+try {
+await setDoc(doc(db, "user_settings", currentUser.uid), {
+dailyGoal: newGoal
+}, { merge: true });
+} catch (err) {
+console.error('Erro ao salvar meta no Firestore: ', err);
+alert('Meta atualizada localmente, mas ocorreu um erro no servidor: ' + err.message);
+}
+});
+
+function initCalendar() {
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+document.getElementById('calendarMonth').textContent = `Estudos - ${monthNames[month]} ${year}`;
+
+const firstDay = new Date(year, month, 1).getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+calendarGrid.innerHTML = '';
+
+for (let i = 0; i < firstDay; i++) {
+const emptyCell = document.createElement('div');
+emptyCell.className = 'calendar-day empty';
+calendarGrid.appendChild(emptyCell);
+}
+
+for (let day = 1; day <= daysInMonth; day++) {
+const dayCell = document.createElement('div');
+dayCell.className = 'calendar-day';
+const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+if (day === now.getDate()) dayCell.classList.add('today');
+
+dayCell.innerHTML = `
+         <div class="calendar-day-header">
+           <span class="day-number">${day}</span>
+           <button class="btn-add-mini" title="Adicionar Estudo">+</button>
+         </div>
+         <div class="log-container" id="logs-${dateKey}"></div>
+       `;
+
+dayCell.querySelector('.btn-add-mini').onclick = (e) => {
+e.stopPropagation();
+openModalForCreate(dateKey, day, monthNames[month]);
+};
+
+calendarGrid.appendChild(dayCell);
+}
+updateStats();
+}
+
+function loadUserStudyLogs(userId) {
+const q = query(collection(db, "study_logs"), where("userId", "==", userId));
+
+unsubscribeLogs = onSnapshot(q, (snapshot) => {
+totalMinutesLogged = 0;
+subjectTotals = {};
+topicTotals = {};
+dailyLogData = {};
+uniqueTopicsList = [];
+allLogs = [];
+
+initCalendar();
+
+snapshot.forEach((docSnap) => {
+const log = docSnap.data();
+allLogs.push({ id: docSnap.id, ...log });
+
+renderTag(docSnap.id, log.dateKey, log.subject, log.duration, log.notes, log.difficulty);
+totalMinutesLogged += log.duration;
+
+const normSubject = log.subject ? log.subject.trim() : 'Geral';
+const normTopic = (log.notes && log.notes.trim()) ? log.notes.trim() : 'Geral / Sem Assunto';
+
+subjectTotals[normSubject] = (subjectTotals[normSubject] || 0) + log.duration;
+topicTotals[normTopic] = (topicTotals[normTopic] || 0) + log.duration;
+
+if (log.notes && log.notes.trim() !== '') {
+uniqueTopicsList.push({
+subject: normSubject,
+notes: log.notes.trim(),
+date: log.dateKey,
+difficulty: log.difficulty || 1
+});
+}
+
+if (!dailyLogData[log.dateKey]) {
+dailyLogData[log.dateKey] = { totalMinutes: 0, subjects: new Set() };
+}
+dailyLogData[log.dateKey].totalMinutes += log.duration;
+dailyLogData[log.dateKey].subjects.add(normSubject);
+});
+
+updateTopicDropdown();
+updateStats();
+renderPieChart();
+renderLineChart();
+renderIndividualPieChart();
+}, (err) => {
+console.error("Erro ao escutar dados do Firestore:", err);
+alert("Erro ao carregar os dados de estudo do Firebase: " + err.message);
+});
+}
+
+function updateTopicDropdown() {
+const topics = Object.keys(topicTotals);
+individualTopicSelect.innerHTML = '<option value="">Selecione um Assunto...</option>';
+topics.forEach(top => {
+const option = document.createElement('option');
+option.value = top;
+option.textContent = top;
+if (top === activeTopicFilter) {
+option.selected = true;
+}
+individualTopicSelect.appendChild(option);
+});
+}
+
+function renderTag(docId, dateKey, subject, duration, notes, difficulty) {
+const logContainer = document.getElementById(`logs-${dateKey}`);
+if (logContainer) {
+const tag = document.createElement('div');
+tag.className = 'study-tag';
+const tagBgColor = getDifficultyColor(difficulty || 1);
+tag.style.backgroundColor = tagBgColor;
+
+const diffText = difficulty ? ` | Dificuldade: ${difficulty}/10` : '';
+const tagDisplay = subject;
+tag.title = `${subject} - Assunto: ${notes || 'Sem assunto'} (${duration}m)${diffText}`;
+
+tag.innerHTML = `
+         <span class="study-tag-text">${tagDisplay}</span>
+         <div class="tag-actions">
+           <button class="btn-action-tag btn-edit-tag" title="Editar">✏️</button>
+           <button class="btn-action-tag btn-delete-tag" title="Excluir">✕</button>
+         </div>
+       `;
+
+tag.querySelector('.btn-edit-tag').onclick = (e) => {
+e.stopPropagation();
+openModalForEdit(docId, dateKey, subject, duration, notes, difficulty);
+};
+
+tag.querySelector('.btn-delete-tag').onclick = async (e) => {
+e.stopPropagation();
+if (confirm(`Excluir "${tagDisplay}"?`)) {
+try {
+await deleteDoc(doc(db, "study_logs", docId));
+} catch (err) {
+alert("Erro ao excluir: " + err.message);
+}
+}
+};
+
+logContainer.appendChild(tag);
+}
+}
+
+function updateStats() {
+const hrs = Math.floor(totalMinutesLogged / 60);
+const mins = totalMinutesLogged % 60;
+document.getElementById('totalHours').textContent = `${hrs}h ${mins}m`;
+
+const uniqueSubjectsCount = Object.keys(subjectTotals).length;
+document.getElementById('totalMaterias').textContent = uniqueSubjectsCount;
+document.getElementById('totalAssuntos').textContent = Object.keys(topicTotals).length;
+
+dailyGoalDisplay.textContent = `${dailyGoalHours} hrs`;
+
+const now = new Date();
+const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+const todayMinutes = dailyLogData[todayKey] ? dailyLogData[todayKey].totalMinutes : 0;
+const todayHours = todayMinutes / 60;
+
+const percent = Math.min(Math.round((todayHours / dailyGoalHours) * 100), 100);
+
+goalProgressBar.style.width = `${percent}%`;
+goalPercentText.textContent = `${percent}%`;
+}
+
+function renderPieChart() {
+const pieChart = document.getElementById('pieChart');
+const pieLegendList = document.getElementById('pieLegendList');
+
+pieLegendList.innerHTML = '';
+const entries = Object.entries(topicTotals);
+
+if (entries.length === 0 || totalMinutesLogged === 0) {
+pieChart.style.background = `conic-gradient(var(--border-color) 0% 100%)`;
+pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum dado de estudo registrado ainda.</p>';
+return;
+}
+
+entries.sort((a, b) => b[1] - a[1]);
+
+let cumulativePercent = 0;
+const gradientStops = [];
+
+entries.forEach(([topic, mins], index) => {
+const color = colorPalette[index % colorPalette.length];
+const percent = (mins / totalMinutesLogged) * 100;
+const formattedPercent = percent.toFixed(1);
+const hrs = (mins / 60).toFixed(1);
+
+const startPercent = cumulativePercent;
+cumulativePercent += percent;
+gradientStops.push(`${color} ${startPercent}% ${cumulativePercent}%`);
+
+const legendItem = document.createElement('div');
+legendItem.className = 'pie-legend-item';
+legendItem.innerHTML = `
+         <span class="legend-name">
+           <span class="color-dot" style="background-color: ${color};"></span>
+           ${topic}
+         </span>
+         <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
+       `;
+pieLegendList.appendChild(legendItem);
+});
+
+pieChart.style.background = `conic-gradient(${gradientStops.join(', ')})`;
+}
+
+// Helper to build SVG Arc path for pie slice animation & cutout
+function describeArc(cx, cy, radius, startAngle, endAngle) {
+const startRad = (startAngle - 90) * Math.PI / 180.0;
+const endRad = (endAngle - 90) * Math.PI / 180.0;
+
+const x1 = cx + radius * Math.cos(startRad);
+const y1 = cy + radius * Math.sin(startRad);
+const x2 = cx + radius * Math.cos(endRad);
+const y2 = cy + radius * Math.sin(endRad);
+
+const largeArcFlag = (endAngle - startAngle) <= 180 ? "0" : "1";
+
+return [
+"M", cx, cy,
+"L", x1, y1,
+"A", radius, radius, 0, largeArcFlag, 1, x2, y2,
+"Z"
+].join(" ");
+}
+
+function renderIndividualPieChart() {
+const svg = document.getElementById('individualPieSvg');
+const pieLegendList = document.getElementById('individualPieLegendList');
+const recContainer = document.getElementById('topicRecommendationContainer');
+
+svg.innerHTML = '';
+pieLegendList.innerHTML = '';
+recContainer.innerHTML = '';
+
+if (!activeTopicFilter) {
+pieLegendList.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a análise específica.</p>';
+recContainer.innerHTML = `
+          <div class="recommendation-box">
+            <p><strong>Dificuldade Média:</strong> --</p>
+            <p style="margin-top: 0.4rem; color: var(--text-sub);">Selecione um assunto acima para visualizar a recomendação pedagógica de estudo.</p>
           <div class="chic-recommendation-card">
             <div>
               <div class="rec-badge-pill" style="background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);">
@@ -2023,20 +1993,23 @@
             <div class="rec-content-body">
               Selecione um assunto acima para visualizar a recomendação técnica de estudo.
             </div>
-          </div>
-        `;
-        renderTopicLineChart([]);
-        return;
-      }
+         </div>
+       `;
+renderTopicLineChart([]);
+return;
+}
 
-      const filteredLogs = allLogs.filter(l => {
-        const top = (l.notes && l.notes.trim()) ? l.notes.trim() : 'Geral / Sem Assunto';
-        return top === activeTopicFilter;
-      });
+const filteredLogs = allLogs.filter(l => {
+const top = (l.notes && l.notes.trim()) ? l.notes.trim() : 'Geral / Sem Assunto';
+return top === activeTopicFilter;
+});
 
-      if (filteredLogs.length === 0) {
-        pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeTopicFilter}.</p>`;
-        recContainer.innerHTML = `
+if (filteredLogs.length === 0) {
+pieLegendList.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-sub);">Nenhum estudo registrado para ${activeTopicFilter}.</p>`;
+recContainer.innerHTML = `
+          <div class="recommendation-box">
+            <p><strong>Dificuldade Média:</strong> --</p>
+            <p style="margin-top: 0.4rem; color: var(--text-sub);">Sem dados suficientes para este assunto.</p>
           <div class="chic-recommendation-card">
             <div>
               <div class="rec-badge-pill" style="background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);">
@@ -2050,149 +2023,156 @@
             <div class="rec-content-body">
               Sem dados suficientes registrados para este assunto.
             </div>
-          </div>
-        `;
-        renderTopicLineChart([]);
-        return;
-      }
+         </div>
+       `;
+renderTopicLineChart([]);
+return;
+}
 
-      // Group into 3 Consolidated Categories: Easy (1-4), Medium (5-7), Hard (8-10)
-      const categories = [
-        { key: 'easy', label: 'Fácil (1-4)', min: 1, max: 4, color: '#10b981', totalMins: 0, sumDiffMins: 0 },
-        { key: 'medium', label: 'Médio (5-7)', min: 5, max: 7, color: '#f59e0b', totalMins: 0, sumDiffMins: 0 },
-        { key: 'hard', label: 'Difícil (8-10)', min: 8, max: 10, color: '#ef4444', totalMins: 0, sumDiffMins: 0 }
-      ];
+// Group into 3 Consolidated Categories: Easy (1-4), Medium (5-7), Hard (8-10)
+const categories = [
+{ key: 'easy', label: 'Fácil (1-4)', min: 1, max: 4, color: '#10b981', totalMins: 0, sumDiffMins: 0 },
+{ key: 'medium', label: 'Médio (5-7)', min: 5, max: 7, color: '#f59e0b', totalMins: 0, sumDiffMins: 0 },
+{ key: 'hard', label: 'Difícil (8-10)', min: 8, max: 10, color: '#ef4444', totalMins: 0, sumDiffMins: 0 }
+];
 
-      let totalTopicMins = 0;
-      let overallSumDiff = 0;
+let totalTopicMins = 0;
+let overallSumDiff = 0;
 
-      filteredLogs.forEach(log => {
-        const diff = log.difficulty || 1;
-        const dur = log.duration || 0;
-        totalTopicMins += dur;
-        overallSumDiff += (diff * dur);
+filteredLogs.forEach(log => {
+const diff = log.difficulty || 1;
+const dur = log.duration || 0;
+totalTopicMins += dur;
+overallSumDiff += (diff * dur);
 
-        const cat = categories.find(c => diff >= c.min && diff <= c.max) || categories[0];
-        cat.totalMins += dur;
-        cat.sumDiffMins += (diff * dur);
-      });
+const cat = categories.find(c => diff >= c.min && diff <= c.max) || categories[0];
+cat.totalMins += dur;
+cat.sumDiffMins += (diff * dur);
+});
 
-      const overallAvgDifficulty = (overallSumDiff / totalTopicMins).toFixed(1);
-      const validCategories = categories.filter(c => c.totalMins > 0);
+const overallAvgDifficulty = (overallSumDiff / totalTopicMins).toFixed(1);
+const validCategories = categories.filter(c => c.totalMins > 0);
 
-      const cx = 100;
-      const cy = 100;
-      const radius = 80;
-      let currentAngle = 0;
+const cx = 100;
+const cy = 100;
+const radius = 80;
+let currentAngle = 0;
 
-      // Check if chart has only 1 slice/option
-      const isSingleOption = validCategories.length === 1;
+// Check if chart has only 1 slice/option
+const isSingleOption = validCategories.length === 1;
 
-      validCategories.forEach((cat) => {
-        const catAvgDiff = (cat.sumDiffMins / cat.totalMins).toFixed(1);
-        const percent = (cat.totalMins / totalTopicMins) * 100;
-        const formattedPercent = percent.toFixed(1);
-        const hrs = (cat.totalMins / 60).toFixed(1);
+validCategories.forEach((cat) => {
+const catAvgDiff = (cat.sumDiffMins / cat.totalMins).toFixed(1);
+const percent = (cat.totalMins / totalTopicMins) * 100;
+const formattedPercent = percent.toFixed(1);
+const hrs = (cat.totalMins / 60).toFixed(1);
 
-        const sliceAngle = (percent / 100) * 360;
-        const startAngle = currentAngle;
-        const endAngle = currentAngle + sliceAngle;
-        const midAngle = startAngle + (sliceAngle / 2);
-        currentAngle = endAngle;
+const sliceAngle = (percent / 100) * 360;
+const startAngle = currentAngle;
+const endAngle = currentAngle + sliceAngle;
+const midAngle = startAngle + (sliceAngle / 2);
+currentAngle = endAngle;
 
-        // Vector for dynamic slice-out pop effect
-        const rad = (midAngle - 90) * Math.PI / 180.0;
-        const shiftX = Math.round(Math.cos(rad) * 12);
-        const shiftY = Math.round(Math.sin(rad) * 12);
+// Vector for dynamic slice-out pop effect
+const rad = (midAngle - 90) * Math.PI / 180.0;
+const shiftX = Math.round(Math.cos(rad) * 12);
+const shiftY = Math.round(Math.sin(rad) * 12);
 
-        // SVG path creation
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        const d = sliceAngle >= 359.9 ? describeArc(cx, cy, radius, 0, 359.99) : describeArc(cx, cy, radius, startAngle, endAngle);
-        
-        path.setAttribute('d', d);
-        path.setAttribute('fill', cat.color);
-        path.setAttribute('class', 'pie-slice-path');
+// SVG path creation (handling 360 full pie)
+const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+const d = sliceAngle >= 359.9 ? describeArc(cx, cy, radius, 0, 359.99) : describeArc(cx, cy, radius, startAngle, endAngle);
 
-        // Legend row
-        const legendItem = document.createElement('div');
-        legendItem.className = 'pie-legend-item';
-        legendItem.innerHTML = `
-          <span class="legend-name">
-            <span class="color-dot" style="background-color: ${cat.color};"></span>
-            ${cat.label}
-          </span>
-          <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
-        `;
+path.setAttribute('d', d);
+path.setAttribute('fill', cat.color);
+path.setAttribute('class', 'pie-slice-path');
 
-        const activateSlice = (e) => {
-          if (!isSingleOption) {
-            path.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
-          }
-          path.classList.add('active-slice');
-          legendItem.classList.add('active-legend');
-          showTooltip(
-            e,
-            cat.label,
-            `Tempo: ${hrs}h (${formattedPercent}%) • Dificuldade Média: ${catAvgDiff}/10`
-          );
-        };
+// Legend row
+const legendItem = document.createElement('div');
+legendItem.className = 'pie-legend-item';
+legendItem.innerHTML = `
+         <span class="legend-name">
+           <span class="color-dot" style="background-color: ${cat.color};"></span>
+           ${cat.label}
+         </span>
+         <span><strong>${hrs}h</strong> (${formattedPercent}%)</span>
+       `;
 
-        const deactivateSlice = () => {
-          path.style.transform = 'translate(0px, 0px)';
-          path.classList.remove('active-slice');
-          legendItem.classList.remove('active-legend');
-          hideTooltip();
-        };
+const activateSlice = (e) => {
+          // If multiple categories exist, perform the cut-open animation; if only 1 option, skip translation animation
+if (!isSingleOption) {
+path.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+}
+path.classList.add('active-slice');
+legendItem.classList.add('active-legend');
+showTooltip(
+e,
+cat.label,
+`Tempo: ${hrs}h (${formattedPercent}%) • Dificuldade Média: ${catAvgDiff}/10`
+);
+};
 
-        path.addEventListener('mouseenter', activateSlice);
-        path.addEventListener('mousemove', updateTooltipPos);
-        path.addEventListener('mouseleave', deactivateSlice);
+const deactivateSlice = () => {
+path.style.transform = 'translate(0px, 0px)';
+path.classList.remove('active-slice');
+legendItem.classList.remove('active-legend');
+hideTooltip();
+};
 
-        legendItem.addEventListener('mouseenter', activateSlice);
-        legendItem.addEventListener('mousemove', updateTooltipPos);
-        legendItem.addEventListener('mouseleave', deactivateSlice);
+path.addEventListener('mouseenter', activateSlice);
+path.addEventListener('mousemove', updateTooltipPos);
+path.addEventListener('mouseleave', deactivateSlice);
 
-        svg.appendChild(path);
-        pieLegendList.appendChild(legendItem);
-      });
+legendItem.addEventListener('mouseenter', activateSlice);
+legendItem.addEventListener('mousemove', updateTooltipPos);
+legendItem.addEventListener('mouseleave', deactivateSlice);
 
-      // Add center donut circle
-      const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      innerCircle.setAttribute('cx', cx);
-      innerCircle.setAttribute('cy', cy);
-      innerCircle.setAttribute('r', 48);
-      innerCircle.setAttribute('fill', 'var(--card-bg)');
-      innerCircle.style.pointerEvents = 'none';
-      svg.appendChild(innerCircle);
+svg.appendChild(path);
+pieLegendList.appendChild(legendItem);
+});
 
-      // Add central text showing overall weighted difficulty average
-      const centerTextVal = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      centerTextVal.setAttribute('x', cx);
-      centerTextVal.setAttribute('y', cy - 2);
-      centerTextVal.setAttribute('text-anchor', 'middle');
-      centerTextVal.setAttribute('font-size', '16');
-      centerTextVal.setAttribute('font-weight', '800');
-      centerTextVal.setAttribute('fill', getDifficultyColor(parseFloat(overallAvgDifficulty)));
-      centerTextVal.textContent = `${overallAvgDifficulty}/10`;
-      centerTextVal.style.pointerEvents = 'none';
-      svg.appendChild(centerTextVal);
+// Add center donut circle
+const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+innerCircle.setAttribute('cx', cx);
+innerCircle.setAttribute('cy', cy);
+innerCircle.setAttribute('r', 48);
+innerCircle.setAttribute('fill', 'var(--card-bg)');
+innerCircle.style.pointerEvents = 'none';
+svg.appendChild(innerCircle);
 
-      const centerTextSub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      centerTextSub.setAttribute('x', cx);
-      centerTextSub.setAttribute('y', cy + 14);
-      centerTextSub.setAttribute('text-anchor', 'middle');
-      centerTextSub.setAttribute('font-size', '9');
-      centerTextSub.setAttribute('font-weight', '600');
-      centerTextSub.setAttribute('fill', 'var(--text-sub)');
-      centerTextSub.textContent = 'Média Geral';
-      centerTextSub.style.pointerEvents = 'none';
-      svg.appendChild(centerTextSub);
+// Add central text showing overall weighted difficulty average
+const centerTextVal = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+centerTextVal.setAttribute('x', cx);
+centerTextVal.setAttribute('y', cy - 2);
+centerTextVal.setAttribute('text-anchor', 'middle');
+centerTextVal.setAttribute('font-size', '16');
+centerTextVal.setAttribute('font-weight', '800');
+centerTextVal.setAttribute('fill', getDifficultyColor(parseFloat(overallAvgDifficulty)));
+centerTextVal.textContent = `${overallAvgDifficulty}/10`;
+centerTextVal.style.pointerEvents = 'none';
+svg.appendChild(centerTextVal);
 
+const centerTextSub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+centerTextSub.setAttribute('x', cx);
+centerTextSub.setAttribute('y', cy + 14);
+centerTextSub.setAttribute('text-anchor', 'middle');
+centerTextSub.setAttribute('font-size', '9');
+centerTextSub.setAttribute('font-weight', '600');
+centerTextSub.setAttribute('fill', 'var(--text-sub)');
+centerTextSub.textContent = 'Média Geral';
+centerTextSub.style.pointerEvents = 'none';
+svg.appendChild(centerTextSub);
+
+      // Render updated Recommendation Box next to line chart
       // Render updated Chic Recommendation Box
       const colorVal = getDifficultyColor(overallAvgDifficulty);
-      const recText = getRecommendationText(overallAvgDifficulty);
+const recText = getRecommendationText(overallAvgDifficulty);
 
-      recContainer.innerHTML = `
+recContainer.innerHTML = `
+        <div class="recommendation-box" style="border-left-color: ${getDifficultyColor(overallAvgDifficulty)};">
+          <p style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">
+            📊 Dificuldade Média do Assunto: <span style="color: ${getDifficultyColor(overallAvgDifficulty)};">${overallAvgDifficulty}/10</span>
+          </p>
+          <div style="font-size: 0.875rem; color: var(--text-main); line-height: 1.5;">
         <div class="chic-recommendation-card" style="border-left-color: ${colorVal};">
           <div>
             <div class="rec-badge-pill" style="background: ${colorVal}1a; color: ${colorVal};">
@@ -2204,134 +2184,147 @@
             </div>
           </div>
           <div class="rec-content-body">
-            ${recText}
-          </div>
-        </div>
-      `;
+           ${recText}
+         </div>
+       </div>
+     `;
 
-      renderTopicLineChart(filteredLogs);
-    }
+renderTopicLineChart(filteredLogs);
+}
 
-    function showTooltip(e, title, subtitle) {
-      pieChartTooltip.innerHTML = `
-        <div class="tooltip-header">📌 ${title}</div>
-        <div class="tooltip-sub">${subtitle}</div>
-      `;
-      pieChartTooltip.classList.add('active');
-      updateTooltipPos(e);
-    }
+function showTooltip(e, title, subtitle) {
+pieChartTooltip.innerHTML = `
+       <div class="tooltip-header">📌 ${title}</div>
+       <div class="tooltip-sub">${subtitle}</div>
+     `;
+pieChartTooltip.classList.add('active');
+updateTooltipPos(e);
+}
 
-    function updateTooltipPos(e) {
-      pieChartTooltip.style.left = `${e.clientX + 14}px`;
-      pieChartTooltip.style.top = `${e.clientY + 14}px`;
-    }
+function updateTooltipPos(e) {
+pieChartTooltip.style.left = `${e.clientX + 14}px`;
+pieChartTooltip.style.top = `${e.clientY + 14}px`;
+}
 
-    function hideTooltip() {
-      pieChartTooltip.classList.remove('active');
-    }
+function hideTooltip() {
+pieChartTooltip.classList.remove('active');
+}
 
     /* -------------------------------------------------------------
        REDESIGNED CHIC ANIMATED TOPIC LINE CHART
     ------------------------------------------------------------- */
-    function renderTopicLineChart(logs) {
-      const svg = document.getElementById('topicLineChartSvg');
+function renderTopicLineChart(logs) {
+const svg = document.getElementById('topicLineChartSvg');
 
-      if (!logs || logs.length === 0) {
-        svg.innerHTML = `
+if (!logs || logs.length === 0) {
+svg.innerHTML = `
+          <text x="50%" y="50%" fill="var(--text-sub)" font-size="14" text-anchor="middle">
           <text x="50%" y="50%" fill="var(--text-sub)" font-size="13" font-weight="600" text-anchor="middle">
-            Selecione um assunto com registros de estudo para visualizar o gráfico.
-          </text>
-        `;
-        return;
-      }
+           Selecione um assunto com registros de estudo para visualizar o gráfico.
+         </text>
+       `;
+return;
+}
 
-      const dailyMap = {};
-      logs.forEach(log => {
-        const dKey = log.dateKey;
-        if (!dailyMap[dKey]) {
-          dailyMap[dKey] = { totalMins: 0, sumDiffMins: 0, dateKey: dKey };
-        }
-        const duration = log.duration || 0;
-        const diff = log.difficulty || 1;
-        dailyMap[dKey].totalMins += duration;
-        dailyMap[dKey].sumDiffMins += (diff * duration);
-      });
+const dailyMap = {};
+logs.forEach(log => {
+const dKey = log.dateKey;
+if (!dailyMap[dKey]) {
+dailyMap[dKey] = { totalMins: 0, sumDiffMins: 0, dateKey: dKey };
+}
+const duration = log.duration || 0;
+const diff = log.difficulty || 1;
+dailyMap[dKey].totalMins += duration;
+dailyMap[dKey].sumDiffMins += (diff * duration);
+});
 
-      const aggregatedDays = Object.values(dailyMap).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+const aggregatedDays = Object.values(dailyMap).sort((a, b) => a.dateKey.localeCompare(b.dateKey));
 
-      const width = 700;
-      const height = 320;
+const width = 700;
+const height = 320;
+      const paddingLeft = 45;
+      const paddingRight = 25;
+      const paddingTop = 35;
       const paddingLeft = 50;
       const paddingRight = 35;
       const paddingTop = 45;
-      const paddingBottom = 45;
+const paddingBottom = 45;
 
-      const chartWidth = width - paddingLeft - paddingRight;
-      const chartHeight = height - paddingTop - paddingBottom;
+const chartWidth = width - paddingLeft - paddingRight;
+const chartHeight = height - paddingTop - paddingBottom;
 
-      const maxHours = Math.max(...aggregatedDays.map(d => d.totalMins / 60), 2);
-      const stepX = aggregatedDays.length > 1 ? chartWidth / (aggregatedDays.length - 1) : chartWidth / 2;
+const maxHours = Math.max(...aggregatedDays.map(d => d.totalMins / 60), 2);
+const stepX = aggregatedDays.length > 1 ? chartWidth / (aggregatedDays.length - 1) : chartWidth / 2;
 
-      const coords = aggregatedDays.map((d, idx) => {
-        const x = aggregatedDays.length === 1 ? paddingLeft + (chartWidth / 2) : paddingLeft + (idx * stepX);
-        const hours = d.totalMins / 60;
-        const y = paddingTop + chartHeight - ((hours / maxHours) * chartHeight);
+const coords = aggregatedDays.map((d, idx) => {
+const x = aggregatedDays.length === 1 ? paddingLeft + (chartWidth / 2) : paddingLeft + (idx * stepX);
+const hours = d.totalMins / 60;
+const y = paddingTop + chartHeight - ((hours / maxHours) * chartHeight);
 
-        const dateParts = d.dateKey.split('-');
-        const formattedDate = `${dateParts[2]}/${dateParts[1]}`;
-        const avgDiff = Math.round(d.sumDiffMins / d.totalMins);
+const dateParts = d.dateKey.split('-');
+const formattedDate = `${dateParts[2]}/${dateParts[1]}`;
+const avgDiff = Math.round(d.sumDiffMins / d.totalMins);
 
-        return {
-          x,
-          y,
-          hours,
-          dateLabel: formattedDate,
-          difficulty: avgDiff,
-          topic: activeTopicFilter
-        };
-      });
+return {
+x,
+y,
+hours,
+dateLabel: formattedDate,
+difficulty: avgDiff,
+topic: activeTopicFilter
+};
+});
 
-      svg.innerHTML = `
-        <defs>
-          <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
+svg.innerHTML = `
+       <defs>
+         <linearGradient id="topic-line-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
             <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.45"/>
-            <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
-          </linearGradient>
+           <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+         </linearGradient>
           <linearGradient id="chic-line-gradient" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#10b981"/>
             <stop offset="50%" stop-color="#8b5cf6"/>
             <stop offset="100%" stop-color="#3b82f6"/>
           </linearGradient>
-        </defs>
-      `;
+       </defs>
+     `;
 
       // Draw Grid Lines & Horizontal Axis Labels
-      const gridCount = 4;
-      for (let i = 0; i <= gridCount; i++) {
-        const yVal = (maxHours / gridCount) * i;
-        const yPos = paddingTop + chartHeight - ((yVal / maxHours) * chartHeight);
+const gridCount = 4;
+for (let i = 0; i <= gridCount; i++) {
+const yVal = (maxHours / gridCount) * i;
+const yPos = paddingTop + chartHeight - ((yVal / maxHours) * chartHeight);
 
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', paddingLeft);
-        line.setAttribute('y1', yPos);
-        line.setAttribute('x2', width - paddingRight);
-        line.setAttribute('y2', yPos);
-        line.setAttribute('class', i === 0 ? 'chart-axis-line' : 'chart-grid-line');
-        svg.appendChild(line);
+const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+line.setAttribute('x1', paddingLeft);
+line.setAttribute('y1', yPos);
+line.setAttribute('x2', width - paddingRight);
+line.setAttribute('y2', yPos);
+line.setAttribute('class', i === 0 ? 'chart-axis-line' : 'chart-grid-line');
+svg.appendChild(line);
 
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', paddingLeft - 8);
         text.setAttribute('x', paddingLeft - 10);
-        text.setAttribute('y', yPos + 4);
+text.setAttribute('y', yPos + 4);
+        text.setAttribute('class', 'chart-text');
         text.setAttribute('class', 'chart-text-chic');
-        text.setAttribute('text-anchor', 'end');
-        text.textContent = `${yVal.toFixed(1)}h`;
-        svg.appendChild(text);
-      }
+text.setAttribute('text-anchor', 'end');
+text.textContent = `${yVal.toFixed(1)}h`;
+svg.appendChild(text);
+}
 
+      let pathD = `M ${coords[0].x} ${coords[0].y}`;
+      let areaD = `M ${coords[0].x} ${paddingTop + chartHeight} L ${coords[0].x} ${coords[0].y}`;
       // Smooth Curve Interpolation (Cubic Bezier)
       let pathD = "";
       let areaD = "";
 
+      for (let i = 1; i < coords.length; i++) {
+        pathD += ` L ${coords[i].x} ${coords[i].y}`;
+        areaD += ` L ${coords[i].x} ${coords[i].y}`;
+      }
       if (coords.length === 1) {
         pathD = `M ${paddingLeft} ${coords[0].y} L ${coords[0].x} ${coords[0].y} L ${width - paddingRight} ${coords[0].y}`;
         areaD = `M ${paddingLeft} ${paddingTop + chartHeight} L ${paddingLeft} ${coords[0].y} L ${width - paddingRight} ${coords[0].y} L ${width - paddingRight} ${paddingTop + chartHeight} Z`;
@@ -2351,40 +2344,57 @@
           areaD += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
         }
 
+      areaD += ` L ${coords[coords.length - 1].x} ${paddingTop + chartHeight} Z`;
         areaD += ` L ${coords[coords.length - 1].x} ${paddingTop + chartHeight} Z`;
       }
 
       // Render Gradient Area Under Line
-      const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      areaPath.setAttribute('d', areaD);
+const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+areaPath.setAttribute('d', areaD);
+      areaPath.setAttribute('class', 'chart-area');
+      areaPath.setAttribute('fill', 'url(#topic-line-gradient)');
       areaPath.setAttribute('class', 'chart-area-chic');
-      svg.appendChild(areaPath);
+svg.appendChild(areaPath);
 
       // Render Animated Line Path
-      const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      linePath.setAttribute('d', pathD);
+const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+linePath.setAttribute('d', pathD);
+      linePath.setAttribute('class', 'chart-path');
+      linePath.setAttribute('stroke', '#8b5cf6');
       linePath.setAttribute('class', 'chart-path-chic');
-      svg.appendChild(linePath);
+svg.appendChild(linePath);
 
       // Render Points, Floating Badges, and Hover Interactions
-      coords.forEach((c) => {
+coords.forEach((c) => {
         const diffColor = getDifficultyColor(c.difficulty);
 
         // Date X Label
-        const xText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        xText.setAttribute('x', c.x);
+const xText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+xText.setAttribute('x', c.x);
+        xText.setAttribute('y', paddingTop + chartHeight + 18);
+        xText.setAttribute('class', 'chart-text');
         xText.setAttribute('y', paddingTop + chartHeight + 22);
         xText.setAttribute('class', 'chart-text-chic');
-        xText.textContent = c.dateLabel;
-        svg.appendChild(xText);
+xText.textContent = c.dateLabel;
+svg.appendChild(xText);
 
         // Hours Text above point
-        const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        valText.setAttribute('x', c.x);
+const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+valText.setAttribute('x', c.x);
+        valText.setAttribute('y', c.y - 10);
+        valText.setAttribute('class', 'chart-val-text');
         valText.setAttribute('y', c.y - 30);
         valText.setAttribute('class', 'chart-val-chic');
-        valText.textContent = `${c.hours.toFixed(1)}h`;
-        svg.appendChild(valText);
+valText.textContent = `${c.hours.toFixed(1)}h`;
+svg.appendChild(valText);
+
+        const diffText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        diffText.setAttribute('x', c.x);
+        diffText.setAttribute('y', c.y - 22);
+        diffText.setAttribute('class', 'chart-subj-text');
+        diffText.setAttribute('fill', getDifficultyColor(c.difficulty));
+        diffText.textContent = `Dif: ${c.difficulty}/10`;
+        svg.appendChild(diffText);
 
         // Difficulty Badge Pill
         const badgeG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -2421,9 +2431,15 @@
         svg.appendChild(pulseCircle);
 
         // Main Data Point
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', c.x);
-        circle.setAttribute('cy', c.y);
+const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+circle.setAttribute('cx', c.x);
+circle.setAttribute('cy', c.y);
+        circle.setAttribute('class', 'chart-point');
+        circle.setAttribute('fill', getDifficultyColor(c.difficulty));
+        
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = `Assunto: ${c.topic}\nData: ${c.dateLabel}\nTempo total: ${c.hours.toFixed(1)}h\nDificuldade média: ${c.difficulty}/10`;
+        circle.appendChild(title);
         circle.setAttribute('class', 'chart-point-chic');
         circle.setAttribute('fill', diffColor);
 
@@ -2438,217 +2454,217 @@
         circle.addEventListener('mousemove', updateTooltipPos);
         circle.addEventListener('mouseleave', hideTooltip);
 
-        svg.appendChild(circle);
-      });
-    }
+svg.appendChild(circle);
+});
+}
 
-    function renderLineChart() {
-      const svg = document.getElementById('lineChartSvg');
-      const timeframe = lineChartTimeframe.value;
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
+function renderLineChart() {
+const svg = document.getElementById('lineChartSvg');
+const timeframe = lineChartTimeframe.value;
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
 
-      let daysList = [];
+let daysList = [];
 
-      if (timeframe === 'weekly') {
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date();
-          d.setDate(now.getDate() - i);
-          const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-          const label = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-          daysList.push({ dateKey, label });
-        }
-      } else {
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-          daysList.push({ dateKey, label: `${day}` });
-        }
-      }
+if (timeframe === 'weekly') {
+for (let i = 6; i >= 0; i--) {
+const d = new Date();
+d.setDate(now.getDate() - i);
+const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const label = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+daysList.push({ dateKey, label });
+}
+} else {
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+for (let day = 1; day <= daysInMonth; day++) {
+const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+daysList.push({ dateKey, label: `${day}` });
+}
+}
 
-      const points = daysList.map(item => {
-        const log = dailyLogData[item.dateKey];
-        const hours = log ? (log.totalMinutes / 60) : 0;
-        const subjects = log ? Array.from(log.subjects).join(', ') : '';
-        return { label: item.label, hours, subjects };
-      });
+const points = daysList.map(item => {
+const log = dailyLogData[item.dateKey];
+const hours = log ? (log.totalMinutes / 60) : 0;
+const subjects = log ? Array.from(log.subjects).join(', ') : '';
+return { label: item.label, hours, subjects };
+});
 
-      const maxHours = Math.max(...points.map(p => p.hours), 4);
-      const width = 700;
-      const height = 320;
-      const paddingLeft = 45;
-      const paddingRight = 25;
-      const paddingTop = 35;
-      const paddingBottom = 45;
+const maxHours = Math.max(...points.map(p => p.hours), 4);
+const width = 700;
+const height = 320;
+const paddingLeft = 45;
+const paddingRight = 25;
+const paddingTop = 35;
+const paddingBottom = 45;
 
-      const chartWidth = width - paddingLeft - paddingRight;
-      const chartHeight = height - paddingTop - paddingBottom;
+const chartWidth = width - paddingLeft - paddingRight;
+const chartHeight = height - paddingTop - paddingBottom;
 
-      const stepX = points.length > 1 ? chartWidth / (points.length - 1) : chartWidth;
+const stepX = points.length > 1 ? chartWidth / (points.length - 1) : chartWidth;
 
-      const coords = points.map((p, idx) => {
-        const x = paddingLeft + (idx * stepX);
-        const y = paddingTop + chartHeight - ((p.hours / maxHours) * chartHeight);
-        return { x, y, ...p };
-      });
+const coords = points.map((p, idx) => {
+const x = paddingLeft + (idx * stepX);
+const y = paddingTop + chartHeight - ((p.hours / maxHours) * chartHeight);
+return { x, y, ...p };
+});
 
-      svg.innerHTML = `
-        <defs>
-          <linearGradient id="line-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#10b981" stop-opacity="0.4"/>
-            <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-      `;
+svg.innerHTML = `
+       <defs>
+         <linearGradient id="line-gradient" x1="0" y1="0" x2="0" y2="1">
+           <stop offset="0%" stop-color="#10b981" stop-opacity="0.4"/>
+           <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+         </linearGradient>
+       </defs>
+     `;
 
-      const gridCount = 4;
-      for (let i = 0; i <= gridCount; i++) {
-        const yVal = (maxHours / gridCount) * i;
-        const yPos = paddingTop + chartHeight - ((yVal / maxHours) * chartHeight);
+const gridCount = 4;
+for (let i = 0; i <= gridCount; i++) {
+const yVal = (maxHours / gridCount) * i;
+const yPos = paddingTop + chartHeight - ((yVal / maxHours) * chartHeight);
 
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', paddingLeft);
-        line.setAttribute('y1', yPos);
-        line.setAttribute('x2', width - paddingRight);
-        line.setAttribute('y2', yPos);
-        line.setAttribute('class', i === 0 ? 'chart-axis-line' : 'chart-grid-line');
-        svg.appendChild(line);
+const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+line.setAttribute('x1', paddingLeft);
+line.setAttribute('y1', yPos);
+line.setAttribute('x2', width - paddingRight);
+line.setAttribute('y2', yPos);
+line.setAttribute('class', i === 0 ? 'chart-axis-line' : 'chart-grid-line');
+svg.appendChild(line);
 
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', paddingLeft - 8);
-        text.setAttribute('y', yPos + 4);
-        text.setAttribute('class', 'chart-text');
-        text.setAttribute('text-anchor', 'end');
-        text.textContent = `${yVal.toFixed(1)}h`;
-        svg.appendChild(text);
-      }
+const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+text.setAttribute('x', paddingLeft - 8);
+text.setAttribute('y', yPos + 4);
+text.setAttribute('class', 'chart-text');
+text.setAttribute('text-anchor', 'end');
+text.textContent = `${yVal.toFixed(1)}h`;
+svg.appendChild(text);
+}
 
-      let pathD = `M ${coords[0].x} ${coords[0].y}`;
-      let areaD = `M ${coords[0].x} ${paddingTop + chartHeight} L ${coords[0].x} ${coords[0].y}`;
+let pathD = `M ${coords[0].x} ${coords[0].y}`;
+let areaD = `M ${coords[0].x} ${paddingTop + chartHeight} L ${coords[0].x} ${coords[0].y}`;
 
-      for (let i = 1; i < coords.length; i++) {
-        pathD += ` L ${coords[i].x} ${coords[i].y}`;
-        areaD += ` L ${coords[i].x} ${coords[i].y}`;
-      }
+for (let i = 1; i < coords.length; i++) {
+pathD += ` L ${coords[i].x} ${coords[i].y}`;
+areaD += ` L ${coords[i].x} ${coords[i].y}`;
+}
 
-      areaD += ` L ${coords[coords.length - 1].x} ${paddingTop + chartHeight} Z`;
+areaD += ` L ${coords[coords.length - 1].x} ${paddingTop + chartHeight} Z`;
 
-      const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      areaPath.setAttribute('d', areaD);
-      areaPath.setAttribute('class', 'chart-area');
-      svg.appendChild(areaPath);
+const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+areaPath.setAttribute('d', areaD);
+areaPath.setAttribute('class', 'chart-area');
+svg.appendChild(areaPath);
 
-      const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      linePath.setAttribute('d', pathD);
-      linePath.setAttribute('class', 'chart-path');
-      svg.appendChild(linePath);
+const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+linePath.setAttribute('d', pathD);
+linePath.setAttribute('class', 'chart-path');
+svg.appendChild(linePath);
 
-      coords.forEach((c) => {
-        const xText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        xText.setAttribute('x', c.x);
-        xText.setAttribute('y', paddingTop + chartHeight + 18);
-        xText.setAttribute('class', 'chart-text');
-        xText.textContent = c.label;
-        svg.appendChild(xText);
+coords.forEach((c) => {
+const xText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+xText.setAttribute('x', c.x);
+xText.setAttribute('y', paddingTop + chartHeight + 18);
+xText.setAttribute('class', 'chart-text');
+xText.textContent = c.label;
+svg.appendChild(xText);
 
-        if (c.hours > 0) {
-          const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          valText.setAttribute('x', c.x);
-          valText.setAttribute('y', c.y - 10);
-          valText.setAttribute('class', 'chart-val-text');
-          valText.textContent = `${c.hours.toFixed(1)}h`;
-          svg.appendChild(valText);
+if (c.hours > 0) {
+const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+valText.setAttribute('x', c.x);
+valText.setAttribute('y', c.y - 10);
+valText.setAttribute('class', 'chart-val-text');
+valText.textContent = `${c.hours.toFixed(1)}h`;
+svg.appendChild(valText);
 
-          if (c.subjects) {
-            const subjText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            subjText.setAttribute('x', c.x);
-            subjText.setAttribute('y', c.y - 22);
-            subjText.setAttribute('class', 'chart-subj-text');
-            const displaySubj = c.subjects.length > 12 ? c.subjects.substring(0, 10) + '...' : c.subjects;
-            subjText.textContent = displaySubj;
-            svg.appendChild(subjText);
-          }
-        }
+if (c.subjects) {
+const subjText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+subjText.setAttribute('x', c.x);
+subjText.setAttribute('y', c.y - 22);
+subjText.setAttribute('class', 'chart-subj-text');
+const displaySubj = c.subjects.length > 12 ? c.subjects.substring(0, 10) + '...' : c.subjects;
+subjText.textContent = displaySubj;
+svg.appendChild(subjText);
+}
+}
 
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', c.x);
-        circle.setAttribute('cy', c.y);
-        circle.setAttribute('class', 'chart-point');
-        
-        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-        title.textContent = `${c.label}: ${c.hours.toFixed(1)}h${c.subjects ? ` (${c.subjects})` : ''}`;
-        circle.appendChild(title);
+const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+circle.setAttribute('cx', c.x);
+circle.setAttribute('cy', c.y);
+circle.setAttribute('class', 'chart-point');
 
-        svg.appendChild(circle);
-      });
-    }
+const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+title.textContent = `${c.label}: ${c.hours.toFixed(1)}h${c.subjects ? ` (${c.subjects})` : ''}`;
+circle.appendChild(title);
 
-    function openModalForCreate(dateKey, day, monthName) {
-      if (!currentUser) {
-        alert('Faça login com o Google para registrar seus estudos.');
-        return;
-      }
-      studyForm.reset();
-      editingDocIdInput.value = '';
-      selectedDateInput.value = dateKey;
-      setDifficultyValue(1);
-      modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
-      document.getElementById('btnSaveStudy').textContent = 'Salvar Registro';
-      studyModal.style.display = 'flex';
-    }
+svg.appendChild(circle);
+});
+}
 
-    function openModalForEdit(docId, dateKey, subject, duration, notes, difficulty) {
-      if (!currentUser) return;
+function openModalForCreate(dateKey, day, monthName) {
+if (!currentUser) {
+alert('Faça login com o Google para registrar seus estudos.');
+return;
+}
+studyForm.reset();
+editingDocIdInput.value = '';
+selectedDateInput.value = dateKey;
+setDifficultyValue(1);
+modalDateTitle.textContent = `Estudo do dia ${day} de ${monthName}`;
+document.getElementById('btnSaveStudy').textContent = 'Salvar Registro';
+studyModal.style.display = 'flex';
+}
 
-      editingDocIdInput.value = docId;
-      selectedDateInput.value = dateKey;
-      document.getElementById('subject').value = subject;
-      document.getElementById('notes').value = notes || '';
-      document.getElementById('duration').value = duration;
-      setDifficultyValue(difficulty || 1);
+function openModalForEdit(docId, dateKey, subject, duration, notes, difficulty) {
+if (!currentUser) return;
 
-      const dateParts = dateKey.split('-');
-      modalDateTitle.textContent = `Editar Estudo (${dateParts[2]}/${dateParts[1]})`;
-      document.getElementById('btnSaveStudy').textContent = 'Atualizar Registro';
-      studyModal.style.display = 'flex';
-    }
+editingDocIdInput.value = docId;
+selectedDateInput.value = dateKey;
+document.getElementById('subject').value = subject;
+document.getElementById('notes').value = notes || '';
+document.getElementById('duration').value = duration;
+setDifficultyValue(difficulty || 1);
 
-    studyForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      if (!currentUser) return;
+const dateParts = dateKey.split('-');
+modalDateTitle.textContent = `Editar Estudo (${dateParts[2]}/${dateParts[1]})`;
+document.getElementById('btnSaveStudy').textContent = 'Atualizar Registro';
+studyModal.style.display = 'flex';
+}
 
-      const docId = editingDocIdInput.value;
-      const dateKey = selectedDateInput.value;
-      const subject = document.getElementById('subject').value;
-      const notes = document.getElementById('notes').value;
-      const duration = parseInt(document.getElementById('duration').value, 10);
-      const difficulty = parseInt(difficultyInput.value, 10);
+studyForm.addEventListener('submit', async function(e) {
+e.preventDefault();
+if (!currentUser) return;
 
-      try {
-        if (docId) {
-          await updateDoc(doc(db, "study_logs", docId), {
-            subject,
-            notes,
-            duration,
-            difficulty
-          });
-        } else {
-          await addDoc(collection(db, "study_logs"), {
-            userId: currentUser.uid,
-            dateKey,
-            subject,
-            notes,
-            duration,
-            difficulty,
-            timestamp: new Date()
-          });
-        }
-        closeStudyModal();
-      } catch (err) {
-        alert('Erro ao salvar estudo: ' + err.message);
-      }
-    });
-  </script>
+const docId = editingDocIdInput.value;
+const dateKey = selectedDateInput.value;
+const subject = document.getElementById('subject').value;
+const notes = document.getElementById('notes').value;
+const duration = parseInt(document.getElementById('duration').value, 10);
+const difficulty = parseInt(difficultyInput.value, 10);
+
+try {
+if (docId) {
+await updateDoc(doc(db, "study_logs", docId), {
+subject,
+notes,
+duration,
+difficulty
+});
+} else {
+await addDoc(collection(db, "study_logs"), {
+userId: currentUser.uid,
+dateKey,
+subject,
+notes,
+duration,
+difficulty,
+timestamp: new Date()
+});
+}
+closeStudyModal();
+} catch (err) {
+alert('Erro ao salvar estudo: ' + err.message);
+}
+});
+</script>
 </body>
 </html>
